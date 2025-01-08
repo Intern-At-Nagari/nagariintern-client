@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Card,
@@ -8,8 +9,8 @@ import {
 } from "@material-tailwind/react";
 import { EnvelopeIcon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from 'react-router-dom';
-import nagariImage from '../assets/nagari.jpg'; // Import the image
-import heroImage from '../assets/hero.jpg'; // Import the hero image
+import nagariImage from '../assets/nagari.jpg';
+import heroImage from '../assets/hero.jpg';
 import { toast } from 'react-toastify';
 
 const validateEmail = (email) => {
@@ -39,7 +40,7 @@ const AuthLayout = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        fullName: ''
+        nama: ''
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -69,8 +70,8 @@ const AuthLayout = () => {
             newErrors.confirmPassword = 'Passwords do not match';
         }
         
-        if (!isLogin && !formData.fullName.trim()) {
-            newErrors.fullName = 'Full name is required';
+        if (!isLogin && !formData.nama.trim()) {
+            newErrors.nama = 'Full name is required';
         }
         
         if (Object.keys(newErrors).length > 0) {
@@ -79,12 +80,15 @@ const AuthLayout = () => {
             setIsLoading(false);
             return;
         }
-
+    
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const url = isLogin ? 'http://localhost:3000/auth/login' : 'http://localhost:3000/auth/register';
+            const response = await axios.post(url, formData);
             toast.success('Authentication successful!');
-            console.log('Authentication successful!');
+            console.log('Authentication successful!', response.data);
+            // Navigate to another page or perform other actions
         } catch (error) {
+            console.error('Error during authentication:', error);
             setErrors({ submit: 'Authentication failed. Please try again.' });
             toast.error('Authentication failed. Please try again.');
         } finally {
@@ -112,8 +116,6 @@ const AuthLayout = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 relative">
-             
-
             <div 
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${heroImage})` }}
@@ -226,17 +228,17 @@ const AuthLayout = () => {
                                         <div>
                                             <Input
                                                 type="text"
-                                                name="fullName"
+                                                name="nama"
                                                 label="Full Name"
                                                 icon={<UserIcon className="h-5 w-5" />}
-                                                value={formData.fullName}
+                                                value={formData.nama}
                                                 onChange={handleInputChange}
-                                                error={!!errors.fullName}
+                                                error={!!errors.nama}
                                                 required
                                             />
-                                            {errors.fullName && (
+                                            {errors.nama && (
                                                 <Typography variant="small" color="red" className="mt-1">
-                                                    {errors.fullName}
+                                                    {errors.nama}
                                                 </Typography>
                                             )}
                                         </div>
@@ -253,8 +255,6 @@ const AuthLayout = () => {
                                 >
                                     {isLoading ? <span className="loader"></span> : (isLogin ? 'MASUK' : 'DAFTAR')}
                                 </Button>
-
-                               
                             </div>
 
                             {isLogin && (
@@ -275,7 +275,7 @@ const AuthLayout = () => {
                                             email: '',
                                             password: '',
                                             confirmPassword: '',
-                                            fullName: ''
+                                            nama: ''
                                         });
                                         setErrors({});
                                     }}
@@ -284,11 +284,20 @@ const AuthLayout = () => {
                                     {isLogin ? 'Daftar' : 'Masuk'}
                                 </a>
                             </Typography>
+                            
+                            <Typography variant="small" className="text-center mt-4">
+                                <a
+                                    href="#"
+                                    onClick={() => navigate('/')}
+                                    className="text-blue-500 hover:underline"
+                                >
+                                    Back to Home
+                                </a>
+                            </Typography>
                         </form>
                     </motion.div>
                 </AnimatePresence>
             </Card>
-            
         </div>
     );
 };
