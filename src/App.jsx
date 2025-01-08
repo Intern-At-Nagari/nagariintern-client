@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './components/Home';
+import Home from './components/LandingPage';
 import AuthLayout from './components/AuthLayout';
 import CustomAlert from './components/CustomAlert';
 import './index.css';

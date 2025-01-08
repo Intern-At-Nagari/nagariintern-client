@@ -203,6 +203,7 @@ const AuthLayout = () => {
                                             {errors.password}
                                         </Typography>
                                     )}
+                                 
                                 </div>
 
                                 {!isLogin && (
@@ -211,7 +212,7 @@ const AuthLayout = () => {
                                             <Input
                                                 type="password"
                                                 name="confirmPassword"
-                                                label="Confirm Password"
+                                                label="Konfirmasi Password"
                                                 icon={<LockClosedIcon className="h-5 w-5" />}
                                                 value={formData.confirmPassword}
                                                 onChange={handleInputChange}
@@ -223,6 +224,7 @@ const AuthLayout = () => {
                                                     {errors.confirmPassword}
                                                 </Typography>
                                             )}
+                                            
                                         </div>
 
                                         <div>
