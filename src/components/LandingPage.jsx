@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import heroImage from '../assets/hero.jpg';
 
 
-const Home = () => {
+const LandingPage = () => {
   const navigate = useNavigate();
   const [scrollPosition, setScrollPosition] = useState(0);
   const featuresSectionRef = useRef(null);
@@ -281,4 +281,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default LandingPage;

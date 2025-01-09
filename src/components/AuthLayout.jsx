@@ -82,18 +82,30 @@ const AuthLayout = () => {
         }
     
         try {
-            const url = isLogin ? 'http://localhost:3000/auth/login' : 'http://localhost:3000/auth/register';
+            const url = `http://localhost:3000/auth/${isLogin ? 'login' : 'register'}`;
             const response = await axios.post(url, formData);
+        
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+
             toast.success('Authentication successful!');
-            console.log('Authentication successful!', response.data);
+          
+            navigate('/home');
             // Navigate to another page or perform other actions
         } catch (error) {
             console.error('Error during authentication:', error);
-            setErrors({ submit: 'Authentication failed. Please try again.' });
-            toast.error('Authentication failed. Please try again.');
+        
+            // Cek jika server mengirimkan pesan error
+            const errorMessage = error.response?.data?.error || error.response?.data?.message || 'An unexpected error occurred.';
+            
+            // Set pesan error di state dan tampilkan di UI
+            setErrors({ submit: errorMessage });
+            
+            // Tampilkan pesan error di toast
+            toast.error(`Authentication failed: ${errorMessage}`);
         } finally {
             setIsLoading(false);
-        }
+        }        
     };
 
     const imageVariants = {
@@ -203,7 +215,6 @@ const AuthLayout = () => {
                                             {errors.password}
                                         </Typography>
                                     )}
-                                 
                                 </div>
 
                                 {!isLogin && (
@@ -212,7 +223,7 @@ const AuthLayout = () => {
                                             <Input
                                                 type="password"
                                                 name="confirmPassword"
-                                                label="Konfirmasi Password"
+                                                label="Confirm Password"
                                                 icon={<LockClosedIcon className="h-5 w-5" />}
                                                 value={formData.confirmPassword}
                                                 onChange={handleInputChange}
@@ -224,7 +235,6 @@ const AuthLayout = () => {
                                                     {errors.confirmPassword}
                                                 </Typography>
                                             )}
-                                            
                                         </div>
 
                                         <div>
