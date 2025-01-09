@@ -4,6 +4,10 @@ import LandingPage from './components/LandingPage';
 import AuthLayout from './components/AuthLayout';
 import CustomAlert from './components/CustomAlert';
 import Home from './components/Home';
+import ApplicationForm from "./components/ApplicationForm";
+import ApplicationStatus from "./components/ApplicationStatus";
+import DashboardLayout from "./components/DashboardLayout";
+
 import './index.css';
 
 function App() {
@@ -13,7 +17,11 @@ function App() {
         <Routes>
           <Route exact path="/" element={<LandingPage />} />
           <Route path="/auth" element={<AuthLayout />} />
-          <Route path="/home" element={<Home />} />
+          <Route element={<DashboardLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/application" element={<ApplicationForm />} />
+            <Route path="/status" element={<ApplicationStatus />} />
+          </Route>
         </Routes>
         <CustomAlert />
       </div>
