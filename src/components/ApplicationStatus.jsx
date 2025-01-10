@@ -41,10 +41,10 @@ const ApplicationStatus = () => {
   }, []);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
     });
   };
 
@@ -118,7 +118,8 @@ const ApplicationStatus = () => {
                 Periode Magang
               </Typography>
               <Typography variant="h6">
-                {formatDate(applicationStatus.tanggalMulai)} - {formatDate(applicationStatus.tanggalSelesai)}
+                {formatDate(applicationStatus.tanggalMulai)} -{" "}
+                {formatDate(applicationStatus.tanggalSelesai)}
               </Typography>
             </div>
           </CardBody>
@@ -137,7 +138,8 @@ const ApplicationStatus = () => {
                   Pengajuan #{applicationStatus.id}
                 </Typography>
                 <Typography variant="small" color="gray">
-                  Diajukan pada: {formatDate(applicationStatus.tanggalPengajuan)}
+                  Diajukan pada:{" "}
+                  {formatDate(applicationStatus.tanggalPengajuan)}
                 </Typography>
               </div>
               <div className="flex items-center gap-2">
@@ -225,6 +227,8 @@ const ApplicationStatus = () => {
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
+                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileCv}`, "_blank")}
+
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Curriculum Vitae
@@ -234,6 +238,8 @@ const ApplicationStatus = () => {
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
+                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileKtp}`, "_blank")}
+
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Kartu Tanda Penduduk
@@ -243,6 +249,8 @@ const ApplicationStatus = () => {
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
+                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileSuratPengantar}`, "_blank")}
+
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Surat Pengantar
@@ -252,6 +260,8 @@ const ApplicationStatus = () => {
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
+                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileTranskrip}`, "_blank")}
+
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Transkrip Nilai
