@@ -63,7 +63,7 @@ const ApplicationStatus = () => {
         </Typography>
         <Button
           size="lg"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700"
           onClick={() => navigate("/application")}
         >
           Ajukan Permohonan Magang
@@ -228,7 +228,6 @@ const ApplicationStatus = () => {
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
                     onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileCv}`, "_blank")}
-
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Curriculum Vitae

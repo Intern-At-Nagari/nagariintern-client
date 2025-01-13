@@ -5,6 +5,7 @@ import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { validateEmail, validatePassword } from '../utils/validation';
+import axios from 'axios';
 
 const LoginForm = ({ nagariImage, onToggleForm }) => {
     const navigate = useNavigate();

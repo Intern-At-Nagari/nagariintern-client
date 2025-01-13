@@ -7,7 +7,7 @@ import Home from './components/Home';
 import ApplicationForm from "./components/ApplicationForm";
 import ApplicationStatus from "./components/ApplicationStatus";
 import DashboardLayout from "./components/DashboardLayout";
-
+import ProfilePage from './components/ProfilePage';
 import './index.css';
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/application" element={<ApplicationForm />} />
             <Route path="/status" element={<ApplicationStatus />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Routes>
         <CustomAlert />
