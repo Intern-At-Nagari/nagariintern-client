@@ -22,12 +22,12 @@ const ApplicationForm = () => {
     institusi: "",
     jurusan: "",
     alamat: "",
-    noHp:"",
+    noHp: "",
     tanggalMulai: "",
     tanggalSelesai: "",
-    departemen: "", // Added departemen to formData
+    divisi: "", // Changed from departemen to divisi
+    userId: userData?.id, // Add userId to formData
   });
-
   const [duration, setDuration] = useState({
     months: 0,
     days: 0,
@@ -83,27 +83,32 @@ const ApplicationForm = () => {
 
     try {
       const formDataToSend = new FormData();
+      
+      // Append all form data
       Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key]);
       });
+      
+      // Append files
       Object.keys(files).forEach((key) => {
         if (files[key]) {
           formDataToSend.append(key, files[key]);
         }
       });
 
-      await axios.post("http://localhost:3000/intern", formDataToSend, {
+      const response = await axios.post("http://localhost:3000/intern", formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
+      console.log('Response:', response.data); // Add logging
       alert("Permintaan magang berhasil diajukan!");
       navigate("/status");
     } catch (error) {
-      console.error("Error submitting application:", error);
-      alert(error);
+      console.error("Error submitting application:", error.response?.data || error);
+      alert(error.response?.data?.error || "Terjadi kesalahan saat mengajukan permintaan");
     } finally {
       setIsSubmitting(false);
     }
@@ -141,11 +146,11 @@ const ApplicationForm = () => {
                       <Option value="siswa">Siswa</Option>
                     </Select>
                     <Input
-                      type="text"
+                      type="phone"
                       name="noHp"
                       label="Nomor Hp"
                       size="lg"
-                      value={formData.alamat}
+                      value={formData.noHp}
                       onChange={handleInputChange}
                       required
                       className="bg-white"
@@ -213,10 +218,10 @@ const ApplicationForm = () => {
                 </Typography>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Select
-                    name="departemen"
+                    name="divisi"
                     label="Departemen Yang Dituju"
                     size="lg"
-                    value={formData.departemen}
+                    value={formData.divisi}
                     onChange={(value) => handleSelectChange("departemen", value)}
                     required
                     className="bg-white"
