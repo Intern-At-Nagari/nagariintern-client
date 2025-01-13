@@ -29,6 +29,7 @@ const ApplicationStatus = () => {
           },
         });
         const data = await response.json();
+        console.log(data);
         if (response.ok) {
           setApplicationStatus(data);
         }
@@ -99,10 +100,10 @@ const ApplicationStatus = () => {
             </div>
             <div>
               <Typography variant="small" color="blue-gray">
-                Departemen
+                Divisi
               </Typography>
               <Typography variant="h6" className="capitalize">
-                {applicationStatus.departemen}
+                {applicationStatus.Divisi.name}
               </Typography>
             </div>
           </CardBody>
@@ -202,7 +203,7 @@ const ApplicationStatus = () => {
                         Institusi
                       </Typography>
                       <Typography className="font-medium">
-                        {applicationStatus.institusi}
+                        {applicationStatus.Institusi.name}
                       </Typography>
                     </div>
                     <div>
@@ -210,7 +211,7 @@ const ApplicationStatus = () => {
                         Program Studi
                       </Typography>
                       <Typography className="font-medium">
-                        {applicationStatus.jurusan}
+                        {applicationStatus.Jurusan.name}
                       </Typography>
                     </div>
                   </div>
@@ -223,43 +224,43 @@ const ApplicationStatus = () => {
                 Dokumen Pendukung
               </Typography>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {applicationStatus.fileCv && (
+                {applicationStatus.Dokumens && (
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
-                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileCv}`, "_blank")}
+                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.Dokumens[0].url}`, "_blank")}
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Curriculum Vitae
                   </Button>
                 )}
-                {applicationStatus.fileKtp && (
+                {applicationStatus.Dokumens && (
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
-                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileKtp}`, "_blank")}
+                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.Dokumens[2].url}`, "_blank")}
 
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Kartu Tanda Penduduk
                   </Button>
                 )}
-                {applicationStatus.fileSuratPengantar && (
+                {applicationStatus.Dokumens && (
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
-                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileSuratPengantar}`, "_blank")}
+                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.Dokumens[3].url}`, "_blank")}
 
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Surat Pengantar
                   </Button>
                 )}
-                {applicationStatus.fileTranskrip && (
+                {applicationStatus.Dokumens && (
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
-                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.fileTranskrip}`, "_blank")}
+                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.Dokumens[1].url}`, "_blank")}
 
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
