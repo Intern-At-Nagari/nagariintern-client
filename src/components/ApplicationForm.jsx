@@ -219,17 +219,17 @@ const ApplicationForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Select
                     name="divisi"
-                    label="Departemen Yang Dituju"
+                    label="Divisi Yang Dituju"
                     size="lg"
                     value={formData.divisi}
-                    onChange={(value) => handleSelectChange("departemen", value)}
+                    onChange={(value) => handleSelectChange("divisi", value)}
                     required
                     className="bg-white"
                   >
-                    <Option value="it">IT Development</Option>
-                    <Option value="hr">Human Resources</Option>
-                    <Option value="finance">Finance</Option>
-                    <Option value="marketing">Marketing</Option>
+                    <Option value="IT_Develompent">IT Development</Option>
+                    <Option value="Human_Resource">Human Resources</Option>
+                    <Option value="Finance">Finance</Option>
+                    <Option value="Marketing">Marketing</Option>
                   </Select>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
