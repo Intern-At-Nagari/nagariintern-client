@@ -10,6 +10,7 @@ import {
   Option,
 } from "@material-tailwind/react";
 import axios from "axios";
+import LoadingButton from "./LoadingButton";
 
 const ApplicationForm = () => {
   const navigate = useNavigate();
@@ -83,12 +84,12 @@ const ApplicationForm = () => {
 
     try {
       const formDataToSend = new FormData();
-      
+
       // Append all form data
       Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key]);
       });
-      
+
       // Append files
       Object.keys(files).forEach((key) => {
         if (files[key]) {
@@ -96,19 +97,29 @@ const ApplicationForm = () => {
         }
       });
 
-      const response = await axios.post("http://localhost:3000/intern", formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:3000/intern",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-      console.log('Response:', response.data); // Add logging
+      console.log("Response:", response.data); // Add logging
       alert("Permintaan magang berhasil diajukan!");
       navigate("/status");
     } catch (error) {
-      console.error("Error submitting application:", error.response?.data || error);
-      alert(error.response?.data?.error || "Terjadi kesalahan saat mengajukan permintaan");
+      console.error(
+        "Error submitting application:",
+        error.response?.data || error
+      );
+      alert(
+        error.response?.data?.error ||
+          "Terjadi kesalahan saat mengajukan permintaan"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -119,7 +130,11 @@ const ApplicationForm = () => {
       <form onSubmit={handleSubmit}>
         <Card className="mb-8">
           <CardBody className="p-6">
-            <Typography variant="h4" color="blue-gray" className="mb-8 text-center">
+            <Typography
+              variant="h4"
+              color="blue-gray"
+              className="mb-8 text-center"
+            >
               Form Pengajuan Magang
             </Typography>
 
@@ -157,7 +172,7 @@ const ApplicationForm = () => {
                     />
                   </div>
                   <div className="space-y-4">
-                  <Input
+                    <Input
                       type="text"
                       label="Nama Lengkap"
                       size="lg"
@@ -165,7 +180,7 @@ const ApplicationForm = () => {
                       disabled
                       className="bg-white"
                     />
-                  
+
                     <Input
                       type="text"
                       name="alamat"
@@ -200,7 +215,9 @@ const ApplicationForm = () => {
                     <Input
                       type="text"
                       name="jurusan"
-                      label={role === "mahasiswa" ? "Fakultas/Jurusan" : "Jurusan"}
+                      label={
+                        role === "mahasiswa" ? "Fakultas/Jurusan" : "Jurusan"
+                      }
                       size="lg"
                       value={formData.jurusan}
                       onChange={handleInputChange}
@@ -256,8 +273,13 @@ const ApplicationForm = () => {
                 </div>
                 {duration.months > 0 || duration.days > 0 ? (
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg text-center">
-                    <Typography variant="small" color="blue" className="font-medium">
-                      Durasi Magang: {duration.months} bulan {duration.days} hari
+                    <Typography
+                      variant="small"
+                      color="blue"
+                      className="font-medium"
+                    >
+                      Durasi Magang: {duration.months} bulan {duration.days}{" "}
+                      hari
                     </Typography>
                   </div>
                 ) : null}
@@ -271,12 +293,22 @@ const ApplicationForm = () => {
                 <div className="grid grid-cols-1 gap-6">
                   {[
                     { name: "fileCv", label: "Upload CV (PDF)" },
-                    { name: "fileTranskrip", label: "Transkrip Nilai Semester Terakhir" },
+                    {
+                      name: "fileTranskrip",
+                      label: "Transkrip Nilai Semester Terakhir",
+                    },
                     { name: "fileKtp", label: "Kartu Tanda Penduduk" },
-                    { name: "fileSuratPengantar", label: "Surat Pengantar dari Institusi (PDF)" }
+                    {
+                      name: "fileSuratPengantar",
+                      label: "Surat Pengantar dari Institusi (PDF)",
+                    },
                   ].map((doc) => (
                     <div key={doc.name} className="space-y-2">
-                      <Typography variant="small" color="blue-gray" className="font-medium">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-medium"
+                      >
                         {doc.label}
                       </Typography>
                       <Input
@@ -294,15 +326,13 @@ const ApplicationForm = () => {
               </div>
 
               {/* Submit Button */}
-              <Button
+              <LoadingButton
                 type="submit"
-                size="lg"
-                className="w-full"
-                color="blue"
-                disabled={isSubmitting}
+                isLoading={isSubmitting}
+                className="w-full !bg-blue-500 hover:!bg-blue-600"
               >
-                {isSubmitting ? "Mengirim..." : "Submit Pengajuan"}
-              </Button>
+                Submit Pengajuan
+              </LoadingButton>
             </div>
           </CardBody>
         </Card>
