@@ -16,6 +16,10 @@ const ApplicationForm = () => {
   const navigate = useNavigate();
   const { userData } = useOutletContext();
   const [role, setRole] = useState("");
+  const [npsnQuery, setNpsnQuery] = useState("");
+  const [schoolData, setSchoolData] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -42,6 +46,50 @@ const ApplicationForm = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const searchSchool = async () => {
+    if (!npsnQuery) {
+      setSearchError("Masukkan NPSN");
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchError("");
+    setSchoolData(null);
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/sekolah?npsn=${npsnQuery}`
+      );
+      console.log("School data:", response.data);
+
+      if (response.data) {
+        const school = response.data.dataSekolah[0];
+        console.log("School data:", school);
+
+        console.log("Bentuk:", school.bentuk);
+        // Verify if it's an SMK
+        if (school.bentuk !== "SMK") {
+          setSearchError("NPSN yang dimasukkan bukan untuk SMK");
+          setSchoolData(null);
+          return;
+        }
+
+        setSchoolData(school);
+        setFormData((prev) => ({
+          ...prev,
+          institusi: school.sekolah,
+        }));
+      } else {
+        setSearchError("SMK tidak ditemukan");
+      }
+    } catch (error) {
+      console.error("Error searching school:", error);
+      setSearchError("Terjadi kesalahan saat mencari sekolah");
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   useEffect(() => {
     if (formData.tanggalMulai && formData.tanggalSelesai) {
@@ -200,17 +248,63 @@ const ApplicationForm = () => {
                 <Typography variant="h6" color="blue-gray" className="mb-4">
                   Informasi Pendidikan
                 </Typography>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Input
-                    type="text"
-                    name="institusi"
-                    label="Institusi Pendidikan"
-                    size="lg"
-                    value={formData.institusi}
-                    onChange={handleInputChange}
-                    required
-                    className="bg-white"
-                  />
+                {/* NPSN Search Section */}
+                <div className="space-y-4 mb-6">
+                  <div className="flex gap-4">
+                    <Input
+                      type="text"
+                      label="NPSN SMK"
+                      value={npsnQuery}
+                      onChange={(e) => {
+                        setNpsnQuery(e.target.value);
+                        setSearchError("");
+                      }}
+                      className="bg-white"
+                    />
+                    <Button
+                      onClick={searchSchool}
+                      disabled={isSearching}
+                      className="flex-shrink-0"
+                    >
+                      {isSearching ? "Mencari..." : "Cari SMK"}
+                    </Button>
+                  </div>
+
+                  {searchError && (
+                    <div className="text-red-500 text-sm">{searchError}</div>
+                  )}
+
+                  {/* School Data Display */}
+                  {schoolData && (
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="font-medium text-lg mb-2">
+                        {schoolData.sekolah}
+                      </div>
+                      <div className="text-sm space-y-1">
+                        <div>
+                          <span className="font-medium">NPSN:</span>{" "}
+                          {schoolData.npsn}
+                        </div>
+                        <div>
+                          <span className="font-medium">Alamat:</span>{" "}
+                          {schoolData.alamat_jalan}
+                        </div>
+                        <div>
+                          <span className="font-medium">Kecamatan:</span>{" "}
+                          {schoolData.kecamatan}
+                        </div>
+                        <div>
+                          <span className="font-medium">Kabupaten/Kota:</span>{" "}
+                          {schoolData.kabupaten_kota}
+                        </div>
+                        <div>
+                          <span className="font-medium">Provinsi:</span>{" "}
+                          {schoolData.propinsi}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {role && (
                     <Input
                       type="text"

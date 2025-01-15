@@ -24,6 +24,7 @@ import {
 } from "@heroicons/react/24/outline";
 import profileImg from '../assets/profile.png';
 
+
 const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
