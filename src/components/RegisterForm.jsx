@@ -4,7 +4,6 @@ import { Input, Button, Typography } from "@material-tailwind/react";
 import {
   EnvelopeIcon,
   LockClosedIcon,
-  UserIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -18,7 +17,6 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
     email: "",
     password: "",
     confirmPassword: "",
-    nama: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -48,10 +46,6 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    if (!formData.nama.trim()) {
-      newErrors.nama = "Full name is required";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -183,24 +177,6 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
               {errors.confirmPassword && (
                 <Typography variant="small" color="red" className="mt-1">
                   {errors.confirmPassword}
-                </Typography>
-              )}
-            </div>
-
-            <div>
-              <Input
-                type="text"
-                name="nama"
-                label="Full Name"
-                icon={<UserIcon className="h-5 w-5" />}
-                value={formData.nama}
-                onChange={handleInputChange}
-                error={!!errors.nama}
-                required
-              />
-              {errors.nama && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.nama}
                 </Typography>
               )}
             </div>
