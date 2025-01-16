@@ -4,7 +4,8 @@ import LandingPage from './components/LandingPage';
 import AuthLayout from './components/AuthLayout';
 import CustomAlert from './components/CustomAlert';
 import Home from './components/Home';
-import ApplicationForm from "./components/ApplicationForm";
+import ApplicationFormSiswa from "./components/ApplicationFormSiswa";
+import ApplicationFormMahasiswa from "./components/ApplicationFormMahasiswa";
 import ApplicationStatus from "./components/ApplicationStatus";
 import DashboardLayout from "./components/DashboardLayout";
 import ProfilePage from './components/ProfilePage';
@@ -19,7 +20,8 @@ function App() {
           <Route path="/auth" element={<AuthLayout />} />
           <Route element={<DashboardLayout />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/application" element={<ApplicationForm />} />
+            <Route path="/application/siswa" element={<ApplicationFormSiswa />} />
+            <Route path="/application/mahasiswa" element={<ApplicationFormMahasiswa />} />
             <Route path="/status" element={<ApplicationStatus />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>

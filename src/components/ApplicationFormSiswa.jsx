@@ -9,21 +9,24 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
+import { X, Loader2, ChevronDown } from "lucide-react";
 import axios from "axios";
 import LoadingButton from "./LoadingButton";
 
-const ApplicationForm = () => {
+const ApplicationFormSiswa = () => {
   const navigate = useNavigate();
   const { userData } = useOutletContext();
   const [role, setRole] = useState("");
-  const [npsnQuery, setNpsnQuery] = useState("");
-  const [schoolData, setSchoolData] = useState(null);
+  const [schoolQuery, setSchoolQuery] = useState("");
+  const [schoolSuggestions, setSchoolSuggestions] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
-    tipePemohon: "",
+    tipePemohon: "siswa",
     institusi: "",
     jurusan: "",
     alamat: "",
@@ -47,41 +50,37 @@ const ApplicationForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const searchSchool = async () => {
-    if (!npsnQuery) {
-      setSearchError("Masukkan NPSN");
+  const [schoolInputProps, setSchoolInputProps] = useState({
+    value: "",
+    isValid: true,
+    errorMessage: "",
+    isLocked: false,
+  });
+
+  const searchSchool = async (query) => {
+    if (!query || query.length < 3 || schoolInputProps.isLocked) {
+      // Add lock check
+      setSchoolSuggestions([]);
       return;
     }
 
     setIsSearching(true);
     setSearchError("");
-    setSchoolData(null);
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/sekolah?npsn=${npsnQuery}`
+        `http://localhost:3000/api/sekolah?sekolah=${encodeURIComponent(query)}`
       );
-      console.log("School data:", response.data);
 
-      if (response.data) {
-        const school = response.data.dataSekolah[0];
-        console.log("School data:", school);
-
-        console.log("Bentuk:", school.bentuk);
-        // Verify if it's an SMK
-        if (school.bentuk !== "SMK") {
-          setSearchError("NPSN yang dimasukkan bukan untuk SMK");
-          setSchoolData(null);
-          return;
-        }
-
-        setSchoolData(school);
-        setFormData((prev) => ({
-          ...prev,
-          institusi: school.sekolah,
-        }));
+      console.log("Search response:", response.data); // Add logging
+      if (response.data.dataSekolah) {
+        const smkSchools = response.data.dataSekolah.filter(
+          (school) => school.bentuk === "SMK"
+        );
+        setSchoolSuggestions(smkSchools);
+        setShowSuggestions(true);
       } else {
-        setSearchError("SMK tidak ditemukan");
+        setSchoolSuggestions([]);
       }
     } catch (error) {
       console.error("Error searching school:", error);
@@ -90,6 +89,92 @@ const ApplicationForm = () => {
       setIsSearching(false);
     }
   };
+
+  const handleSchoolInputChange = (e) => {
+    // If input is locked, don't allow changes
+    if (schoolInputProps.isLocked) {
+      return;
+    }
+
+    const value = e.target.value;
+    setSchoolQuery(value);
+    setSelectedSchool(null);
+    setFormData((prev) => ({
+      ...prev,
+      institusi: "",
+    }));
+
+    setSchoolInputProps((prev) => ({
+      ...prev,
+      value,
+      isValid: true,
+      errorMessage: "",
+    }));
+
+    if (value.length >= 3) {
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSchoolSelect = (school) => {
+    setSelectedSchool(school);
+    setSchoolQuery(school.sekolah);
+    setShowSuggestions(false);
+    setSchoolSuggestions([]); // Clear suggestions immediately
+    setFormData((prev) => ({
+      ...prev,
+      institusi: school.sekolah,
+    }));
+    setSchoolInputProps((prev) => ({
+      ...prev,
+      value: school.sekolah,
+      isValid: true,
+      errorMessage: "",
+      isLocked: true, // Lock the input after selection
+    }));
+  };
+
+  const handleClearSearch = () => {
+    setSchoolQuery("");
+    setSelectedSchool(null);
+    setSchoolSuggestions([]);
+    setShowSuggestions(false);
+    setSearchError("");
+    setFormData((prev) => ({
+      ...prev,
+      institusi: "",
+    }));
+    setSchoolInputProps({
+      value: "",
+      isValid: true,
+      errorMessage: "",
+      isLocked: false, // Unlock the input when clearing
+    });
+  };
+
+  const validateSchoolSelection = () => {
+    if (!selectedSchool) {
+      setSchoolInputProps((prev) => ({
+        ...prev,
+        isValid: false,
+        errorMessage: "Pilih sekolah dari daftar yang tersedia",
+      }));
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    if (!schoolInputProps.isLocked && schoolQuery) {
+      const timeoutId = setTimeout(() => {
+        searchSchool(schoolQuery);
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [schoolQuery, schoolInputProps.isLocked]);
 
   useEffect(() => {
     if (formData.tanggalMulai && formData.tanggalSelesai) {
@@ -128,6 +213,10 @@ const ApplicationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    if (!validateSchoolSelection()) {
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -183,7 +272,7 @@ const ApplicationForm = () => {
               color="blue-gray"
               className="mb-8 text-center"
             >
-              Form Pengajuan Magang
+              Form Pengajuan Magang Siswa
             </Typography>
 
             {/* Personal Information Section */}
@@ -194,20 +283,6 @@ const ApplicationForm = () => {
                 </Typography>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <Select
-                      label="Status Pendaftar"
-                      size="lg"
-                      value={formData.tipePemohon}
-                      onChange={(value) => {
-                        handleSelectChange("tipePemohon", value);
-                        setRole(value);
-                      }}
-                      required
-                      className="bg-white"
-                    >
-                      <Option value="mahasiswa">Mahasiswa</Option>
-                      <Option value="siswa">Siswa</Option>
-                    </Select>
                     <Input
                       type="phone"
                       name="noHp"
@@ -248,78 +323,124 @@ const ApplicationForm = () => {
                 <Typography variant="h6" color="blue-gray" className="mb-4">
                   Informasi Pendidikan
                 </Typography>
-                {/* NPSN Search Section */}
+                {/* School Search Section */}
                 <div className="space-y-4 mb-6">
-                  <div className="flex gap-4">
-                    <Input
-                      type="text"
-                      label="NPSN SMK"
-                      value={npsnQuery}
-                      onChange={(e) => {
-                        setNpsnQuery(e.target.value);
-                        setSearchError("");
-                      }}
-                      className="bg-white"
-                    />
-                    <Button
-                      onClick={searchSchool}
-                      disabled={isSearching}
-                      className="flex-shrink-0"
-                    >
-                      {isSearching ? "Mencari..." : "Cari SMK"}
-                    </Button>
+                  <div className="relative">
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        label="Cari Nama SMK"
+                        value={schoolInputProps.value}
+                        onChange={handleSchoolInputChange}
+                        className={`bg-white pr-20 ${
+                          !schoolInputProps.isValid ? "border-red-500" : ""
+                        } 
+                  ${schoolInputProps.isLocked ? "bg-gray-50" : ""}`}
+                        labelProps={{
+                          className: "peer-disabled:text-blue-gray-400",
+                        }}
+                        error={!schoolInputProps.isValid}
+                        icon={<ChevronDown className="h-4 w-4" />}
+                        disabled={schoolInputProps.isLocked} // Disable input when locked
+                      />
+                      <div className="absolute right-2 top-2.5 flex items-center space-x-1">
+                        {isSearching && !schoolInputProps.isLocked && (
+                          <Loader2 className="h-5 w-5 text-blue-gray-400 animate-spin" />
+                        )}
+                        {schoolInputProps.value && (
+                          <button
+                            type="button"
+                            onClick={handleClearSearch}
+                            className="p-1 hover:bg-blue-gray-50 rounded-full transition-colors"
+                          >
+                            <X className="h-5 w-5 text-blue-gray-400" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Error Message */}
+                    {!schoolInputProps.isValid && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {schoolInputProps.errorMessage}
+                      </div>
+                    )}
+
+                    {/* Updated Suggestions Dropdown - Only show when not locked */}
+                    {showSuggestions &&
+                      !schoolInputProps.isLocked &&
+                      schoolQuery.length >= 3 && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                          {isSearching ? (
+                            <div className="p-3 text-center text-gray-500">
+                              Mencari SMK...
+                            </div>
+                          ) : schoolSuggestions.length > 0 ? (
+                            schoolSuggestions.map((school) => (
+                              <div
+                                key={school.id}
+                                className="p-3 hover:bg-gray-100 cursor-pointer transition-colors"
+                                onClick={() => handleSchoolSelect(school)}
+                              >
+                                <div className="font-medium">
+                                  {school.sekolah}
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                  {school.alamat_jalan}, {school.kecamatan}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="p-3 text-center text-gray-500">
+                              Tidak ada SMK yang ditemukan
+                            </div>
+                          )}
+                        </div>
+                      )}
                   </div>
 
-                  {searchError && (
-                    <div className="text-red-500 text-sm">{searchError}</div>
-                  )}
-
-                  {/* School Data Display */}
-                  {schoolData && (
+                  {/* Selected School Display */}
+                  {selectedSchool && (
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <div className="font-medium text-lg mb-2">
-                        {schoolData.sekolah}
+                        {selectedSchool.sekolah}
                       </div>
                       <div className="text-sm space-y-1">
                         <div>
                           <span className="font-medium">NPSN:</span>{" "}
-                          {schoolData.npsn}
+                          {selectedSchool.npsn}
                         </div>
                         <div>
                           <span className="font-medium">Alamat:</span>{" "}
-                          {schoolData.alamat_jalan}
+                          {selectedSchool.alamat_jalan}
                         </div>
                         <div>
                           <span className="font-medium">Kecamatan:</span>{" "}
-                          {schoolData.kecamatan}
+                          {selectedSchool.kecamatan}
                         </div>
                         <div>
                           <span className="font-medium">Kabupaten/Kota:</span>{" "}
-                          {schoolData.kabupaten_kota}
+                          {selectedSchool.kabupaten_kota}
                         </div>
                         <div>
                           <span className="font-medium">Provinsi:</span>{" "}
-                          {schoolData.propinsi}
+                          {selectedSchool.propinsi}
                         </div>
                       </div>
                     </div>
                   )}
-
-                  {role && (
-                    <Input
-                      type="text"
-                      name="jurusan"
-                      label={
-                        role === "mahasiswa" ? "Fakultas/Jurusan" : "Jurusan"
-                      }
-                      size="lg"
-                      value={formData.jurusan}
-                      onChange={handleInputChange}
-                      required
-                      className="bg-white"
-                    />
-                  )}
                 </div>
+                <Input
+                    type="text"
+                    name="jurusan"
+                    label={"Jurusan "}
+                    size="lg"
+                    value={formData.jurusan}
+                    onChange={handleInputChange}
+
+                    required
+                    className="bg-white"
+                  />
               </div>
 
               {/* Internship Details Section */}
@@ -435,4 +556,4 @@ const ApplicationForm = () => {
   );
 };
 
-export default ApplicationForm;
+export default ApplicationFormSiswa;
