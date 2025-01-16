@@ -52,9 +52,12 @@ const ApplicationStatus = () => {
   const EmptyState = () => (
     <Card className="mt-6">
       <CardBody className="flex flex-col items-center text-center py-12">
+        {/* Icon Section */}
         <div className="rounded-full p-6 bg-blue-50 mb-4">
           <ClipboardDocumentListIcon className="w-12 h-12 text-blue-500" />
         </div>
+
+        {/* Title and Description */}
         <Typography variant="h4" color="blue-gray" className="mb-2">
           Belum Ada Pengajuan Magang
         </Typography>
@@ -62,14 +65,22 @@ const ApplicationStatus = () => {
           Anda belum mengajukan permohonan magang. Mulai perjalanan karir Anda
           dengan mengajukan permohonan magang sekarang.
         </Typography>
-        <Button
-          size="lg"
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-700"
-          onClick={() => navigate("/application")}
-        >
-          Ajukan Permohonan Magang
-          <ArrowRightIcon className="w-4 h-4" />
-        </Button>
+
+        {/* Buttons Section */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-all"
+            onClick={() => navigate("/application/siswa")}
+          >
+            Ajukan Magang untuk Siswa
+          </button>
+          <button
+            className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all"
+            onClick={() => navigate("/application/mahasiswa")}
+          >
+            Ajukan Magang untuk Mahasiswa
+          </button>
+        </div>
       </CardBody>
     </Card>
   );
@@ -228,7 +239,12 @@ const ApplicationStatus = () => {
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
-                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.Dokumens[0].url}`, "_blank")}
+                    onClick={() =>
+                      window.open(
+                        `http://localhost:3000/uploads/${applicationStatus.Dokumens[0].url}`,
+                        "_blank"
+                      )
+                    }
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Curriculum Vitae
@@ -238,8 +254,12 @@ const ApplicationStatus = () => {
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
-                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.Dokumens[2].url}`, "_blank")}
-
+                    onClick={() =>
+                      window.open(
+                        `http://localhost:3000/uploads/${applicationStatus.Dokumens[2].url}`,
+                        "_blank"
+                      )
+                    }
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Kartu Tanda Penduduk
@@ -249,8 +269,12 @@ const ApplicationStatus = () => {
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
-                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.Dokumens[3].url}`, "_blank")}
-
+                    onClick={() =>
+                      window.open(
+                        `http://localhost:3000/uploads/${applicationStatus.Dokumens[3].url}`,
+                        "_blank"
+                      )
+                    }
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Surat Pengantar
@@ -260,8 +284,12 @@ const ApplicationStatus = () => {
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
-                    onClick={() => window.open(`http://localhost:3000/uploads/${applicationStatus.Dokumens[1].url}`, "_blank")}
-
+                    onClick={() =>
+                      window.open(
+                        `http://localhost:3000/uploads/${applicationStatus.Dokumens[1].url}`,
+                        "_blank"
+                      )
+                    }
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
                     Transkrip Nilai
