@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Card } from "@material-tailwind/react";
 import { AnimatePresence } from 'framer-motion';
-import LoginForm from './LoginForm';
-import RegisterForm from './RegisterForm';
+import LoginForm from '../pages/LoginPage';
+import RegisterForm from '../pages/RegisterPage';
 import heroImage from '../assets/hero.jpg';
 import nagariImage from '../assets/nagari.jpg';
 

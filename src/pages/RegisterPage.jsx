@@ -1,16 +1,23 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Input, Button, Typography } from "@material-tailwind/react";
-import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import {
+  EnvelopeIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { validateEmail, validatePassword } from "../utils/validation";
 import axios from "axios";
-import AnimatedButton from "./AnimatedButton";
+import { validateEmail, validatePassword } from "../utils/validation";
+import AnimatedButton from "../components/AnimatedButton";
 
-const LoginForm = ({ nagariImage, onToggleForm }) => {
+const RegisterForm = ({ nagariImage, onToggleForm }) => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,6 +44,10 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
       )}`;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       toast.error("Please fix the errors in the form");
@@ -45,18 +56,13 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/login",
-        formData
-      );
-      toast.success("Login successful!");
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
-      navigate("/home");
+      await axios.post("http://localhost:3000/auth/register", formData);
+      toast.success("Register berhasil, silakan aktivasi email Anda.");
+      onToggleForm(); // Kembali ke halaman login
     } catch (error) {
-      console.error("Error during login:", error);
-      setErrors({ submit: "Login failed. Please check your credentials." });
-      toast.error("Login failed. Please check your credentials.");
+      console.error("Error during registration:", error);
+      setErrors({ submit: "Registration failed. Please try again." });
+      toast.error("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -64,27 +70,25 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
 
   const imageVariants = {
     animate: { x: "0%", opacity: 1 },
-    exit: { x: "-100%", opacity: 1 },
+    exit: { x: "100%", opacity: 1 },
   };
 
   const formVariants = {
-    initial: { x: "-100%", opacity: 1 },
-    animate: { x: 0, opacity: 1 },
-    exit: { x: "100%", opacity: 0 },
+    initial: { x: "100%", opacity: 1 },
+    animate: { x: "0%", opacity: 1 },
+    exit: { x: "-100%", opacity: 0 },
   };
 
   const transition = {
     type: "spring",
-    stiffness: 100,
-    damping: 20,
+    stiffness: 85,
+    damping: 17,
     mass: 1,
   };
-
   return (
     <>
       <motion.div
         className="absolute w-1/2 h-full"
-        style={{ left: "50%" }}
         variants={imageVariants}
         initial="initial"
         animate="animate"
@@ -102,6 +106,7 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
 
       <motion.div
         className="absolute w-1/2 h-full flex items-center justify-center p-6"
+        style={{ left: "50%" }}
         variants={formVariants}
         initial="initial"
         animate="animate"
@@ -111,7 +116,7 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
         <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-6">
           <div className="text-center">
             <Typography variant="h4" color="blue">
-              Masuk
+              Daftar
             </Typography>
           </div>
 
@@ -158,23 +163,35 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
               )}
             </div>
 
+            <div>
+              <Input
+                type="password"
+                name="confirmPassword"
+                label="Konfirmasi Password"
+                icon={<LockClosedIcon className="h-5 w-5" />}
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                error={!!errors.confirmPassword}
+                required
+              />
+              {errors.confirmPassword && (
+                <Typography variant="small" color="red" className="mt-1">
+                  {errors.confirmPassword}
+                </Typography>
+              )}
+            </div>
+
             <AnimatedButton
               type="submit"
               disabled={isLoading}
               isLoading={isLoading}
             >
-              MASUK
+              DAFTAR
             </AnimatedButton>
           </div>
 
-          <Typography variant="small" className="text-center mt-4">
-            <a href="#" className="text-blue-500 hover:underline">
-              Lupa Password?
-            </a>
-          </Typography>
-
           <Typography variant="small" className="text-center mt-6">
-            Tidak Punya Akun?{" "}
+            Sudah Punya Akun?{" "}
             <a
               href="#"
               onClick={(e) => {
@@ -183,7 +200,7 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
               }}
               className="font-medium text-blue-500 hover:underline"
             >
-              Daftar
+              Masuk
             </a>
           </Typography>
 
@@ -202,4 +219,4 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

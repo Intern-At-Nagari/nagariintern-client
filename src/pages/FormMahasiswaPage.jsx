@@ -11,29 +11,30 @@ import {
 } from "@material-tailwind/react";
 import { X, Loader2, ChevronDown } from "lucide-react";
 import axios from "axios";
-import LoadingButton from "./LoadingButton";
+import LoadingButton from "../components/LoadingButton";
 
-const ApplicationFormSiswa = () => {
+const ApplicationFormMahasiswa = () => {
   const navigate = useNavigate();
   const { userData } = useOutletContext();
-  const [schoolQuery, setSchoolQuery] = useState("");
-  const [schoolSuggestions, setSchoolSuggestions] = useState([]);
-  const [selectedSchool, setSelectedSchool] = useState(null);
+  const [role, setRole] = useState("");
+  const [schoolQuery, setUniversityQuery] = useState("");
+  const [schoolSuggestions, setUniversitySuggestions] = useState([]);
+  const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchError, setSearchError] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
     nama: "",
-    nisn: "",
-    smk: "",
-    jurusan: "",
+    nim: "",
+    perguruanTinggi: "",
+    prodi: "",
     alamat: "",
     noHp: "",
     tanggalMulai: "",
     tanggalSelesai: "",
-    unitKerja: "", 
+    unitKerja: "",
     userId: userData?.id,
   });
   const [duration, setDuration] = useState({
@@ -50,17 +51,16 @@ const ApplicationFormSiswa = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [schoolInputProps, setSchoolInputProps] = useState({
+  const [schoolInputProps, setUniversityInputProps] = useState({
     value: "",
     isValid: true,
     errorMessage: "",
     isLocked: false,
   });
 
-  const searchSchool = async (query) => {
+  const searchUniversity = async (query) => {
     if (!query || query.length < 3 || schoolInputProps.isLocked) {
-      // Add lock check
-      setSchoolSuggestions([]);
+      setUniversitySuggestions([]);
       return;
     }
 
@@ -69,41 +69,42 @@ const ApplicationFormSiswa = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/sekolah?sekolah=${encodeURIComponent(query)}`
+        `http://localhost:3000/api/universitas?name=${encodeURIComponent(
+          query
+        )}`
       );
+      console.log("Response:", response.data);
 
-      console.log("Search response:", response.data); // Add logging
-      if (response.data.dataSekolah) {
-        const smkSchools = response.data.dataSekolah.filter(
-          (school) => school.bentuk === "SMK"
-        );
-        setSchoolSuggestions(smkSchools);
+      if (response.data.dataUniversitas) {
+        const universitys = response.data.dataUniversitas;
+        setUniversitySuggestions(universitys);
         setShowSuggestions(true);
       } else {
-        setSchoolSuggestions([]);
+        setUniversitySuggestions([]);
       }
     } catch (error) {
       console.error("Error searching school:", error);
-      setSearchError("Terjadi kesalahan saat mencari sekolah");
+      setSearchError("Terjadi kesalahan saat mencari universitas");
     } finally {
       setIsSearching(false);
     }
   };
 
-  const handleSchoolInputChange = (e) => {
+  const handleUniversityInputChange = (e) => {
+    // If input is locked, don't allow changes
     if (schoolInputProps.isLocked) {
       return;
     }
 
     const value = e.target.value;
-    setSchoolQuery(value);
-    setSelectedSchool(null);
+    setUniversityQuery(value);
+    setSelectedUniversity(null);
     setFormData((prev) => ({
       ...prev,
-      smk: "",
+      institusi: "",
     }));
 
-    setSchoolInputProps((prev) => ({
+    setUniversityInputProps((prev) => ({
       ...prev,
       value,
       isValid: true,
@@ -117,18 +118,18 @@ const ApplicationFormSiswa = () => {
     }
   };
 
-  const handleSchoolSelect = (school) => {
-    setSelectedSchool(school);
-    setSchoolQuery(school.sekolah);
+  const handleUniversitySelect = (school) => {
+    setSelectedUniversity(school);
+    setUniversityQuery(school.name);
     setShowSuggestions(false);
-    setSchoolSuggestions([]); // Clear suggestions immediately
+    setUniversitySuggestions([]); // Clear suggestions immediately
     setFormData((prev) => ({
       ...prev,
-      smk: school.sekolah,
+      perguruanTinggi: school.name,
     }));
-    setSchoolInputProps((prev) => ({
+    setUniversityInputProps((prev) => ({
       ...prev,
-      value: school.sekolah,
+      value: school.name,
       isValid: true,
       errorMessage: "",
       isLocked: true, // Lock the input after selection
@@ -136,16 +137,16 @@ const ApplicationFormSiswa = () => {
   };
 
   const handleClearSearch = () => {
-    setSchoolQuery("");
-    setSelectedSchool(null);
-    setSchoolSuggestions([]);
+    setUniversityQuery("");
+    setSelectedUniversity(null);
+    setUniversitySuggestions([]);
     setShowSuggestions(false);
     setSearchError("");
     setFormData((prev) => ({
       ...prev,
-      smk: "",
+      institusi: "",
     }));
-    setSchoolInputProps({
+    setUniversityInputProps({
       value: "",
       isValid: true,
       errorMessage: "",
@@ -153,12 +154,12 @@ const ApplicationFormSiswa = () => {
     });
   };
 
-  const validateSchoolSelection = () => {
-    if (!selectedSchool) {
-      setSchoolInputProps((prev) => ({
+  const validateUniversitySelection = () => {
+    if (!selectedUniversity) {
+      setUniversityInputProps((prev) => ({
         ...prev,
         isValid: false,
-        errorMessage: "Pilih sekolah dari daftar yang tersedia",
+        errorMessage: "Pilih universitas dari daftar yang tersedia",
       }));
       return false;
     }
@@ -168,7 +169,7 @@ const ApplicationFormSiswa = () => {
   useEffect(() => {
     if (!schoolInputProps.isLocked && schoolQuery) {
       const timeoutId = setTimeout(() => {
-        searchSchool(schoolQuery);
+        searchUniversity(schoolQuery);
       }, 300);
 
       return () => clearTimeout(timeoutId);
@@ -214,7 +215,7 @@ const ApplicationFormSiswa = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    if (!validateSchoolSelection()) {
+    if (!validateUniversitySelection()) {
       return;
     }
     setIsSubmitting(true);
@@ -235,7 +236,7 @@ const ApplicationFormSiswa = () => {
       });
 
       const response = await axios.post(
-        "http://localhost:3000/intern/siswa",
+        "http://localhost:3000/intern/mahasiswa",
         formDataToSend,
         {
           headers: {
@@ -308,10 +309,10 @@ const ApplicationFormSiswa = () => {
                   <div className="space-y-4">
                     <Input
                       type="text"
-                      name="nisn"
-                      label="NISN"
+                      name="nim"
+                      label="NIM"
                       size="lg"
-                      value={formData.nisn}
+                      value={formData.nim}
                       onChange={handleInputChange}
                       required
                       className="bg-white"
@@ -335,15 +336,15 @@ const ApplicationFormSiswa = () => {
                 <Typography variant="h6" color="blue-gray" className="mb-4">
                   Informasi Pendidikan
                 </Typography>
-                {/* School Search Section */}
+                {/* University Search Section */}
                 <div className="space-y-4 mb-6">
                   <div className="relative">
                     <div className="relative">
                       <Input
                         type="text"
-                        label="Cari Nama SMK"
+                        label="Cari Nama Universitas"
                         value={schoolInputProps.value}
-                        onChange={handleSchoolInputChange}
+                        onChange={handleUniversityInputChange}
                         className={`bg-white pr-20 ${
                           !schoolInputProps.isValid ? "border-red-500" : ""
                         } 
@@ -385,69 +386,33 @@ const ApplicationFormSiswa = () => {
                         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
                           {isSearching ? (
                             <div className="p-3 text-center text-gray-500">
-                              Mencari SMK...
+                              Mencari Universitas...
                             </div>
                           ) : schoolSuggestions.length > 0 ? (
                             schoolSuggestions.map((school) => (
                               <div
                                 key={school.id}
                                 className="p-3 hover:bg-gray-100 cursor-pointer transition-colors"
-                                onClick={() => handleSchoolSelect(school)}
+                                onClick={() => handleUniversitySelect(school)}
                               >
-                                <div className="font-medium">
-                                  {school.sekolah}
-                                </div>
-                                <div className="text-sm text-gray-600">
-                                  {school.alamat_jalan}, {school.kecamatan}
-                                </div>
+                                <div className="font-medium">{school.name}</div>
                               </div>
                             ))
                           ) : (
                             <div className="p-3 text-center text-gray-500">
-                              Tidak ada SMK yang ditemukan
+                              Tidak ada Universitas yang ditemukan
                             </div>
                           )}
                         </div>
                       )}
                   </div>
-
-                  {/* Selected School Display */}
-                  {selectedSchool && (
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <div className="font-medium text-lg mb-2">
-                        {selectedSchool.sekolah}
-                      </div>
-                      <div className="text-sm space-y-1">
-                        <div>
-                          <span className="font-medium">NPSN:</span>{" "}
-                          {selectedSchool.npsn}
-                        </div>
-                        <div>
-                          <span className="font-medium">Alamat:</span>{" "}
-                          {selectedSchool.alamat_jalan}
-                        </div>
-                        <div>
-                          <span className="font-medium">Kecamatan:</span>{" "}
-                          {selectedSchool.kecamatan}
-                        </div>
-                        <div>
-                          <span className="font-medium">Kabupaten/Kota:</span>{" "}
-                          {selectedSchool.kabupaten_kota}
-                        </div>
-                        <div>
-                          <span className="font-medium">Provinsi:</span>{" "}
-                          {selectedSchool.propinsi}
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
                 <Input
                   type="text"
-                  name="jurusan"
-                  label={"Jurusan "}
+                  name="prodi"
+                  label={"Prodi "}
                   size="lg"
-                  value={formData.jurusan}
+                  value={formData.prodi}
                   onChange={handleInputChange}
                   required
                   className="bg-white"
@@ -599,4 +564,4 @@ const ApplicationFormSiswa = () => {
   );
 };
 
-export default ApplicationFormSiswa;
+export default ApplicationFormMahasiswa;
