@@ -11,7 +11,7 @@ import {
 } from "@material-tailwind/react";
 import { X, Loader2, ChevronDown } from "lucide-react";
 import axios from "axios";
-import LoadingButton from "./LoadingButton";
+import LoadingButton from "../components/LoadingButton";
 
 const ApplicationFormMahasiswa = () => {
   const navigate = useNavigate();
