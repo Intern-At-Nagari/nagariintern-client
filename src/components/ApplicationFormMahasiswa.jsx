@@ -16,7 +16,7 @@ import LoadingButton from "./LoadingButton";
 const ApplicationFormMahasiswa = () => {
   const navigate = useNavigate();
   const { userData } = useOutletContext();
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState(""); 
   const [schoolQuery, setUniversityQuery] = useState("");
   const [schoolSuggestions, setUniversitySuggestions] = useState([]);
   const [selectedUniversity, setSelectedUniversity] = useState(null);
@@ -33,8 +33,8 @@ const ApplicationFormMahasiswa = () => {
     noHp: "",
     tanggalMulai: "",
     tanggalSelesai: "",
-    divisi: "", // Changed from departemen to divisi
-    userId: userData?.id, // Add userId to formData
+    divisi: "", 
+    userId: userData?.id,
   });
   const [duration, setDuration] = useState({
     months: 0,
@@ -59,7 +59,7 @@ const ApplicationFormMahasiswa = () => {
 
   const searchUniversity = async (query) => {
     if (!query || query.length < 3 || schoolInputProps.isLocked) {
-      // Add lock check
+
       setUniversitySuggestions([]);
       return;
     }
@@ -235,7 +235,7 @@ const ApplicationFormMahasiswa = () => {
       });
 
       const response = await axios.post(
-        "http://localhost:3000/intern",
+        "http://localhost:3000/intern/mahasiswa",
         formDataToSend,
         {
           headers: {

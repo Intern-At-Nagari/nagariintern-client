@@ -16,25 +16,26 @@ import LoadingButton from "./LoadingButton";
 const ApplicationFormSiswa = () => {
   const navigate = useNavigate();
   const { userData } = useOutletContext();
-  const [role, setRole] = useState("");
   const [schoolQuery, setSchoolQuery] = useState("");
   const [schoolSuggestions, setSchoolSuggestions] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchError, setSearchError] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
     tipePemohon: "siswa",
-    institusi: "",
+    nama: "",
+    nisn: "",
+    smk: "",
     jurusan: "",
     alamat: "",
     noHp: "",
     tanggalMulai: "",
     tanggalSelesai: "",
-    divisi: "", // Changed from departemen to divisi
-    userId: userData?.id, // Add userId to formData
+    unitKerja: "", 
+    userId: userData?.id,
   });
   const [duration, setDuration] = useState({
     months: 0,
@@ -91,7 +92,6 @@ const ApplicationFormSiswa = () => {
   };
 
   const handleSchoolInputChange = (e) => {
-    // If input is locked, don't allow changes
     if (schoolInputProps.isLocked) {
       return;
     }
@@ -101,7 +101,7 @@ const ApplicationFormSiswa = () => {
     setSelectedSchool(null);
     setFormData((prev) => ({
       ...prev,
-      institusi: "",
+      smk: "",
     }));
 
     setSchoolInputProps((prev) => ({
@@ -125,7 +125,7 @@ const ApplicationFormSiswa = () => {
     setSchoolSuggestions([]); // Clear suggestions immediately
     setFormData((prev) => ({
       ...prev,
-      institusi: school.sekolah,
+      smk: school.sekolah,
     }));
     setSchoolInputProps((prev) => ({
       ...prev,
@@ -144,7 +144,7 @@ const ApplicationFormSiswa = () => {
     setSearchError("");
     setFormData((prev) => ({
       ...prev,
-      institusi: "",
+      smk: "",
     }));
     setSchoolInputProps({
       value: "",
@@ -205,6 +205,7 @@ const ApplicationFormSiswa = () => {
   };
 
   const handleSelectChange = (name, value) => {
+    console.log('Select value:', value); // untuk debugging
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -235,7 +236,7 @@ const ApplicationFormSiswa = () => {
       });
 
       const response = await axios.post(
-        "http://localhost:3000/intern",
+        "http://localhost:3000/intern/siswa",
         formDataToSend,
         {
           headers: {
@@ -284,23 +285,13 @@ const ApplicationFormSiswa = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <Input
-                      type="phone"
-                      name="noHp"
-                      label="Nomor Hp"
-                      size="lg"
-                      value={formData.noHp}
-                      onChange={handleInputChange}
-                      required
-                      className="bg-white"
-                    />
-                  </div>
-                  <div className="space-y-4">
-                    <Input
                       type="text"
+                      name="nama"
                       label="Nama Lengkap"
                       size="lg"
-                      value={userData.nama}
-                      disabled
+                      value={formData.nama}
+                      onChange={handleInputChange}
+                      required
                       className="bg-white"
                     />
 
@@ -310,6 +301,28 @@ const ApplicationFormSiswa = () => {
                       label="Alamat"
                       size="lg"
                       value={formData.alamat}
+                      onChange={handleInputChange}
+                      required
+                      className="bg-white"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <Input
+                      type="text"
+                      name="nisn"
+                      label="NISN"
+                      size="lg"
+                      value={formData.nisn}
+                      onChange={handleInputChange}
+                      required
+                      className="bg-white"
+                    />
+                    <Input
+                      type="phone"
+                      name="noHp"
+                      label="Nomor Hp"
+                      size="lg"
+                      value={formData.noHp}
                       onChange={handleInputChange}
                       required
                       className="bg-white"
@@ -431,16 +444,15 @@ const ApplicationFormSiswa = () => {
                   )}
                 </div>
                 <Input
-                    type="text"
-                    name="jurusan"
-                    label={"Jurusan "}
-                    size="lg"
-                    value={formData.jurusan}
-                    onChange={handleInputChange}
-
-                    required
-                    className="bg-white"
-                  />
+                  type="text"
+                  name="jurusan"
+                  label={"Jurusan "}
+                  size="lg"
+                  value={formData.jurusan}
+                  onChange={handleInputChange}
+                  required
+                  className="bg-white"
+                />
               </div>
 
               {/* Internship Details Section */}
@@ -450,18 +462,50 @@ const ApplicationFormSiswa = () => {
                 </Typography>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Select
-                    name="divisi"
-                    label="Divisi Yang Dituju"
+                    name="unitKerja"
+                    label="Pilih unit kerja"
                     size="lg"
-                    value={formData.divisi}
-                    onChange={(value) => handleSelectChange("divisi", value)}
+                    value={formData.unitKerja}
+                    onChange={(value) => handleSelectChange("unitKerja", value)}
                     required
                     className="bg-white"
+                    placeholder="Pilih Unit Kerja"
                   >
-                    <Option value="IT_Develompent">IT Development</Option>
-                    <Option value="Human_Resource">Human Resources</Option>
-                    <Option value="Finance">Finance</Option>
-                    <Option value="Marketing">Marketing</Option>
+                    <Option value="1">CABANG ALAHAN PANJANG</Option>
+                    <Option value="2">CABANG BANDUNG</Option>
+                    <Option value="3">CABANG BATUSANGKAR</Option>
+                    <Option value="4">CABANG BUKITTINGGI</Option>
+                    <Option value="5">CABANG JAKARTA</Option>
+                    <Option value="6">CABANG KOTO BARU</Option>
+                    <Option value="7">CABANG LINTAU</Option>
+                    <Option value="8">CABANG LUBUK ALUNG</Option>
+                    <Option value="9">CABANG LUBUK BASUNG</Option>
+                    <Option value="10">CABANG LUBUK GADANG</Option>
+                    <Option value="11">CABANG LUBUK SIKAPING</Option>
+                    <Option value="12">CABANG MATRAMAN JAKARTA</Option>
+                    <Option value="13">CABANG MENTAWAI</Option>
+                    <Option value="14">CABANG MUARA LABUH</Option>
+                    <Option value="15">CABANG PADANG PANJANG</Option>
+                    <Option value="16">CABANG PAINAN</Option>
+                    <Option value="17">CABANG PANGKALAN</Option>
+                    <Option value="18">CABANG PARIAMAN</Option>
+                    <Option value="19">CABANG PASAR RAYA PADANG</Option>
+                    <Option value="20">CABANG PAYAKUMBUH</Option>
+                    <Option value="21">CABANG PEKANBARU</Option>
+                    <Option value="22">CABANG PULAU PUNJUNG</Option>
+                    <Option value="23">CABANG SAWAHLUNTO</Option>
+                    <Option value="24">CABANG SIJUNJUNG</Option>
+                    <Option value="25">CABANG SIMPANG EMPAT</Option>
+                    <Option value="26">CABANG SITEBA</Option>
+                    <Option value="27">CABANG SOLOK</Option>
+                    <Option value="28">CABANG SYARIAH PADANG</Option>
+                    <Option value="29">CABANG SYARIAH PAYAKUMBUH</Option>
+                    <Option value="30">CABANG SYARIAH SOLOK</Option>
+                    <Option value="31">CABANG TAPAN</Option>
+                    <Option value="32">CABANG TAPUS</Option>
+                    <Option value="33">CABANG UJUNG GADING</Option>
+                    <Option value="34">CABANG UTAMA PADANG</Option>
+                    <Option value="35">KANTOR PUSAT</Option>
                   </Select>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
