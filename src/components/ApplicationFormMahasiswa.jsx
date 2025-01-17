@@ -96,7 +96,7 @@ const ApplicationFormMahasiswa = () => {
       return;
     }
 
-    const value = e.target.value;
+    const value = e.target.value.toUpperCase();
     setUniversityQuery(value);
     setSelectedUniversity(null);
     setFormData((prev) => ({
@@ -397,7 +397,7 @@ const ApplicationFormMahasiswa = () => {
                 <Input
                   type="text"
                   name="jurusan"
-                  label={"Jurusan "}
+                  label={"Program Studi "}
                   size="lg"
                   value={formData.jurusan}
                   onChange={handleInputChange}
