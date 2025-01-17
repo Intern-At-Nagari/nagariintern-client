@@ -25,7 +25,6 @@ const ApplicationFormSiswa = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    tipePemohon: "siswa",
     nama: "",
     nisn: "",
     smk: "",

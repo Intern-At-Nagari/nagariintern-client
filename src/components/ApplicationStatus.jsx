@@ -98,7 +98,7 @@ const ApplicationStatus = () => {
                 Status Pengajuan
               </Typography>
               <Typography variant="h6" className="capitalize">
-                {applicationStatus.statusPermohonan}
+                {applicationStatus.data.status}
               </Typography>
             </div>
           </CardBody>
@@ -111,10 +111,10 @@ const ApplicationStatus = () => {
             </div>
             <div>
               <Typography variant="small" color="blue-gray">
-                Divisi
+                Unit Kerja
               </Typography>
               <Typography variant="h6" className="capitalize">
-                {applicationStatus.Divisi.name}
+                {applicationStatus.data.unitKerja}
               </Typography>
             </div>
           </CardBody>
@@ -130,8 +130,8 @@ const ApplicationStatus = () => {
                 Periode Magang
               </Typography>
               <Typography variant="h6">
-                {formatDate(applicationStatus.tanggalMulai)} -{" "}
-                {formatDate(applicationStatus.tanggalSelesai)}
+                {formatDate(applicationStatus.data.tanggalMulai)} -{" "}
+                {formatDate(applicationStatus.data.tanggalSelesai)}
               </Typography>
             </div>
           </CardBody>
@@ -147,21 +147,12 @@ const ApplicationStatus = () => {
             <div className="flex justify-between items-center p-4 bg-blue-gray-50 rounded-lg">
               <div>
                 <Typography variant="h6">
-                  Pengajuan #{applicationStatus.id}
+                Diajukan pada:{" "}
+                {formatDate(applicationStatus.data.createdAt)}
                 </Typography>
-                <Typography variant="small" color="gray">
-                  Diajukan pada:{" "}
-                  {formatDate(applicationStatus.tanggalPengajuan)}
-                </Typography>
+          
               </div>
-              <div className="flex items-center gap-2">
-                <Typography
-                  variant="small"
-                  className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full capitalize"
-                >
-                  {applicationStatus.statusPermohonan}
-                </Typography>
-              </div>
+
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -177,7 +168,7 @@ const ApplicationStatus = () => {
                         Status
                       </Typography>
                       <Typography className="font-medium capitalize">
-                        {applicationStatus.tipePemohon}
+                        {applicationStatus.data.type}
                       </Typography>
                     </div>
                     <div>
@@ -185,7 +176,7 @@ const ApplicationStatus = () => {
                         No. Telepon
                       </Typography>
                       <Typography className="font-medium">
-                        {applicationStatus.noHp}
+                        {applicationStatus.data.biodata.noHp}
                       </Typography>
                     </div>
                   </div>
@@ -197,7 +188,7 @@ const ApplicationStatus = () => {
                     <Typography variant="h6">Alamat</Typography>
                   </div>
                   <Typography className="font-medium">
-                    {applicationStatus.alamat}
+                    {applicationStatus.data.biodata.alamat}
                   </Typography>
                 </div>
               </div>
@@ -214,7 +205,7 @@ const ApplicationStatus = () => {
                         Institusi
                       </Typography>
                       <Typography className="font-medium">
-                        {applicationStatus.Institusi.name}
+                        {applicationStatus.data.institusi}
                       </Typography>
                     </div>
                     <div>
@@ -222,7 +213,7 @@ const ApplicationStatus = () => {
                         Program Studi
                       </Typography>
                       <Typography className="font-medium">
-                        {applicationStatus.Jurusan.name}
+                        {applicationStatus.data.jurusan}
                       </Typography>
                     </div>
                   </div>
@@ -235,64 +226,64 @@ const ApplicationStatus = () => {
                 Dokumen Pendukung
               </Typography>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {applicationStatus.Dokumens && (
+                {applicationStatus.data.dokumen && (
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
                     onClick={() =>
                       window.open(
-                        `http://localhost:3000/uploads/${applicationStatus.Dokumens[0].url}`,
+                        `http://localhost:3000/uploads/${applicationStatus.data.dokumen[0].url}`,
                         "_blank"
                       )
                     }
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
-                    Curriculum Vitae
+                    {applicationStatus.data.dokumen[0].tipe}
                   </Button>
                 )}
-                {applicationStatus.Dokumens && (
+                {applicationStatus.data.dokumen && (
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
                     onClick={() =>
                       window.open(
-                        `http://localhost:3000/uploads/${applicationStatus.Dokumens[2].url}`,
+                        `http://localhost:3000/uploads/${applicationStatus.data.dokumen[2].url}`,
                         "_blank"
                       )
                     }
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
-                    Kartu Tanda Penduduk
+                    {applicationStatus.data.dokumen[2].tipe}
                   </Button>
                 )}
-                {applicationStatus.Dokumens && (
+                {applicationStatus.data.dokumen && (
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
                     onClick={() =>
                       window.open(
-                        `http://localhost:3000/uploads/${applicationStatus.Dokumens[3].url}`,
+                        `http://localhost:3000/uploads/${applicationStatus.data.dokumen[3].url}`,
                         "_blank"
                       )
                     }
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
-                    Surat Pengantar
+                    {applicationStatus.data.dokumen[3].tipe}
                   </Button>
                 )}
-                {applicationStatus.Dokumens && (
+                {applicationStatus.data.dokumen && (
                   <Button
                     variant="outlined"
                     className="flex items-center gap-2 normal-case"
                     onClick={() =>
                       window.open(
-                        `http://localhost:3000/uploads/${applicationStatus.Dokumens[1].url}`,
+                        `http://localhost:3000/uploads/${applicationStatus.data.dokumen[1].url}`,
                         "_blank"
                       )
                     }
                   >
                     <ArrowDownTrayIcon className="w-4 h-4" />
-                    Transkrip Nilai
+                    {applicationStatus.data.dokumen[0].tipe}
                   </Button>
                 )}
               </div>
