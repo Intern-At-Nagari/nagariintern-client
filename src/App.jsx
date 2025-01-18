@@ -1,66 +1,58 @@
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
-import AuthLayout from './layout/AuthLayout';
-import CustomAlert from './components/CustomAlert';
-import Home from './pages/HomePage';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate
+} from "react-router-dom";
+import { AuthProvider } from "./utils/AuthContext";
+import ProtectedRoute from "./routes/ProtectedRoutes";
+import PublicRoute from "./routes/PublicRoute";  // New component
+import LandingPage from "./pages/LandingPage";
+import AuthLayout from "./layout/AuthLayout";
+import Home from "./pages/HomePage";
 import ApplicationFormSiswa from "./pages/FormSiswaPage";
 import ApplicationFormMahasiswa from "./pages/FormMahasiswaPage";
 import ApplicationStatus from "./pages/MagangPage";
-import DashboardLayout from "./layout/DashboardLayout";
 import ProfilePage from './pages/ProfilePage';
-import { AuthProvider } from './context/AuthContext';
-import { GuestRoute, ProtectedRoute } from './routes/ProtectedRoutes';
-import './index.css';
+import DashboardLayout from "./layout/DashboardLayout";
+import CustomAlert from "./components/CustomAlert";
+import "./index.css";
 
-const App = () => {
+function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <div className="App">
-          <Routes>
-            {/* Guest Routes */}
-            <Route
-              path="/"
-              element={
-                <GuestRoute>
-                  <LandingPage />
-                </GuestRoute>
-              }
-            />
-            <Route
-              path="/auth"
-              element={
-                <GuestRoute>
-                  <AuthLayout />
-                </GuestRoute>
-              }
-            />
-
-            {/* Protected Routes */}
-            <Route
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="/home" element={<Home />} />
-              <Route path="/application/siswa" element={<ApplicationFormSiswa />} />
-              <Route path="/application/mahasiswa" element={<ApplicationFormMahasiswa />} />
-              <Route path="/status" element={<ApplicationStatus />} />
-              <Route path="/profile" element={<ProfilePage />} />
+    <AuthProvider>
+      <Router>
+        <CustomAlert />
+        <Routes>
+          {/* Public routes - only accessible when NOT authenticated */}
+          <Route element={<PublicRoute />}>
+            <Route element={<AuthLayout />}>
+              <Route path="/auth/*" element={<AuthLayout />} />
             </Route>
+          </Route>
 
-            {/* Catch-all route for 404 */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          <CustomAlert />
-        </div>
-      </AuthProvider>
-    </BrowserRouter>
+          {/* Protected routes - only accessible when authenticated */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/form-siswa" element={<ApplicationFormSiswa />} />
+              <Route path="/form-mahasiswa" element={<ApplicationFormMahasiswa />} />
+              <Route path="/magang" element={<ApplicationStatus />} />
+              <Route path="/profile" element={<ProfilePage />} />
+
+
+            </Route>
+          </Route>
+
+          {/* Landing page - accessible to all */}
+          <Route path="/" element={<LandingPage />} />
+
+          {/* Catch all route - redirect based on auth state */}
+          <Route path="*" element={<Navigate to="/home" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
-};
+}
 
 export default App;

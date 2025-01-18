@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { validateEmail, validatePassword } from "../utils/validation";
 import axios from "axios";
 import AnimatedButton from "../components/AnimatedButton";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../utils/AuthContext";
 
 const LoginForm = ({ nagariImage, onToggleForm }) => {
   const navigate = useNavigate();
@@ -52,9 +52,7 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
         formData
       );
       toast.success("Login successful!");
-      localStorage.setItem("token", response.data.token);
-      login();
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      login(response.data);
       navigate("/home");
     } catch (error) {
       console.error("Error during login:", error);

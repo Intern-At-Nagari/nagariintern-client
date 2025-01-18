@@ -1,10 +1,8 @@
-import React from "react";
-import { useOutletContext } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Card,
   CardBody,
-  Button,
   List,
   ListItem,
   ListItemPrefix,
@@ -14,17 +12,22 @@ import {
   InformationCircleIcon,
   CalendarIcon,
   ChatBubbleLeftEllipsisIcon,
-  ClipboardIcon,
 } from "@heroicons/react/24/outline";
 
 const Home = () => {
-  const { userData } = useOutletContext();
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    console.log(user, 'user>>>>>');
+    setUserData(user);
+  }, []);
+
 
   return (
     <div className="mb-8">
       {/* Welcome Section */}
       <Typography variant="h3" color="blue-gray">
-        Selamat Datang, {userData.nama}
       </Typography>
       <Typography color="gray" className="mt-1">
         Kelola pengajuan magang Anda di sini

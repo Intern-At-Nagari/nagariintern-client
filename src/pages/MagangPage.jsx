@@ -1,5 +1,5 @@
 import React from "react";
-import StatusView from "./StatusViewPage";
+import TimelineView from "../components/TimeLineView";
 import EmptyState from "./EmptyStatePage";
 
 const ApplicationStatus = () => {
@@ -26,7 +26,7 @@ const ApplicationStatus = () => {
   }, []);
 
   return applicationStatus ? (
-    <StatusView applicationStatus={applicationStatus} />
+    <TimelineView applicationStatus={applicationStatus} />
   ) : (
     <EmptyState />
   );

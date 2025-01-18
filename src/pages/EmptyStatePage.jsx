@@ -27,13 +27,13 @@ const EmptyState = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <button
             className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-all"
-            onClick={() => navigate("/application/siswa")}
+            onClick={() => navigate("/form-siswa")}
           >
             Ajukan Magang untuk Siswa
           </button>
           <button
             className="px-6 py-3 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition-all"
-            onClick={() => navigate("/application/mahasiswa")}
+            onClick={() => navigate("/form-mahasiswa")}
           >
             Ajukan Magang untuk Mahasiswa
           </button>
