@@ -11,6 +11,10 @@ import {
   Lock,
 } from "lucide-react";
 import DiprosesCard from "./card/DiprosesCard";
+import MenungguSuratCard from "./card/MenungguSuratCard";
+import VerifikasiCard from "./card/VerifikasiCard";
+import PersetujuanCard from "./card/PersetujuanCard";
+import SelesaiCard from "./card/SelesaiCard";
 
 const TimelineView = ({ applicationStatus }) => {
   const [activeStep, setActiveStep] = useState("waiting_approval");
@@ -49,7 +53,7 @@ const TimelineView = ({ applicationStatus }) => {
       id: "statement_uploaded",
       title: "Verifikasi",
       subtitle: "Tahap 3",
-      status: "in-progress",
+      status: "completed",
       content: {
         title: "Status Dokumen",
         info: [
@@ -63,7 +67,7 @@ const TimelineView = ({ applicationStatus }) => {
       id: "statement_approved",
       title: "Persetujuan",
       subtitle: "Tahap 4",
-      status: "pending",
+      status: "in-progress",
       content: {
         title: "Dokumen Disetujui",
         info: [
@@ -158,125 +162,7 @@ const TimelineView = ({ applicationStatus }) => {
 
 
 
-  // Menunggu Surat Card Component
-  const MenungguSuratCard = () => {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-start border-b border-gray-100 pb-4">
-          <div>
-            <Typography variant="h5" className="font-bold text-gray-800">
-              Upload Surat Pernyataan
-            </Typography>
-            <Typography className="text-gray-600 mt-1">
-              Menunggu dokumen
-            </Typography>
-          </div>
-          <div className="px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
-            Tahap 2
-          </div>
-        </div>
 
-        <div className="grid gap-4">
-          <InfoItem icon={Calendar} label="Batas Upload" value="22 Jan 2025" />
-          <InfoItem icon={File} label="Format" value="PDF (Max 2MB)" />
-        </div>
-      </div>
-    );
-  };
-
-  // Verifikasi Card Component
-  const VerifikasiCard = () => {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-start border-b border-gray-100 pb-4">
-          <div>
-            <Typography variant="h5" className="font-bold text-gray-800">
-              Status Dokumen
-            </Typography>
-            <Typography className="text-gray-600 mt-1">
-              Sedang direview
-            </Typography>
-          </div>
-          <div className="px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
-            Tahap 3
-          </div>
-        </div>
-
-        <div className="grid gap-4">
-          <InfoItem
-            icon={Calendar}
-            label="Tanggal Upload"
-            value="18 Jan 2025"
-          />
-          <InfoItem
-            icon={File}
-            label="Nama File"
-            value="surat_pernyataan.pdf"
-          />
-        </div>
-      </div>
-    );
-  };
-
-  // Persetujuan Card Component
-  const PersetujuanCard = () => {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-start border-b border-gray-100 pb-4">
-          <div>
-            <Typography variant="h5" className="font-bold text-gray-800">
-              Dokumen Disetujui
-            </Typography>
-            <Typography className="text-gray-600 mt-1">
-              Terverifikasi
-            </Typography>
-          </div>
-          <div className="px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
-            Tahap 4
-          </div>
-        </div>
-
-        <div className="grid gap-4">
-          <InfoItem
-            icon={Calendar}
-            label="Tanggal Persetujuan"
-            value="19 Jan 2025"
-          />
-          <InfoItem icon={Users} label="Disetujui Oleh" value="Admin HR" />
-        </div>
-      </div>
-    );
-  };
-
-  // Selesai Card Component
-  const SelesaiCard = () => {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-start border-b border-gray-100 pb-4">
-          <div>
-            <Typography variant="h5" className="font-bold text-gray-800">
-              Surat Pengantar
-            </Typography>
-            <Typography className="text-gray-600 mt-1">
-              Proses selesai
-            </Typography>
-          </div>
-          <div className="px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-700">
-            Tahap Final
-          </div>
-        </div>
-
-        <div className="grid gap-4">
-          <InfoItem
-            icon={Calendar}
-            label="Tanggal Pengiriman"
-            value="20 Jan 2025"
-          />
-          <InfoItem icon={Users} label="Tujuan" value="Kantor Jakarta" />
-        </div>
-      </div>
-    );
-  };
 
   // Reusable Info Item Component
   const InfoItem = ({ icon: Icon, label, value }) => {
@@ -399,7 +285,7 @@ const TimelineView = ({ applicationStatus }) => {
                           ${
                             isActive
                               ? "bg-blue-50 p-2 rounded-lg shadow-sm"
-                              : ""
+                              : "p-2"
                           }
                         `}
                       >
