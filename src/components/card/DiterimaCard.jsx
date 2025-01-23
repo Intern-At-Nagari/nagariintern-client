@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Typography } from "@material-tailwind/react";
-import { Calendar, Building, Download, Upload, FileText, XCircle, Check, AlertCircle } from "lucide-react";
+import {
+  Calendar,
+  Building,
+  Download,
+  Upload,
+  FileText,
+  XCircle,
+  Check,
+  AlertCircle,
+} from "lucide-react";
 
-const MenungguSuratCard = () => {
+const DiterimaCard = ({ applicationStatus }) => {
+  const [siswaFile, setSiswaFile] = useState(null);
+  const [institusiFile, setInstitusiFile] = useState(null);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [uploadStep, setUploadStep] = useState(0);
-  
-  const internshipDetails = {
-    period: {
-      start: "2 Januari 2025",
-      end: "12 Februari 2025",
-      duration: "2 Bulan"
-    },
-    placement: {
-      applied: "CABANG PADANG",
-      assigned: "CABANG TAPAN"
-    }
-  };
 
   const handleAcceptClick = () => {
     setShowAcceptModal(true);
@@ -28,7 +27,46 @@ const MenungguSuratCard = () => {
   };
 
   const handleFileUpload = (event, documentType) => {
-    console.log(`Uploading ${documentType}:`, event.target.files[0]);
+    const file = event.target.files[0];
+    if (documentType === "siswa") {
+      setSiswaFile(file);
+    } else if (documentType === "institusi") {
+      setInstitusiFile(file);
+    }
+  };
+
+  const handleSendDocuments = async () => {
+    if (!siswaFile || !institusiFile) {
+      alert('Harap unggah kedua dokumen');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('fileSuratPernyataanSiswa', siswaFile);
+    formData.append('fileSuratPernyataanWali', institusiFile);
+  
+    try {
+      const response = await fetch('http://localhost:3000/intern/send-surat-pernyataan', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+  
+      const result = await response.json();
+  
+      if (result.status === 'success') {
+        setShowAcceptModal(false);
+        setUploadStep(0);
+        // Optional: Show success message
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Gagal mengunggah dokumen');
+    }
   };
 
   const ConfirmationModal = ({ isOpen, onClose, children }) => {
@@ -44,7 +82,7 @@ const MenungguSuratCard = () => {
   };
 
   const renderUploadStep = () => {
-    switch(uploadStep) {
+    switch (uploadStep) {
       case 0:
         return (
           <div className="space-y-4">
@@ -58,19 +96,23 @@ const MenungguSuratCard = () => {
               </Typography>
             </div>
             <ul className="space-y-2 text-gray-600 list-disc pl-6">
-              <li>Bersedia mengikuti program magang sesuai periode yang ditentukan</li>
+              <li>
+                Bersedia mengikuti program magang sesuai periode yang ditentukan
+              </li>
               <li>Akan mematuhi seluruh peraturan yang berlaku</li>
-              <li>Berkomitmen untuk menyelesaikan program magang hingga selesai</li>
+              <li>
+                Berkomitmen untuk menyelesaikan program magang hingga selesai
+              </li>
               <li>Bersedia ditempatkan di unit kerja yang telah ditentukan</li>
             </ul>
             <div className="flex justify-end space-x-3 mt-6">
-              <button 
+              <button
                 onClick={() => setShowAcceptModal(false)}
                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               >
                 Batalkan
               </button>
-              <button 
+              <button
                 onClick={() => setUploadStep(1)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
               >
@@ -92,26 +134,6 @@ const MenungguSuratCard = () => {
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <Typography className="font-medium text-gray-800">
-                      Template Surat Pernyataan
-                    </Typography>
-                    <div className="flex space-x-2 mt-2">
-                      <button className="text-sm text-blue-500 hover:text-blue-600 flex items-center">
-                        <Download className="w-4 h-4 mr-1" />
-                        Surat Pernyataan Siswa
-                      </button>
-                      <button className="text-sm text-blue-500 hover:text-blue-600 flex items-center">
-                        <Download className="w-4 h-4 mr-1" />
-                        Surat Pernyataan Institusi
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <div className="space-y-3">
                 <div className="p-4 border border-gray-200 rounded-lg">
                   <Typography className="font-medium text-gray-800">
@@ -122,7 +144,7 @@ const MenungguSuratCard = () => {
                       type="file"
                       className="hidden"
                       accept=".pdf"
-                      onChange={(e) => handleFileUpload(e, 'siswa')}
+                      onChange={(e) => handleFileUpload(e, "siswa")}
                     />
                     <div className="text-center">
                       <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
@@ -142,7 +164,7 @@ const MenungguSuratCard = () => {
                       type="file"
                       className="hidden"
                       accept=".pdf"
-                      onChange={(e) => handleFileUpload(e, 'institusi')}
+                      onChange={(e) => handleFileUpload(e, "institusi")}
                     />
                     <div className="text-center">
                       <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
@@ -156,17 +178,14 @@ const MenungguSuratCard = () => {
             </div>
 
             <div className="flex justify-end space-x-3 mt-6">
-              <button 
+              <button
                 onClick={() => setUploadStep(0)}
                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               >
                 Kembali
               </button>
-              <button 
-                onClick={() => {
-                  setShowAcceptModal(false);
-                  setUploadStep(0);
-                }}
+              <button
+                onClick={handleSendDocuments}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
               >
                 Kirim Dokumen
@@ -193,33 +212,34 @@ const MenungguSuratCard = () => {
       <div className="bg-blue-50 rounded-lg p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <Typography className="text-sm text-gray-600">Unit Kerja Dilamar</Typography>
-            <Typography className="font-medium">{internshipDetails.placement.applied}</Typography>
-          </div>
-          <Building className="w-5 h-5 text-blue-500" />
-        </div>
-        <div className="flex items-center justify-between">
-          <div>
-            <Typography className="text-sm text-gray-600">Unit Kerja Ditempatkan</Typography>
-            <Typography className="font-medium">{internshipDetails.placement.assigned}</Typography>
-          </div>
-          <Building className="w-5 h-5 text-blue-500" />
-        </div>
-        <div className="flex items-center justify-between">
-          <div>
-            <Typography className="text-sm text-gray-600">Periode Magang</Typography>
+            <Typography className="text-sm text-gray-600">
+              Unit Kerja Ditempatkan
+            </Typography>
             <Typography className="font-medium">
-              {internshipDetails.period.start} - {internshipDetails.period.end}
+              {applicationStatus.data.penempatan}
             </Typography>
           </div>
-          <Calendar className="w-5 h-5 text-blue-500" />
+          <Building className="w-5 h-5 text-blue-500" />
         </div>
-        <div className="flex items-center justify-between">
+      </div>
+
+      <div className="p-4 border border-gray-200 rounded-lg">
+        <div className="flex justify-between items-start">
           <div>
-            <Typography className="text-sm text-gray-600">Durasi</Typography>
-            <Typography className="font-medium">{internshipDetails.period.duration}</Typography>
+            <Typography className="font-medium text-gray-800">
+              Template Surat Pernyataan
+            </Typography>
+            <div className="flex space-x-2 mt-2">
+              <button className="text-sm text-blue-500 hover:text-blue-600 flex items-center">
+                <Download className="w-4 h-4 mr-1" />
+                Surat Pernyataan Siswa
+              </button>
+              <button className="text-sm text-blue-500 hover:text-blue-600 flex items-center">
+                <Download className="w-4 h-4 mr-1" />
+                Surat Pernyataan Institusi
+              </button>
+            </div>
           </div>
-          <Calendar className="w-5 h-5 text-blue-500" />
         </div>
       </div>
 
@@ -243,8 +263,8 @@ const MenungguSuratCard = () => {
       </div>
 
       {/* Accept Modal */}
-      <ConfirmationModal 
-        isOpen={showAcceptModal} 
+      <ConfirmationModal
+        isOpen={showAcceptModal}
         onClose={() => {
           setShowAcceptModal(false);
           setUploadStep(0);
@@ -254,8 +274,8 @@ const MenungguSuratCard = () => {
       </ConfirmationModal>
 
       {/* Reject Modal */}
-      <ConfirmationModal 
-        isOpen={showRejectModal} 
+      <ConfirmationModal
+        isOpen={showRejectModal}
         onClose={() => setShowRejectModal(false)}
       >
         <div className="text-center">
@@ -264,16 +284,17 @@ const MenungguSuratCard = () => {
             Konfirmasi Penolakan
           </Typography>
           <Typography className="text-gray-600 mb-6">
-            Apakah Anda yakin ingin menolak tawaran magang ini? Tindakan ini tidak dapat dibatalkan.
+            Apakah Anda yakin ingin menolak tawaran magang ini? Tindakan ini
+            tidak dapat dibatalkan.
           </Typography>
           <div className="flex justify-end space-x-3">
-            <button 
+            <button
               onClick={() => setShowRejectModal(false)}
               className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
             >
               Batalkan
             </button>
-            <button 
+            <button
               onClick={() => {
                 setShowRejectModal(false);
                 // Handle rejection logic
@@ -289,4 +310,4 @@ const MenungguSuratCard = () => {
   );
 };
 
-export default MenungguSuratCard;
+export default DiterimaCard;
