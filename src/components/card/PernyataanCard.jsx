@@ -1,55 +1,81 @@
-import React from 'react';
+import React from "react";
 import { Typography, Button } from "@material-tailwind/react";
-import { FileCheck, Clock, CheckCircle, AlertCircle, FileText, Download } from "lucide-react";
+import {
+  FileCheck,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  FileText,
+  Download,
+} from "lucide-react";
 
 const PernyataanCard = ({ applicationStatus }) => {
   const documents = [
     {
       title: "Surat Pernyataan Siswa/Mahasiswa",
-      fileName: applicationStatus.data.dokumen[0].url
+      fileName: applicationStatus.data.dokumen[0].url,
     },
     {
       title: "Surat Pernyataan Orang Tua/Wali & Sekolah/Perguruan Tinggi",
-      fileName: applicationStatus.data.dokumen[1].url
-    }
+      fileName: applicationStatus.data.dokumen[1].url,
+    },
   ];
 
-  const handleDownload = (fileUrl) => {
-    if (!fileUrl) {
-      console.error("File URL is invalid or missing.");
-      return;
+  const handleDownload = async (fileUrl) => {
+    try {
+      if (!fileUrl) {
+        throw new Error("File URL is invalid or missing.");
+      }
+
+      const link = document.createElement("a");
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
+      link.href = `${backendUrl}/uploads/${fileUrl}`;
+
+      // Set the file name to download, fallback to a default name if not found
+      const fileName = fileUrl.split("/").pop() || "document.pdf";
+      link.setAttribute("download", fileName);
+
+      // Append to body for triggering click
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up the DOM
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      alert("Failed to download file. Please try again.");
     }
-  
-    // Create a temporary anchor element
-    const link = document.createElement('a');
-    link.href = `http://localhost:3000/uploads/${fileUrl}`;
-  
-    // Extract file name from the URL or set a default name
-    const fileName = fileUrl.split('/').pop() || 'document.pdf';
-    link.setAttribute('download', fileName);
-  
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'verified':
+      case "verified":
         return (
-          <Typography variant="small" color="green" className="flex items-center gap-2">
+          <Typography
+            variant="small"
+            color="green"
+            className="flex items-center gap-2"
+          >
             <CheckCircle size={16} /> Terverifikasi
           </Typography>
         );
-      case 'pending':
+      case "pending":
         return (
-          <Typography variant="small" color="orange" className="flex items-center gap-2">
+          <Typography
+            variant="small"
+            color="orange"
+            className="flex items-center gap-2"
+          >
             <Clock size={16} /> Sedang Diproses
           </Typography>
         );
-      case 'rejected':
+      case "rejected":
         return (
-          <Typography variant="small" color="red" className="flex items-center gap-2">
+          <Typography
+            variant="small"
+            color="red"
+            className="flex items-center gap-2"
+          >
             <AlertCircle size={16} /> Ditolak
           </Typography>
         );
@@ -74,19 +100,26 @@ const PernyataanCard = ({ applicationStatus }) => {
       {/* Documents List */}
       <div className="space-y-4 mb-6">
         {documents.map((doc, index) => (
-          <div key={index} className="border rounded-lg p-4 flex justify-between items-center">
+          <div
+            key={index}
+            className="border rounded-lg p-4 flex justify-between items-center"
+          >
             <div>
-              <Typography variant="small" color="blue-gray" className="font-medium">
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="font-medium"
+              >
                 {doc.title}
               </Typography>
               <Typography variant="small" color="gray">
                 {doc.fileName}
               </Typography>
             </div>
-            <Button 
-              size="sm" 
-              variant="outlined" 
-              color="blue" 
+            <Button
+              size="sm"
+              variant="outlined"
+              color="blue"
               className="flex items-center gap-2"
               onClick={() => handleDownload(doc.fileName)}
             >
@@ -98,12 +131,16 @@ const PernyataanCard = ({ applicationStatus }) => {
 
       {/* Status Summary */}
       <div className="bg-blue-50 rounded-lg p-4">
-        <Typography variant="small" color="blue-gray" className="flex items-center gap-2 mb-2">
+        <Typography
+          variant="small"
+          color="blue-gray"
+          className="flex items-center gap-2 mb-2"
+        >
           <Clock size={16} /> Estimasi Waktu Verifikasi
         </Typography>
         <Typography variant="small" color="gray">
-          Proses verifikasi dokumen membutuhkan waktu 1-2 hari kerja. 
-          Anda akan mendapatkan notifikasi setelah dokumen selesai diverifikasi.
+          Proses verifikasi dokumen membutuhkan waktu 1-2 hari kerja. Anda akan
+          mendapatkan notifikasi setelah dokumen selesai diverifikasi.
         </Typography>
       </div>
     </div>
