@@ -22,29 +22,13 @@ const PernyataanCard = ({ applicationStatus }) => {
   ];
 
   const handleDownload = async (fileUrl) => {
-    try {
-      if (!fileUrl) {
-        throw new Error("File URL is invalid or missing.");
-      }
-
-      const link = document.createElement("a");
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:3000";
-      link.href = `${backendUrl}/uploads/${fileUrl}`;
-
-      // Set the file name to download, fallback to a default name if not found
-      const fileName = fileUrl.split("/").pop() || "document.pdf";
-      link.setAttribute("download", fileName);
-
-      // Append to body for triggering click
-      document.body.appendChild(link);
-      link.click();
-
-      // Clean up the DOM
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error downloading file:", error);
-      alert("Failed to download file. Please try again.");
-    }
+    const fileName = fileUrl.split("/").pop();
+    const aTag = document.createElement("a");
+    aTag.href = `http://localhost:3000/uploads/${fileUrl}`;
+    aTag.setAttribute("download", fileName);
+    document.body.appendChild(aTag);
+    aTag.click();
+    aTag.remove();
   };
 
   const getStatusBadge = (status) => {

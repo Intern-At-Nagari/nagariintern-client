@@ -42,21 +42,14 @@ const DiterimaCard = ({ applicationStatus }) => {
     }
   };
 
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:3000/download-surat-balasan",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-    } catch (error) {
-      console.error("Download error:", error);
-      alert("Gagal mengunduh dokumen");
-    }
+  const handleDownload = async (fileUrl) => {
+    const fileName = fileUrl.split("/").pop();
+    const aTag = document.createElement("a");
+    aTag.href = `http://localhost:3000/uploads/${fileUrl}`;
+    aTag.setAttribute("download", fileName);
+    document.body.appendChild(aTag);
+    aTag.click();
+    aTag.remove();
   };
 
   const handleSendDocuments = async () => {
@@ -232,7 +225,9 @@ const DiterimaCard = ({ applicationStatus }) => {
             </Typography>
             <div className="flex space-x-2 mt-2">
               <Button
-                onClick={handleDownload}
+                onClick={() => {
+                  handleDownload(applicationStatus.data.dokumen[0].url);
+                }}
                 color="blue"
                 size="sm"
                 className="flex items-center"
