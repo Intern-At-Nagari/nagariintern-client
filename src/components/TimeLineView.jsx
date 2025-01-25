@@ -22,7 +22,7 @@ import SelesaiCard from "./card/SelesaiCard";
 
 const TimelineView = ({ applicationStatus }) => {
   const [activeStep, setActiveStep] = useState("1");
-  console.log(applicationStatus.data.status);
+
 
   const timelineSteps = [
     {
@@ -209,7 +209,6 @@ const TimelineView = ({ applicationStatus }) => {
   };
 
   const getStepIcon = (stepStatusCode) => {
-    console.log(stepStatusCode, "stepStatusCode");
     const currentStatusId = applicationStatus.data.status.id;
 
     if (stepStatusCode < currentStatusId) {
@@ -256,7 +255,7 @@ const TimelineView = ({ applicationStatus }) => {
   };
 
   const getStepContent = (stepId, applicationStatus) => {
-    console.log(stepId);
+
 
     switch (stepId) {
       case "1":

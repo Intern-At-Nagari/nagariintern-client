@@ -1,11 +1,16 @@
 import React, { useState } from "react";
-import { Typography } from "@material-tailwind/react";
 import {
-  Calendar,
+  Typography,
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+} from "@material-tailwind/react";
+import {
   Building,
   Download,
   Upload,
-  FileText,
   XCircle,
   Check,
   AlertCircle,
@@ -14,16 +19,18 @@ import {
 const DiterimaCard = ({ applicationStatus }) => {
   const [siswaFile, setSiswaFile] = useState(null);
   const [institusiFile, setInstitusiFile] = useState(null);
-  const [showAcceptModal, setShowAcceptModal] = useState(false);
-  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showAcceptDialog, setShowAcceptDialog] = useState(false);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [uploadStep, setUploadStep] = useState(0);
 
+  const token = localStorage.getItem("token");
+  console.log(token);
   const handleAcceptClick = () => {
-    setShowAcceptModal(true);
+    setShowAcceptDialog(true);
   };
 
   const handleRejectClick = () => {
-    setShowRejectModal(true);
+    setShowRejectDialog(true);
   };
 
   const handleFileUpload = (event, documentType) => {
@@ -35,50 +42,51 @@ const DiterimaCard = ({ applicationStatus }) => {
     }
   };
 
+  const handleDownload = async (fileUrl) => {
+    const fileName = fileUrl.split("/").pop();
+    const aTag = document.createElement("a");
+    aTag.href = `http://localhost:3000/uploads/${fileUrl}`;
+    aTag.setAttribute("download", fileName);
+    document.body.appendChild(aTag);
+    aTag.click();
+    aTag.remove();
+  };
+
   const handleSendDocuments = async () => {
     if (!siswaFile || !institusiFile) {
-      alert('Harap unggah kedua dokumen');
+      alert("Harap unggah kedua dokumen");
       return;
     }
-  
+
     const formData = new FormData();
-    formData.append('fileSuratPernyataanSiswa', siswaFile);
-    formData.append('fileSuratPernyataanWali', institusiFile);
-  
+    formData.append("fileSuratPernyataanSiswa", siswaFile);
+    formData.append("fileSuratPernyataanWali", institusiFile);
+
     try {
-      const response = await fetch('http://localhost:3000/intern/send-surat-pernyataan', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: formData
-      });
-  
+      const response = await fetch(
+        "http://localhost:3000/intern/send-surat-pernyataan",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: formData,
+        }
+      );
+
       const result = await response.json();
-  
-      if (result.status === 'success') {
-        setShowAcceptModal(false);
+
+      if (result.status === "success") {
+        setShowAcceptDialog(false);
         setUploadStep(0);
         // Optional: Show success message
       } else {
         alert(result.message);
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      alert('Gagal mengunggah dokumen');
+      console.error("Upload error:", error);
+      alert("Gagal mengunggah dokumen");
     }
-  };
-
-  const ConfirmationModal = ({ isOpen, onClose, children }) => {
-    if (!isOpen) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 relative">
-          {children}
-        </div>
-      </div>
-    );
   };
 
   const renderUploadStep = () => {
@@ -106,18 +114,12 @@ const DiterimaCard = ({ applicationStatus }) => {
               <li>Bersedia ditempatkan di unit kerja yang telah ditentukan</li>
             </ul>
             <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => setShowAcceptModal(false)}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-              >
+              <Button onClick={() => setShowAcceptDialog(false)} color="gray">
                 Batalkan
-              </button>
-              <button
-                onClick={() => setUploadStep(1)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              >
+              </Button>
+              <Button onClick={() => setUploadStep(1)} color="blue">
                 Saya Setuju
-              </button>
+              </Button>
             </div>
           </div>
         );
@@ -178,18 +180,12 @@ const DiterimaCard = ({ applicationStatus }) => {
             </div>
 
             <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => setUploadStep(0)}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-              >
+              <Button onClick={() => setUploadStep(0)} color="gray">
                 Kembali
-              </button>
-              <button
-                onClick={handleSendDocuments}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              >
+              </Button>
+              <Button onClick={handleSendDocuments} color="blue">
                 Kirim Dokumen
-              </button>
+              </Button>
             </div>
           </div>
         );
@@ -198,7 +194,6 @@ const DiterimaCard = ({ applicationStatus }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="border-b border-gray-100 pb-4">
         <Typography variant="h4" className="font-bold text-gray-800">
           Tawaran Magang
@@ -208,7 +203,6 @@ const DiterimaCard = ({ applicationStatus }) => {
         </Typography>
       </div>
 
-      {/* Placement Info */}
       <div className="bg-blue-50 rounded-lg p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
@@ -227,17 +221,52 @@ const DiterimaCard = ({ applicationStatus }) => {
         <div className="flex justify-between items-start">
           <div>
             <Typography className="font-medium text-gray-800">
+              Dokumen Tawaran
+            </Typography>
+            <div className="flex space-x-2 mt-2">
+              <Button
+                onClick={() => {
+                  handleDownload(applicationStatus.data.dokumen[0].url);
+                }}
+                color="blue"
+                size="sm"
+                className="flex items-center"
+              >
+                <Download className="w-4 h-4 mr-1" />
+                Surat Balasan (Offering Letter)
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 border border-gray-200 rounded-lg">
+        <div className="flex justify-between items-start">
+          <div>
+            <Typography className="font-medium text-gray-800">
               Template Surat Pernyataan
             </Typography>
             <div className="flex space-x-2 mt-2">
-              <button className="text-sm text-blue-500 hover:text-blue-600 flex items-center">
-                <Download className="w-4 h-4 mr-1" />
-                Surat Pernyataan Siswa
-              </button>
-              <button className="text-sm text-blue-500 hover:text-blue-600 flex items-center">
-                <Download className="w-4 h-4 mr-1" />
-                Surat Pernyataan Institusi
-              </button>
+              <a
+                href={`http://localhost:3000/intern/download-template/siswa`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button color="blue" size="sm" className="flex items-center">
+                  <Download className="w-4 h-4 mr-1" />
+                  Surat Pernyataan Siswa
+                </Button>
+              </a>
+              <a
+                href={`http://localhost:3000/intern/download-template/institusi`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button color="blue" size="sm" className="flex items-center">
+                  <Download className="w-4 h-4 mr-1" />
+                  Surat Pernyataan Institusi
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -245,67 +274,70 @@ const DiterimaCard = ({ applicationStatus }) => {
 
       {/* Action Buttons */}
       <div className="flex justify-center space-x-4 pt-4">
-        <button
+        <Button
           onClick={handleRejectClick}
-          className="px-6 py-2.5 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 transition-colors flex items-center space-x-2"
+          color="red"
+          className="flex items-center space-x-2"
         >
           <XCircle className="w-5 h-5" />
           <span>Tolak Tawaran</span>
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={handleAcceptClick}
-          className="px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-2"
+          color="blue"
+          className="flex items-center space-x-2"
         >
           <Check className="w-5 h-5" />
           <span>Terima Tawaran</span>
-        </button>
+        </Button>
       </div>
 
-      {/* Accept Modal */}
-      <ConfirmationModal
-        isOpen={showAcceptModal}
-        onClose={() => {
-          setShowAcceptModal(false);
-          setUploadStep(0);
-        }}
+      {/* Accept Dialog */}
+      <Dialog
+        open={showAcceptDialog}
+        handler={() => setShowAcceptDialog(false)}
+        size="md"
       >
-        {renderUploadStep()}
-      </ConfirmationModal>
+        <DialogHeader>
+          <Typography variant="h5">Konfirmasi Penerimaan</Typography>
+        </DialogHeader>
+        <DialogBody>{renderUploadStep()}</DialogBody>
+      </Dialog>
 
-      {/* Reject Modal */}
-      <ConfirmationModal
-        isOpen={showRejectModal}
-        onClose={() => setShowRejectModal(false)}
+      {/* Reject Dialog */}
+      <Dialog
+        open={showRejectDialog}
+        handler={() => setShowRejectDialog(false)}
+        size="md"
       >
-        <div className="text-center">
-          <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <Typography variant="h5" className="font-bold text-gray-800 mb-2">
-            Konfirmasi Penolakan
-          </Typography>
-          <Typography className="text-gray-600 mb-6">
-            Apakah Anda yakin ingin menolak tawaran magang ini? Tindakan ini
-            tidak dapat dibatalkan.
-          </Typography>
-          <div className="flex justify-end space-x-3">
-            <button
-              onClick={() => setShowRejectModal(false)}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-            >
-              Batalkan
-            </button>
-            <button
-              onClick={() => {
-                setShowRejectModal(false);
-                // Handle rejection logic
-              }}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-            >
-              Ya, Tolak Tawaran
-            </button>
+        <DialogHeader>
+          <Typography variant="h5">Konfirmasi Penolakan</Typography>
+        </DialogHeader>
+        <DialogBody>
+          <div className="text-center">
+            <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <Typography className="text-gray-600 mb-6">
+              Apakah Anda yakin ingin menolak tawaran magang ini? Tindakan ini
+              tidak dapat dibatalkan.
+            </Typography>
           </div>
-        </div>
-      </ConfirmationModal>
+        </DialogBody>
+        <DialogFooter>
+          <Button color="gray" onClick={() => setShowRejectDialog(false)}>
+            Batalkan
+          </Button>
+          <Button
+            color="red"
+            onClick={() => {
+              setShowRejectDialog(false);
+              // Logika penolakan dapat ditambahkan di sini
+            }}
+          >
+            Ya, Tolak Tawaran
+          </Button>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 };
