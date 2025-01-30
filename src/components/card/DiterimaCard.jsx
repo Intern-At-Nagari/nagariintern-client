@@ -219,54 +219,90 @@ const DiterimaCard = ({ applicationStatus }) => {
 
       <div className="p-4 border border-gray-200 rounded-lg">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="w-full">
             <Typography className="font-medium text-gray-800">
-              Dokumen Tawaran
+              Surat Pengantar
             </Typography>
-            <div className="flex space-x-2 mt-2">
-              <Button
-                onClick={() => {
-                  handleDownload(applicationStatus.data.dokumen[0].url);
-                }}
-                color="blue"
-                size="sm"
-                className="flex items-center"
-              >
-                <Download className="w-4 h-4 mr-1" />
-                Surat Balasan (Offering Letter)
-              </Button>
-            </div>
+
+            {/* Cari dokumen dengan tipe "Surat Pengantar" */}
+            {applicationStatus.data.dokumen.find(
+              (dokumen) => dokumen.tipe === "Surat Pengantar"
+            ) ? (
+              <div className="border rounded-lg p-4 mt-2 flex justify-between items-center">
+                <div>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium"
+                  ></Typography>
+                  <Typography variant="small" color="gray">
+                    {
+                      applicationStatus.data.dokumen.find(
+                        (dokumen) => dokumen.tipe === "Surat Pengantar"
+                      ).url
+                    }
+                  </Typography>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outlined"
+                  color="blue"
+                  className="flex items-center gap-2"
+                  onClick={() =>
+                    handleDownload(
+                      applicationStatus.data.dokumen.find(
+                        (dokumen) => dokumen.tipe === "Surat Pengantar"
+                      ).url
+                    )
+                  }
+                >
+                  <Download size={16} /> Download
+                </Button>
+              </div>
+            ) : (
+              <Typography variant="small" color="gray" className="mt-2">
+                Dokumen Surat Pengantar tidak tersedia.
+              </Typography>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="p-4 border border-gray-200 rounded-lg">
+      <div className="p-4 border border-gray-200 rounded-lg mt-4">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="w-full">
             <Typography className="font-medium text-gray-800">
               Template Surat Pernyataan
             </Typography>
             <div className="flex space-x-2 mt-2">
-              <a
-                href={`http://localhost:3000/intern/download-template/siswa`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Button
+                size="sm"
+                variant="outlined"
+                color="blue"
+                className="flex items-center gap-2"
+                onClick={() =>
+                  window.open(
+                    "http://localhost:3000/intern/download-template/siswa",
+                    "_blank"
+                  )
+                }
               >
-                <Button color="blue" size="sm" className="flex items-center">
-                  <Download className="w-4 h-4 mr-1" />
-                  Surat Pernyataan Siswa
-                </Button>
-              </a>
-              <a
-                href={`http://localhost:3000/intern/download-template/institusi`}
-                target="_blank"
-                rel="noopener noreferrer"
+                <Download size={16} /> Surat Pernyataan Siswa
+              </Button>
+              <Button
+                size="sm"
+                variant="outlined"
+                color="blue"
+                className="flex items-center gap-2"
+                onClick={() =>
+                  window.open(
+                    "http://localhost:3000/intern/download-template/institusi",
+                    "_blank"
+                  )
+                }
               >
-                <Button color="blue" size="sm" className="flex items-center">
-                  <Download className="w-4 h-4 mr-1" />
-                  Surat Pernyataan Institusi
-                </Button>
-              </a>
+                <Download size={16} /> Surat Pernyataan Institusi
+              </Button>
             </div>
           </div>
         </div>

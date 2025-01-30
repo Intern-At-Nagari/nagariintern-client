@@ -21,8 +21,8 @@ import PersetujuanCard from "./card/PersetujuanCard";
 import SelesaiCard from "./card/SelesaiCard";
 
 const TimelineView = ({ applicationStatus }) => {
+  console.log(applicationStatus);
   const [activeStep, setActiveStep] = useState("1");
-
 
   const timelineSteps = [
     {
@@ -181,13 +181,7 @@ const TimelineView = ({ applicationStatus }) => {
   );
 
   const isStepAccessible = (stepId) => {
-    // Use the numeric status ID from the applicationStatus
     const currentStatusId = applicationStatus.data.status.id;
-    const clickedStepIndex = timelineSteps.findIndex(
-      (step) => step.statusCode === parseInt(stepId)
-    );
-
-    // Check if the clicked step's statusCode is less than or equal to current status
     return parseInt(stepId) <= currentStatusId;
   };
 
@@ -215,10 +209,9 @@ const TimelineView = ({ applicationStatus }) => {
       return CheckCircle;
     }
 
-    if (stepStatusCode === currentStatusId) {
+    if (stepStatusCode == currentStatusId) {
       return Clock;
     }
-
     return AlertCircle; // Future steps
   };
 
@@ -255,8 +248,6 @@ const TimelineView = ({ applicationStatus }) => {
   };
 
   const getStepContent = (stepId, applicationStatus) => {
-
-
     switch (stepId) {
       case "1":
         return <DiprosesCard applicationStatus={applicationStatus} />;
@@ -290,9 +281,9 @@ const TimelineView = ({ applicationStatus }) => {
         <div className="hidden md:block min-w-max pt-2">
           <div className="flex items-center justify-between px-4">
             {timelineSteps.map((step, index) => {
-              const StatusIcon = getStepIcon(step.id);
+              const StatusIcon = getStepIcon(step.statusCode);
               const isActive = activeStep === step.id;
-              const isAccessible = isStepAccessible(index);
+              const isAccessible = isStepAccessible(step.id);
               const isLast = index === timelineSteps.length - 1;
 
               return (
@@ -300,7 +291,6 @@ const TimelineView = ({ applicationStatus }) => {
                   key={step.id}
                   className="relative flex flex-col items-center w-48"
                 >
-                  {/* Connector Line - Now outside the button's transform scope */}
                   {!isLast && (
                     <div
                       className={`absolute top-7 left-1/2 w-full h-1 ${getProgressLineColor(
@@ -308,32 +298,35 @@ const TimelineView = ({ applicationStatus }) => {
                       )}`}
                     />
                   )}
-
                   <div className="relative z-10 flex flex-col items-center">
                     <button
-                      onClick={() => handleStepClick(step.id, index)}
+                      onClick={() => handleStepClick(step.id)}
                       className={`
-                        flex flex-col items-center space-y-2 
-                        transition-all duration-200 group
-                        ${!isAccessible ? "cursor-not-allowed opacity-60" : ""}
-                      `}
+                flex flex-col items-center space-y-2 
+                transition-all duration-200 group
+                ${!isAccessible ? "cursor-not-allowed opacity-60" : ""}
+              `}
+                      disabled={!isAccessible}
                     >
-                      {/* Icon Circle */}
                       <div
                         className={`
-    w-14 h-14 rounded-full flex items-center justify-center
-    transition-all duration-200 border-2
-    ${isActive ? "ring-4 ring-blue-100 shadow-lg transform scale-110" : ""}
-    ${
-      !isAccessible
-        ? "bg-gray-100 border-gray-200"
-        : step.statusCode < applicationStatus.data.status.id // Completed steps
-        ? "bg-blue-500 border-blue-500"
-        : step.statusCode === applicationStatus.data.status.id // Current step
-        ? "bg-white border-blue-500 ring-2 ring-blue-100"
-        : "bg-white border-gray-300"
-    }
-  `}
+                  w-14 h-14 rounded-full flex items-center justify-center
+                  transition-all duration-200 border-2
+                  ${
+                    isActive
+                      ? "ring-4 ring-blue-100 shadow-lg transform scale-110"
+                      : ""
+                  }
+                  ${
+                    !isAccessible
+                      ? "bg-gray-100 border-gray-200"
+                      : step.statusCode < applicationStatus.data.status.id
+                      ? "bg-blue-500 border-blue-500"
+                      : step.statusCode === applicationStatus.data.status.id
+                      ? "bg-white border-blue-500 ring-2 ring-blue-100"
+                      : "bg-white border-gray-300"
+                  }
+                `}
                       >
                         {!isAccessible ? (
                           <Lock className="w-6 h-6 text-gray-400" />
@@ -341,47 +334,45 @@ const TimelineView = ({ applicationStatus }) => {
                           <StatusIcon
                             className={`w-6 h-6 ${
                               step.statusCode < applicationStatus.data.status.id
-                                ? "text-white" // Completed steps in white
+                                ? "text-white"
                                 : step.statusCode ===
                                   applicationStatus.data.status.id
-                                ? "text-blue-500" // Current step in blue
-                                : "text-gray-400" // Future steps in gray
+                                ? "text-blue-500"
+                                : "text-gray-400"
                             }`}
                           />
                         )}
                       </div>
-
-                      {/* Step Title */}
                       <div
                         className={`
-    text-center transition-all duration-200
-    ${isActive ? "bg-blue-50 p-2 rounded-lg shadow-sm" : "p-2"}
-  `}
+                  text-center transition-all duration-200
+                  ${isActive ? "bg-blue-50 p-2 rounded-lg shadow-sm" : "p-2"}
+                `}
                       >
                         <Typography
                           className={`
-      font-semibold mb-0.5
-      ${
-        !isAccessible
-          ? "text-gray-400"
-          : step.statusCode < applicationStatus.data.status.id
-          ? "text-blue-500" // Completed steps in blue
-          : step.statusCode === applicationStatus.data.status.id
-          ? "text-blue-600" // Current step in darker blue
-          : "text-gray-600" // Future steps in gray
-      }
-    `}
+                    font-semibold mb-0.5
+                    ${
+                      !isAccessible
+                        ? "text-gray-400"
+                        : step.statusCode < applicationStatus.data.status.id
+                        ? "text-blue-500"
+                        : step.statusCode === applicationStatus.data.status.id
+                        ? "text-blue-600"
+                        : "text-gray-600"
+                    }
+                  `}
                         >
                           {step.title}
                         </Typography>
                         <Typography
                           className={`text-sm ${
                             step.statusCode < applicationStatus.data.status.id
-                              ? "text-blue-500" // Completed steps in blue
+                              ? "text-blue-500"
                               : step.statusCode ===
                                 applicationStatus.data.status.id
-                              ? "text-blue-600" // Current step in darker blue
-                              : "text-gray-500" // Future steps in gray
+                              ? "text-blue-600"
+                              : "text-gray-500"
                           }`}
                         >
                           {step.subtitle}
@@ -398,47 +389,47 @@ const TimelineView = ({ applicationStatus }) => {
         {/* Mobile Timeline - Remains largely unchanged */}
         <div className="md:hidden space-y-4">
           {timelineSteps.map((step, index) => {
-            const StatusIcon = getStepIcon(step.status);
+            const StatusIcon = getStepIcon(step.statusCode);
             const isActive = activeStep === step.id;
-            const isAccessible = isStepAccessible(index);
+            const isAccessible = isStepAccessible(step.id);
 
             return (
               <button
                 key={step.id}
-                onClick={() => handleStepClick(step.id, index)}
+                onClick={() => handleStepClick(step.id)}
                 disabled={!isAccessible}
                 className={`
-                  w-full flex items-center p-4 rounded-xl
-                  transition-all duration-200
-                  ${!isAccessible ? "opacity-60 cursor-not-allowed" : ""}
-                  ${
-                    isActive
-                      ? "bg-blue-50 border-2 border-blue-200 shadow-md"
-                      : "hover:bg-gray-50 border border-gray-100"
-                  }
-                `}
+          w-full flex items-center p-4 rounded-xl
+          transition-all duration-200
+          ${!isAccessible ? "opacity-60 cursor-not-allowed" : ""}
+          ${
+            isActive
+              ? "bg-blue-50 border-2 border-blue-200 shadow-md"
+              : "hover:bg-gray-50 border border-gray-100"
+          }
+        `}
               >
                 <div
                   className={`
-                    w-12 h-12 rounded-full flex items-center justify-center
-                    ${
-                      !isAccessible
-                        ? "bg-gray-100"
-                        : step.status === "completed"
-                        ? "bg-blue-500"
-                        : step.status === "in-progress"
-                        ? "bg-blue-500"
-                        : "bg-gray-100"
-                    }
-                  `}
+            w-12 h-12 rounded-full flex items-center justify-center
+            ${
+              !isAccessible
+                ? "bg-gray-100"
+                : step.statusCode < applicationStatus.data.status.id
+                ? "bg-blue-500"
+                : step.statusCode === applicationStatus.data.status.id
+                ? "bg-blue-500"
+                : "bg-gray-100"
+            }
+          `}
                 >
                   {!isAccessible ? (
                     <Lock className="w-6 h-6 text-gray-400" />
                   ) : (
                     <StatusIcon
                       className={`w-6 h-6 ${
-                        step.status === "completed" ||
-                        step.status === "in-progress"
+                        step.statusCode < applicationStatus.data.status.id ||
+                        step.statusCode === applicationStatus.data.status.id
                           ? "text-white"
                           : "text-gray-400"
                       }`}
@@ -448,19 +439,19 @@ const TimelineView = ({ applicationStatus }) => {
                 <div className="ml-4 text-left">
                   <Typography
                     className={`
-                      font-semibold
-                      ${
-                        !isAccessible
-                          ? "text-gray-400"
-                          : isActive
-                          ? "text-blue-600"
-                          : step.status === "completed"
-                          ? "text-blue-500"
-                          : step.status === "in-progress"
-                          ? "text-blue-500"
-                          : "text-gray-600"
-                      }
-                    `}
+              font-semibold
+              ${
+                !isAccessible
+                  ? "text-gray-400"
+                  : isActive
+                  ? "text-blue-600"
+                  : step.statusCode < applicationStatus.data.status.id
+                  ? "text-blue-500"
+                  : step.statusCode === applicationStatus.data.status.id
+                  ? "text-blue-500"
+                  : "text-gray-600"
+              }
+            `}
                   >
                     {step.title}
                   </Typography>
@@ -478,7 +469,7 @@ const TimelineView = ({ applicationStatus }) => {
         </div>
       </div>
       {/* Content Card */}
-      {isStepAccessible(currentStepIndex) ? (
+      {isStepAccessible(activeStep) ? (
         <Card
           className={`mt-8 shadow-lg ${
             activeStep === currentStepIndex ? "ring-2 ring-blue-200" : ""
