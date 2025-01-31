@@ -18,7 +18,7 @@ import DiprosesCard from "./card/DiprosesCard";
 import DiterimaCard from "./card/DiterimaCard";
 import PernyataanCard from "./card/PernyataanCard";
 import PersetujuanCard from "./card/PersetujuanCard";
-import SelesaiCard from "./card/SelesaiCard";
+// import SelesaiCard from "./card/SelesaiCard"; // Hapus import ini jika tidak digunakan
 
 const TimelineView = ({ applicationStatus }) => {
   console.log(applicationStatus);
@@ -43,7 +43,7 @@ const TimelineView = ({ applicationStatus }) => {
     },
     {
       id: "3",
-      title: "Surat Pernyataan",
+      title: "Verifikasi",
       subtitle: "Tahap 3",
       statusCode: 3,
       content: {
@@ -61,16 +61,7 @@ const TimelineView = ({ applicationStatus }) => {
         status: "Terverifikasi",
       },
     },
-    {
-      id: "5",
-      title: "Selesai Magang",
-      subtitle: "Tahap 5",
-      statusCode: 5,
-      content: {
-        title: "Surat Pengantar",
-        status: "Proses selesai",
-      },
-    },
+    // Hapus tahap 5
   ];
 
   const ApplicantProfileSummary = ({ data }) => {
@@ -257,8 +248,7 @@ const TimelineView = ({ applicationStatus }) => {
         return <PernyataanCard applicationStatus={applicationStatus} />;
       case "4":
         return <PersetujuanCard applicationStatus={applicationStatus} />;
-      case "5":
-        return <SelesaiCard applicationStatus={applicationStatus} />;
+      // Hapus case untuk tahap 5
       default:
         return null;
     }
@@ -289,13 +279,13 @@ const TimelineView = ({ applicationStatus }) => {
               return (
                 <div
                   key={step.id}
-                  className="relative flex flex-col items-center w-48"
+                  className="relative flex flex-col items-center w-full"
                 >
                   {!isLast && (
                     <div
                       className={`absolute top-7 left-1/2 w-full h-1 ${getProgressLineColor(
                         index
-                      )}`}
+                      )}`} 
                     />
                   )}
                   <div className="relative z-10 flex flex-col items-center">

@@ -12,6 +12,7 @@ import {
 import { X, Loader2, ChevronDown } from "lucide-react";
 import axios from "axios";
 import LoadingButton from "../components/LoadingButton";
+import { toast } from "react-toastify";
 
 const ApplicationFormSiswa = () => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const ApplicationFormSiswa = () => {
     noHp: "",
     tanggalMulai: "",
     tanggalSelesai: "",
-    unitKerja: "", 
+    unitKerja: "",
     userId: userData?.id,
   });
   const [duration, setDuration] = useState({
@@ -189,10 +190,20 @@ const ApplicationFormSiswa = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    // Jika field yang diubah adalah "jurusan", ubah nilai menjadi UPPERCASE
+    if (name === "jurusan") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value.toUpperCase(), // Ubah ke huruf besar
+      }));
+    } else {
+      // Untuk field lainnya, simpan nilai seperti biasa
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -204,7 +215,7 @@ const ApplicationFormSiswa = () => {
   };
 
   const handleSelectChange = (name, value) => {
-    console.log('Select value:', value); // untuk debugging
+    console.log("Select value:", value); // untuk debugging
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -245,8 +256,7 @@ const ApplicationFormSiswa = () => {
         }
       );
 
-      console.log("Response:", response.data); // Add logging
-      alert("Permintaan magang berhasil diajukan!");
+      toast.success("Permintaan magang berhasil diajukan!");
       navigate("/status");
     } catch (error) {
       console.error(
@@ -504,7 +514,42 @@ const ApplicationFormSiswa = () => {
                     <Option value="32">CABANG TAPUS</Option>
                     <Option value="33">CABANG UJUNG GADING</Option>
                     <Option value="34">CABANG UTAMA PADANG</Option>
-                    <Option value="35">KANTOR PUSAT</Option>
+                    <Option value="35">
+                      KANTOR PUSAT-Divisi Dana & Treasury
+                    </Option>
+                    <Option value="36">
+                      KANTOR PUSAT-Divisi Kredit & Mikro Banking
+                    </Option>
+                    <Option value="37">
+                      KANTOR PUSAT-Divisi Penyelamatan Kredit & Pembiayaan
+                    </Option>
+                    <Option value="38">KANTOR PUSAT-Divisi Pemasaran</Option>
+                    <Option value="39">
+                      KANTOR PUSAT-Divisi Usaha Syariah
+                    </Option>
+                    <Option value="40">
+                      KANTOR PUSAT-Divisi Audit Internal
+                    </Option>
+                    <Option value="41">KANTOR PUSAT-Divisi Kepatuhan</Option>
+                    <Option value="42">
+                      KANTOR PUSAT-Divisi Perencanaan Strategis
+                    </Option>
+                    <Option value="43">
+                      KANTOR PUSAT-Divisi Sekretaris Perusahaan
+                    </Option>
+                    <Option value="44">
+                      KANTOR PUSAT-Divisi Keuangan & Informasi
+                    </Option>
+                    <Option value="45">
+                      KANTOR PUSAT-Divisi Human Capital
+                    </Option>
+                    <Option value="46">
+                      KANTOR PUSAT-Divisi Teknologi & Digitalisasi
+                    </Option>
+                    <Option value="47">KANTOR PUSAT-Divisi Umum</Option>
+                    <Option value="48">
+                      KANTOR PUSAT-Divisi Manajemen Resiko
+                    </Option>
                   </Select>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
