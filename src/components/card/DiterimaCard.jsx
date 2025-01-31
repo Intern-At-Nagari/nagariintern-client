@@ -221,12 +221,12 @@ const DiterimaCard = ({ applicationStatus }) => {
         <div className="flex justify-between items-start">
           <div className="w-full">
             <Typography className="font-medium text-gray-800">
-              Surat Pengantar
+              Surat Balasan
             </Typography>
 
             {/* Cari dokumen dengan tipe "Surat Pengantar" */}
             {applicationStatus.data.dokumen.find(
-              (dokumen) => dokumen.tipe === "Surat Pengantar"
+              (dokumen) => dokumen.tipe === "Surat Balasan"
             ) ? (
               <div className="border rounded-lg p-4 mt-2 flex justify-between items-center">
                 <div>
@@ -238,8 +238,9 @@ const DiterimaCard = ({ applicationStatus }) => {
                   <Typography variant="small" color="gray">
                     {
                       applicationStatus.data.dokumen.find(
-                        (dokumen) => dokumen.tipe === "Surat Pengantar"
+                        (dokumen) => dokumen.tipe === "Surat Balasan"
                       ).url
+
                     }
                   </Typography>
                 </div>
@@ -251,7 +252,7 @@ const DiterimaCard = ({ applicationStatus }) => {
                   onClick={() =>
                     handleDownload(
                       applicationStatus.data.dokumen.find(
-                        (dokumen) => dokumen.tipe === "Surat Pengantar"
+                        (dokumen) => dokumen.tipe === "Surat Balasan"
                       ).url
                     )
                   }

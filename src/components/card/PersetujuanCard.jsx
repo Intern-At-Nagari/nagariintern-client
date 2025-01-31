@@ -4,7 +4,8 @@ import { FileCheck, Download, Calendar, MapPin, UserCheck } from "lucide-react";
 
 const PersetujuanCard = ({ applicationStatus }) => {
   // Ambil data dari applicationStatus
-  const { dokumen, unitKerja, penempatan, tanggalMulai } = applicationStatus.data;
+  const { dokumen, unitKerja, penempatan, tanggalMulai } =
+    applicationStatus.data;
 
   // Cari dokumen Surat Pengantar Divisi
   const suratPengantarDivisi = dokumen.find(
@@ -83,7 +84,6 @@ const PersetujuanCard = ({ applicationStatus }) => {
             </div>
           </div>
 
-          {/* Instruksi Masuk Magang */}
           <div className="flex items-center space-x-3">
             <FileCheck className="w-5 h-5 text-gray-600" />
             <div>
@@ -91,8 +91,17 @@ const PersetujuanCard = ({ applicationStatus }) => {
                 Instruksi Masuk Magang
               </Typography>
               <Typography className="font-medium text-gray-800">
-                Silakan langsung masuk ke unit penempatan pada tanggal mulai magang.
-                Pastikan Anda membawa surat pengantar divisi.
+                Peserta magang silahkan mengambil surat pengantar magang di
+                Divisi Human Capital dan sekaligus mengikuti coaching magang.
+                Untuk informasi lebih lanjut silahkan menghubungi{" "}
+                <a
+                  href="https://wa.me/+6282391233317"
+                  className="text-blue-500 hover:text-blue-700 underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  WhatsApp
+                </a>
               </Typography>
             </div>
           </div>
