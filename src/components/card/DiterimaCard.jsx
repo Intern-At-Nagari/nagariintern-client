@@ -16,9 +16,11 @@ import {
   AlertCircle,
   X,
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const DiterimaCard = ({ applicationStatus }) => {
   const [siswaFile, setSiswaFile] = useState(null);
+  const [tabunganFile, setTabunganFile] = useState(null);
   const [institusiFile, setInstitusiFile] = useState(null);
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
@@ -41,6 +43,8 @@ const DiterimaCard = ({ applicationStatus }) => {
       setSiswaFile(file);
     } else if (documentType === "institusi") {
       setInstitusiFile(file);
+    } else if (documentType === "tabungan") {
+      setTabunganFile(file);
     }
   };
 
@@ -54,12 +58,9 @@ const DiterimaCard = ({ applicationStatus }) => {
     aTag.remove();
   };
 
-
   const handleReject = async () => {
     try {
-
       const response = await fetch("http://localhost:3000/my-intern/reject", {
-
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -68,23 +69,20 @@ const DiterimaCard = ({ applicationStatus }) => {
 
       const result = await response.json();
 
-      if (result.status === "success") {
+      if (result.message === "Permintaan magang berhasil ditolak.") {
         setShowRejectDialog(false);
-        // Optional: Show success message
+        window.location.reload(); 
       } else {
-        alert(result.message);
+        alert(result.status);
       }
     } catch (error) {
       console.error("Reject error:", error);
       alert("Gagal menolak tawaran");
     }
-
   };
 
-
-
   const handleSendDocuments = async () => {
-    if (!siswaFile || !institusiFile) {
+    if (!siswaFile || !institusiFile || !tabunganFile) {
       alert("Harap unggah kedua dokumen");
       return;
     }
@@ -92,6 +90,8 @@ const DiterimaCard = ({ applicationStatus }) => {
     const formData = new FormData();
     formData.append("fileSuratPernyataanSiswa", siswaFile);
     formData.append("fileSuratPernyataanWali", institusiFile);
+    formData.append("fileTabungan", tabunganFile);
+    console.log(tabunganFile);
 
     try {
       const response = await fetch(
@@ -110,7 +110,8 @@ const DiterimaCard = ({ applicationStatus }) => {
       if (result.status === "success") {
         setShowAcceptDialog(false);
         setUploadStep(0);
-        // Optional: Show success message
+        window.location.reload(); 
+
       } else {
         alert(result.message);
       }
@@ -237,6 +238,41 @@ const DiterimaCard = ({ applicationStatus }) => {
                     </div>
                   )}
                 </div>
+
+                <div className="p-4 border border-gray-200 rounded-lg">
+                  <Typography className="font-medium text-gray-800">
+                    Fotocopy Buku Tabungan
+                  </Typography>
+                  <label className="mt-2 flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500">
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".pdf"
+                      onChange={(e) => handleFileUpload(e, "tabungan")}
+                    />
+                    <div className="text-center">
+                      <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
+                      <Typography className="text-sm text-gray-600">
+                        Klik untuk upload PDF (max 2MB)
+                      </Typography>
+                    </div>
+                  </label>
+                  {tabunganFile && (
+                    <div className="mt-4 flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                      <div className="flex items-center">
+                        <Typography className="text-sm text-gray-500">
+                          {tabunganFile.name}
+                        </Typography>
+                      </div>
+                      <button
+                        onClick={() => setTabunganFile(null)}
+                        className="p-1 hover:bg-gray-200 rounded-full"
+                      >
+                        <X className="h-5 w-5 text-gray-500" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -263,7 +299,6 @@ const DiterimaCard = ({ applicationStatus }) => {
           Silakan tinjau penawaran magang yang diberikan
         </Typography>
       </div>
-
       <div className="bg-blue-50 rounded-lg p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
@@ -277,7 +312,6 @@ const DiterimaCard = ({ applicationStatus }) => {
           <Building className="w-5 h-5 text-blue-500" />
         </div>
       </div>
-
       <div className="p-4 border border-gray-200 rounded-lg">
         <div className="flex justify-between items-start">
           <div className="w-full">
@@ -328,7 +362,6 @@ const DiterimaCard = ({ applicationStatus }) => {
           </div>
         </div>
       </div>
-
       <div className="p-4 border border-gray-200 rounded-lg mt-4">
         <div className="flex justify-between items-start">
           <div className="w-full">
@@ -368,27 +401,29 @@ const DiterimaCard = ({ applicationStatus }) => {
           </div>
         </div>
       </div>
-
       {/* Action Buttons */}
-      <div className="flex justify-center space-x-4 pt-4">
-        <Button
-          onClick={handleRejectClick}
-          color="red"
-          className="flex items-center space-x-2"
-        >
-          <XCircle className="w-5 h-5" />
-          <span>Tolak Tawaran</span>
-        </Button>
+      {applicationStatus?.data?.status.id == 2 &&
+        applicationStatus?.data?.statusState == "completed" && (
+          <div className="flex justify-center space-x-4 pt-4">
+            <Button
+              onClick={handleRejectClick}
+              color="red"
+              className="flex items-center space-x-2"
+            >
+              <XCircle className="w-5 h-5" />
+              <span>Tolak Tawaran</span>
+            </Button>
 
-        <Button
-          onClick={handleAcceptClick}
-          color="blue"
-          className="flex items-center space-x-2"
-        >
-          <Check className="w-5 h-5" />
-          <span>Terima Tawaran</span>
-        </Button>
-      </div>
+            <Button
+              onClick={handleAcceptClick}
+              color="blue"
+              className="flex items-center space-x-2"
+            >
+              <Check className="w-5 h-5" />
+              <span>Terima Tawaran</span>
+            </Button>
+          </div>
+        )}
 
       {/* Accept Dialog */}
       <Dialog
@@ -401,7 +436,6 @@ const DiterimaCard = ({ applicationStatus }) => {
         </DialogHeader>
         <DialogBody>{renderUploadStep()}</DialogBody>
       </Dialog>
-
       {/* Reject Dialog */}
       <Dialog
         open={showRejectDialog}
@@ -429,7 +463,6 @@ const DiterimaCard = ({ applicationStatus }) => {
             onClick={() => {
               setShowRejectDialog(false);
               handleReject();
-
             }}
           >
             Ya, Tolak Tawaran

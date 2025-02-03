@@ -13,11 +13,15 @@ const PernyataanCard = ({ applicationStatus }) => {
   const documents = [
     {
       title: "Surat Pernyataan Siswa/Mahasiswa",
-      fileName: applicationStatus.data.dokumen[0].url,
+      fileName: applicationStatus.data.dokumen.find(doc => doc.tipe === "Surat Pernyataan Pribadi")?.url || "",
     },
     {
       title: "Surat Pernyataan Orang Tua/Wali & Sekolah/Perguruan Tinggi",
-      fileName: applicationStatus.data.dokumen[1].url,
+      fileName: applicationStatus.data.dokumen.find(doc => doc.tipe === "Surat Pernyataan Kampus")?.url || "",
+    },
+    {
+      title: "Fotocopy Buku Tabungan Bank Nagari",
+      fileName: applicationStatus.data.dokumen.find(doc => doc.tipe === "Buku Tabungan")?.url || "",
     },
   ];
 
