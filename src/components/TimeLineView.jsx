@@ -6,6 +6,7 @@ import {
   Timer,
   File,
   CheckCircle,
+  XCircle,
   Clock,
   AlertCircle,
   Lock,
@@ -18,7 +19,8 @@ import DiprosesCard from "./card/DiprosesCard";
 import DiterimaCard from "./card/DiterimaCard";
 import PernyataanCard from "./card/PernyataanCard";
 import PersetujuanCard from "./card/PersetujuanCard";
-// import SelesaiCard from "./card/SelesaiCard"; // Hapus import ini jika tidak digunakan
+import MenolakCard from "./card/MenolakCard";
+import DitolakCard from "./card/tahap-2/DitolakCard";
 
 const TimelineView = ({ applicationStatus }) => {
   console.log(applicationStatus);
@@ -33,7 +35,14 @@ const TimelineView = ({ applicationStatus }) => {
     },
     {
       id: "2",
-      title: "Diterima",
+      title:
+        applicationStatus.data.status.id === 2 &&
+        applicationStatus.data.statusState === "rejected"
+          ? "Ditolak"
+          : applicationStatus.data.status.id === 2 &&
+            applicationStatus.data.statusState === "reject"
+          ? "Menolak"
+          : "Diterima",
       subtitle: "Tahap 2",
       statusCode: 2,
       content: {
@@ -61,7 +70,6 @@ const TimelineView = ({ applicationStatus }) => {
         status: "Terverifikasi",
       },
     },
-    // Hapus tahap 5
   ];
 
   const ApplicantProfileSummary = ({ data }) => {
@@ -163,10 +171,6 @@ const TimelineView = ({ applicationStatus }) => {
     setActiveStep(currentStatusStep);
   }, [applicationStatus]);
 
-  const verificationStepIndex = timelineSteps.findIndex(
-    (step) => step.id === "statement_uploaded"
-  );
-
   const currentStepIndex = timelineSteps.findIndex(
     (step) => step.id === activeStep
   );
@@ -174,23 +178,6 @@ const TimelineView = ({ applicationStatus }) => {
   const isStepAccessible = (stepId) => {
     const currentStatusId = applicationStatus.data.status.id;
     return parseInt(stepId) <= currentStatusId;
-  };
-
-  const getStepBackgroundColor = (stepStatusCode) => {
-    const currentStatusId = applicationStatus.data.status.id;
-
-    // If step is completed (status code less than current status)
-    if (stepStatusCode < currentStatusId) {
-      return "bg-blue-50"; // Light blue background for completed steps
-    }
-
-    // Current active step
-    if (stepStatusCode === currentStatusId) {
-      return "bg-white"; // Keep current step white
-    }
-
-    // Future steps
-    return "bg-white";
   };
 
   const getStepIcon = (stepStatusCode) => {
@@ -201,6 +188,13 @@ const TimelineView = ({ applicationStatus }) => {
     }
 
     if (stepStatusCode == currentStatusId) {
+      if (
+        stepStatusCode == 2 &&
+        (applicationStatus.data.statusState == "reject" ||
+          applicationStatus.data.statusState == "rejected")
+      ) {
+        return XCircle;
+      }
       return Clock;
     }
     return AlertCircle; // Future steps
@@ -218,11 +212,25 @@ const TimelineView = ({ applicationStatus }) => {
 
     // If current step's status code is less than the current status, it's completed (blue)
     if (step.statusCode < currentStatusId) {
+      if (
+        step.statusCode == 1 && applicationStatus.data.status.id==2 &&
+        (applicationStatus.data.statusState == "reject" ||
+          applicationStatus.data.statusState == "rejected")
+      ) {
+        return "bg-gradient-to-r from-blue-500 to-red-400";
+      }
       return "bg-blue-500";
     }
 
     // If current step's status code matches current status, it's in-progress (gradient)
     if (step.statusCode === currentStatusId) {
+      if (
+        step.statusCode == 2 &&
+        (applicationStatus.data.statusState == "reject" ||
+          applicationStatus.data.statusState == "rejected")
+      ) {
+        return "bg-gray-200";
+      }
       return "bg-gradient-to-r from-blue-500 to-gray-200";
     }
 
@@ -243,7 +251,13 @@ const TimelineView = ({ applicationStatus }) => {
       case "1":
         return <DiprosesCard applicationStatus={applicationStatus} />;
       case "2":
-        return <DiterimaCard applicationStatus={applicationStatus} />;
+        return applicationStatus.data.statusState === "reject" ? (
+          <MenolakCard applicationStatus={applicationStatus} />
+        ) : applicationStatus.data.statusState === "rejected" ? (
+          <DitolakCard applicationStatus={applicationStatus} />
+        ) : (
+          <DiterimaCard applicationStatus={applicationStatus} />
+        );
       case "3":
         return <PernyataanCard applicationStatus={applicationStatus} />;
       case "4":
@@ -285,7 +299,7 @@ const TimelineView = ({ applicationStatus }) => {
                     <div
                       className={`absolute top-7 left-1/2 w-full h-1 ${getProgressLineColor(
                         index
-                      )}`} 
+                      )}`}
                     />
                   )}
                   <div className="relative z-10 flex flex-col items-center">
@@ -312,9 +326,12 @@ const TimelineView = ({ applicationStatus }) => {
                       ? "bg-gray-100 border-gray-200"
                       : step.statusCode < applicationStatus.data.status.id
                       ? "bg-blue-500 border-blue-500"
+                      : step.statusCode === 2 &&
+                        (applicationStatus.data.statusState == "reject" ||applicationStatus.data.statusState == "rejected")
+                      ? "bg-white border-red-500 ring-2 ring-red-100"
                       : step.statusCode === applicationStatus.data.status.id
                       ? "bg-white border-blue-500 ring-2 ring-blue-100"
-                      : "bg-white border-gray-300"
+                      : "bg-gray-100 border-gray-200"
                   }
                 `}
                       >
@@ -325,6 +342,9 @@ const TimelineView = ({ applicationStatus }) => {
                             className={`w-6 h-6 ${
                               step.statusCode < applicationStatus.data.status.id
                                 ? "text-white"
+                                : step.statusCode === 2 &&
+                                (applicationStatus.data.statusState == "reject" ||applicationStatus.data.statusState == "rejected")
+                                ? "text-red-500"
                                 : step.statusCode ===
                                   applicationStatus.data.status.id
                                 ? "text-blue-500"
@@ -336,7 +356,14 @@ const TimelineView = ({ applicationStatus }) => {
                       <div
                         className={`
                   text-center transition-all duration-200
-                  ${isActive ? "bg-blue-50 p-2 rounded-lg shadow-sm" : "p-2"}
+                  ${
+                    !isActive
+                      ? "p-2"
+                      : step.statusCode === 2 &&
+                        (applicationStatus.data.statusState == "reject" ||applicationStatus.data.statusState == "rejected")
+                      ? "bg-red-50 p-2 rounded-lg shadow-sm"
+                      : "bg-blue-50 p-2 rounded-lg shadow-sm"
+                  }
                 `}
                       >
                         <Typography
@@ -347,6 +374,9 @@ const TimelineView = ({ applicationStatus }) => {
                         ? "text-gray-400"
                         : step.statusCode < applicationStatus.data.status.id
                         ? "text-blue-500"
+                        : step.statusCode === 2 &&
+                          (applicationStatus.data.statusState == "reject" ||applicationStatus.data.statusState == "rejected")
+                        ? "text-red-500"
                         : step.statusCode === applicationStatus.data.status.id
                         ? "text-blue-600"
                         : "text-gray-600"
@@ -359,6 +389,9 @@ const TimelineView = ({ applicationStatus }) => {
                           className={`text-sm ${
                             step.statusCode < applicationStatus.data.status.id
                               ? "text-blue-500"
+                              : step.statusCode === 2 &&
+                              (applicationStatus.data.statusState == "reject" ||applicationStatus.data.statusState == "rejected")
+                              ? "text-red-500"
                               : step.statusCode ===
                                 applicationStatus.data.status.id
                               ? "text-blue-600"

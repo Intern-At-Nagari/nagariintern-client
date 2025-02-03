@@ -14,6 +14,7 @@ import {
   XCircle,
   Check,
   AlertCircle,
+  X,
 } from "lucide-react";
 
 const DiterimaCard = ({ applicationStatus }) => {
@@ -25,6 +26,7 @@ const DiterimaCard = ({ applicationStatus }) => {
 
   const token = localStorage.getItem("token");
   console.log(token);
+
   const handleAcceptClick = () => {
     setShowAcceptDialog(true);
   };
@@ -51,6 +53,35 @@ const DiterimaCard = ({ applicationStatus }) => {
     aTag.click();
     aTag.remove();
   };
+
+
+  const handleReject = async () => {
+    try {
+
+      const response = await fetch("http://localhost:3000/my-intern/reject", {
+
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.status === "success") {
+        setShowRejectDialog(false);
+        // Optional: Show success message
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error("Reject error:", error);
+      alert("Gagal menolak tawaran");
+    }
+
+  };
+
+
 
   const handleSendDocuments = async () => {
     if (!siswaFile || !institusiFile) {
@@ -155,6 +186,21 @@ const DiterimaCard = ({ applicationStatus }) => {
                       </Typography>
                     </div>
                   </label>
+                  {siswaFile && (
+                    <div className="mt-4 flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                      <div className="flex items-center">
+                        <Typography className="text-sm text-gray-500">
+                          {siswaFile.name}
+                        </Typography>
+                      </div>
+                      <button
+                        onClick={() => setSiswaFile(null)}
+                        className="p-1 hover:bg-gray-200 rounded-full"
+                      >
+                        <X className="h-5 w-5 text-gray-500" />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-4 border border-gray-200 rounded-lg">
@@ -175,6 +221,21 @@ const DiterimaCard = ({ applicationStatus }) => {
                       </Typography>
                     </div>
                   </label>
+                  {institusiFile && (
+                    <div className="mt-4 flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                      <div className="flex items-center">
+                        <Typography className="text-sm text-gray-500">
+                          {institusiFile.name}
+                        </Typography>
+                      </div>
+                      <button
+                        onClick={() => setInstitusiFile(null)}
+                        className="p-1 hover:bg-gray-200 rounded-full"
+                      >
+                        <X className="h-5 w-5 text-gray-500" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -240,7 +301,6 @@ const DiterimaCard = ({ applicationStatus }) => {
                       applicationStatus.data.dokumen.find(
                         (dokumen) => dokumen.tipe === "Surat Balasan"
                       ).url
-
                     }
                   </Typography>
                 </div>
@@ -368,7 +428,8 @@ const DiterimaCard = ({ applicationStatus }) => {
             color="red"
             onClick={() => {
               setShowRejectDialog(false);
-              // Logika penolakan dapat ditambahkan di sini
+              handleReject();
+
             }}
           >
             Ya, Tolak Tawaran
