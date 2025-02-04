@@ -12,6 +12,8 @@ import {
   Spinner,
 } from "@material-tailwind/react";
 import { UserIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 
 const AdminLoginForm = () => {
@@ -39,7 +41,9 @@ const AdminLoginForm = () => {
 
     const passwordErrors = validatePassword(formData.password);
     if (passwordErrors.length > 0) {
-      newErrors.password = `Password must include: ${passwordErrors.join(", ")}`;
+      newErrors.password = `Password must include: ${passwordErrors.join(
+        ", "
+      )}`;
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -49,18 +53,22 @@ const AdminLoginForm = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await axios.post(
+        "http://localhost:3000/auth/login",
+        formData
+      );
 
-      console.log(response, 'response>>>>>');
-      const data = await response.json();
-      loginAdmin(data);
-      navigate("/admin/dashboard");
+
+      console.log(response.data);
+
+      loginAdmin(response.data);
+      if (response.data.user.role != "Admin") {
+        toast.error("Login failed. Please check your credentials.");
+      } else {
+        toast.success("Login successful!");
+        navigate("/admin/dashboard");
+      }
+      
     } catch (error) {
       console.error("Error during admin login:", error);
       setErrors({ submit: "Login failed. Please check your credentials." });

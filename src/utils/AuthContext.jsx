@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    if (userData.user.role !== 'user') {
+    if (userData.user.role !== 'User') {
       return;
     }
     setUser(userData);

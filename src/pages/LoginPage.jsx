@@ -51,9 +51,14 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
         "http://localhost:3000/auth/login",
         formData
       );
-      toast.success("Login successful!");
+
       login(response.data);
-      navigate("/home");
+      if (response.data.user.role != "User") {
+        toast.error("Login failed. Please check your credentials.");
+      } else {
+        toast.success("Login successful!");
+        navigate("/home");
+      }
     } catch (error) {
       console.error("Error during login:", error);
       setErrors({ submit: "Login failed. Please check your credentials." });

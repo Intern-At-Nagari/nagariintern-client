@@ -19,6 +19,7 @@ import DashboardLayout from "./layout/DashboardLayout";
 import CustomAlert from "./components/CustomAlert";
 import "./index.css";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
+import PesertaMagang from "./pages/admin/PesertaMagangPage";
 import AdminRoute from "./routes/AdminRoute";
 
 function App() {
@@ -52,8 +53,9 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/peserta-magang" element={<PesertaMagang />} />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Catch all route */}
         </Routes>
       </Router>
     </AuthProvider>

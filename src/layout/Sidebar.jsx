@@ -11,7 +11,7 @@ import {
   ChevronDownIcon,
   ArrowRightEndOnRectangleIcon,
   UserGroupIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { Typography } from "@material-tailwind/react";
 
@@ -35,9 +35,13 @@ const Sidebar = () => {
       setActiveItem(path.charAt(0).toUpperCase() + path.slice(1));
       setActiveDropdown("Permintaan");
       setOpenPermintaan(true);
-    } else if (["tambah-akun-cabang", "atur-jadwal-pendaftaran"].includes(path)) {
+    } else if (
+      ["tambah-akun-cabang", "atur-jadwal-pendaftaran"].includes(path)
+    ) {
       setActiveItem(
-        path === "tambah-akun-cabang" ? "Buat Akun Cabang" : "Atur Jadwal Pendaftaran"
+        path === "tambah-akun-cabang"
+          ? "Buat Akun Cabang"
+          : "Atur Jadwal Pendaftaran"
       );
       setActiveDropdown("Pengaturan");
       setOpenPengaturan(true);
@@ -115,9 +119,9 @@ const Sidebar = () => {
       label: "Buat Akun Cabang",
       path: "/tambah-akun-cabang",
     },
-    { 
-      label: "Atur Jadwal Pendaftaran", 
-      path: "/atur-jadwal-pendaftaran" 
+    {
+      label: "Atur Jadwal Pendaftaran",
+      path: "/atur-jadwal-pendaftaran",
     },
   ];
 
@@ -157,17 +161,16 @@ const Sidebar = () => {
 
             {/* Profile Card */}
             <div className="mb-8 p-4 bg-white/15 rounded-xl backdrop-blur-lg transform transition-all duration-300 hover:scale-[1.02]">
-              <div className="flex items-center gap-3">
-                <UserCircleIcon className="h-12 w-12" />
-                <div>
-                  <Typography variant="h6" className="text-white font-semibold">
-                    Admin Dashboard
-                  </Typography>
-                  <Typography variant="small" className="text-blue-100">
-                    {userData?.email}
-                  </Typography>
-                </div>
-              </div>
+   
+              <Typography
+                variant="h6"
+                className="text-white font-semibold text-center"
+              >
+                {userData?.UnitKerja}
+              </Typography>
+              <Typography variant="small" className="text-blue-100 text-center">
+                {userData?.email}
+              </Typography>
             </div>
 
             <div className="space-y-2">
@@ -175,9 +178,9 @@ const Sidebar = () => {
               <button
                 onClick={() => setOpenPermintaan(!openPermintaan)}
                 className={`flex items-center justify-between w-full p-3 rounded-xl transition-all duration-300 ${
-                  activeDropdown === "Permintaan" 
-                  ? "bg-white/20 text-white translate-x-1"
-                  : "hover:bg-white/20 hover:text-white hover:translate-x-1"
+                  activeDropdown === "Permintaan"
+                    ? "bg-white/20 text-white translate-x-1"
+                    : "hover:bg-white/20 hover:text-white hover:translate-x-1"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -220,8 +223,8 @@ const Sidebar = () => {
                 onClick={() => setOpenPengaturan(!openPengaturan)}
                 className={`flex items-center justify-between w-full p-3 rounded-xl transition-all duration-300 ${
                   activeDropdown === "Pengaturan"
-                  ? "bg-white/20 text-white translate-x-1"
-                  : "hover:bg-white/20 hover:text-white hover:translate-x-1"
+                    ? "bg-white/20 text-white translate-x-1"
+                    : "hover:bg-white/20 hover:text-white hover:translate-x-1"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -266,7 +269,7 @@ const Sidebar = () => {
                 href="/mapping"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate("/peserta-magang");
+                  navigate("/admin/peserta-magang");
                   setActiveItem("PesertaMagang");
                 }}
                 onMouseEnter={() => setHoveredItem("PesertaMagang")}
