@@ -1,5 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
-import { GuestRoute, ProtectedRoute } from './ProtectedRoutes';
+import { Routes, Route } from "react-router-dom";
+import { GuestRoute, ProtectedRoute } from "./ProtectedRoutes";
+import AdminRoute from "./AdminRoute";
 
 function AppRoutes() {
   return (
@@ -15,6 +16,14 @@ function AppRoutes() {
       />
       <Route
         path="/auth"
+        element={
+          <GuestRoute>
+            <AuthLayout />
+          </GuestRoute>
+        }
+      />
+      <Route
+        path="/admin"
         element={
           <GuestRoute>
             <AuthLayout />
@@ -37,6 +46,17 @@ function AppRoutes() {
         </Route>
         <Route path="/status" element={<ApplicationStatus />} />
         <Route path="/profile" element={<ProfilePage />} />
+      </Route>
+
+      {/* Admin Routes */}
+      <Route
+        element={
+          <AdminRoute>
+            <DashboardLayout />
+          </AdminRoute>
+        }
+      >
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Route>
 
       {/* Catch-all route for 404 */}

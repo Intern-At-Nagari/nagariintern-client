@@ -307,7 +307,7 @@ const ApplicationFormMahasiswa = () => {
                     <Input
                       type="text"
                       name="alamat"
-                      label="Alamat"
+                      label="Alamat Domisili"
                       size="lg"
                       value={formData.alamat}
                       onChange={handleInputChange}

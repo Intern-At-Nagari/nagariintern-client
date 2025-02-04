@@ -14,6 +14,7 @@ import {
   XCircle,
   Check,
   AlertCircle,
+  CheckCircle,
   X,
 } from "lucide-react";
 import { toast } from "react-toastify";
@@ -25,7 +26,7 @@ const DiterimaCard = ({ applicationStatus }) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [uploadStep, setUploadStep] = useState(0);
-
+  const [nomorRekening, setNomorRekening] = useState('');
   const token = localStorage.getItem("token");
   console.log(token);
 
@@ -71,7 +72,7 @@ const DiterimaCard = ({ applicationStatus }) => {
 
       if (result.message === "Permintaan magang berhasil ditolak.") {
         setShowRejectDialog(false);
-        window.location.reload(); 
+        window.location.reload();
       } else {
         alert(result.status);
       }
@@ -91,7 +92,7 @@ const DiterimaCard = ({ applicationStatus }) => {
     formData.append("fileSuratPernyataanSiswa", siswaFile);
     formData.append("fileSuratPernyataanWali", institusiFile);
     formData.append("fileTabungan", tabunganFile);
-    console.log(tabunganFile);
+    formData.append("nomorRekening", nomorRekening);
 
     try {
       const response = await fetch(
@@ -110,8 +111,7 @@ const DiterimaCard = ({ applicationStatus }) => {
       if (result.status === "success") {
         setShowAcceptDialog(false);
         setUploadStep(0);
-        window.location.reload(); 
-
+        window.location.reload();
       } else {
         alert(result.message);
       }
@@ -146,7 +146,11 @@ const DiterimaCard = ({ applicationStatus }) => {
               <li>Bersedia ditempatkan di unit kerja yang telah ditentukan</li>
             </ul>
             <div className="flex justify-end space-x-3 mt-6">
-              <Button onClick={() => setShowAcceptDialog(false)} color="gray">
+              <Button
+                onClick={() => setShowAcceptDialog(false)}
+                variant="outlined"
+                color="red"
+              >
                 Batalkan
               </Button>
               <Button onClick={() => setUploadStep(1)} color="blue">
@@ -158,129 +162,134 @@ const DiterimaCard = ({ applicationStatus }) => {
       case 1:
         return (
           <div className="space-y-4">
-            <div className="text-center mb-6">
+            <div className="text-center mb-4">
               <Typography variant="h5" className="font-bold text-gray-800">
                 Upload Dokumen
               </Typography>
-              <Typography className="text-gray-600">
+              <Typography className="text-sm text-gray-600">
                 Silakan unduh template dan upload dokumen yang diperlukan
               </Typography>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <Typography className="font-medium text-gray-800">
+            <div className="space-y-3">
+              {/* Surat Pernyataan Siswa */}
+              <div className="p-3 border border-gray-200 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <Typography className="font-medium text-gray-800 text-sm">
                     Surat Pernyataan Siswa/Mahasiswa
                   </Typography>
-                  <label className="mt-2 flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500">
+                  <label className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md cursor-pointer hover:bg-blue-100">
                     <input
                       type="file"
                       className="hidden"
                       accept=".pdf"
                       onChange={(e) => handleFileUpload(e, "siswa")}
                     />
-                    <div className="text-center">
-                      <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
-                      <Typography className="text-sm text-gray-600">
-                        Klik untuk upload PDF (max 2MB)
-                      </Typography>
-                    </div>
+                    <Upload className="w-4 h-4 mr-2" />
+                    <span className="text-sm">Upload PDF</span>
                   </label>
-                  {siswaFile && (
-                    <div className="mt-4 flex items-center justify-between p-2 bg-gray-50 rounded-md">
-                      <div className="flex items-center">
-                        <Typography className="text-sm text-gray-500">
-                          {siswaFile.name}
-                        </Typography>
-                      </div>
-                      <button
-                        onClick={() => setSiswaFile(null)}
-                        className="p-1 hover:bg-gray-200 rounded-full"
-                      >
-                        <X className="h-5 w-5 text-gray-500" />
-                      </button>
-                    </div>
-                  )}
                 </div>
+                {siswaFile && (
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                    <Typography className="text-xs text-gray-500 truncate max-w-[200px]">
+                      {siswaFile.name}
+                    </Typography>
+                    <button
+                      onClick={() => setSiswaFile(null)}
+                      className="p-1 hover:bg-gray-200 rounded-full"
+                    >
+                      <X className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </div>
+                )}
+              </div>
 
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <Typography className="font-medium text-gray-800">
-                    Surat Pernyataan Orang Tua/Wali & Sekolah/Perguruan Tinggi
+              {/* Surat Pernyataan Wali */}
+              <div className="p-3 border border-gray-200 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <Typography className="font-medium text-gray-800 text-sm">
+                    Surat Pernyataan Orang Tua/Wali
                   </Typography>
-                  <label className="mt-2 flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500">
+                  <label className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md cursor-pointer hover:bg-blue-100">
                     <input
                       type="file"
                       className="hidden"
                       accept=".pdf"
                       onChange={(e) => handleFileUpload(e, "institusi")}
                     />
-                    <div className="text-center">
-                      <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
-                      <Typography className="text-sm text-gray-600">
-                        Klik untuk upload PDF (max 2MB)
-                      </Typography>
-                    </div>
+                    <Upload className="w-4 h-4 mr-2" />
+                    <span className="text-sm">Upload PDF</span>
                   </label>
-                  {institusiFile && (
-                    <div className="mt-4 flex items-center justify-between p-2 bg-gray-50 rounded-md">
-                      <div className="flex items-center">
-                        <Typography className="text-sm text-gray-500">
-                          {institusiFile.name}
-                        </Typography>
-                      </div>
-                      <button
-                        onClick={() => setInstitusiFile(null)}
-                        className="p-1 hover:bg-gray-200 rounded-full"
-                      >
-                        <X className="h-5 w-5 text-gray-500" />
-                      </button>
-                    </div>
-                  )}
                 </div>
+                {institusiFile && (
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                    <Typography className="text-xs text-gray-500 truncate max-w-[200px]">
+                      {institusiFile.name}
+                    </Typography>
+                    <button
+                      onClick={() => setInstitusiFile(null)}
+                      className="p-1 hover:bg-gray-200 rounded-full"
+                    >
+                      <X className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </div>
+                )}
+              </div>
 
-                <div className="p-4 border border-gray-200 rounded-lg">
-                  <Typography className="font-medium text-gray-800">
+              {/* Buku Tabungan */}
+              <div className="p-3 border border-gray-200 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <Typography className="font-medium text-gray-800 text-sm">
                     Fotocopy Buku Tabungan
                   </Typography>
-                  <label className="mt-2 flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500">
+                  <label className="flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md cursor-pointer hover:bg-blue-100">
                     <input
                       type="file"
                       className="hidden"
                       accept=".pdf"
                       onChange={(e) => handleFileUpload(e, "tabungan")}
                     />
-                    <div className="text-center">
-                      <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
-                      <Typography className="text-sm text-gray-600">
-                        Klik untuk upload PDF (max 2MB)
-                      </Typography>
-                    </div>
+                    <Upload className="w-4 h-4 mr-2" />
+                    <span className="text-sm">Upload PDF</span>
                   </label>
-                  {tabunganFile && (
-                    <div className="mt-4 flex items-center justify-between p-2 bg-gray-50 rounded-md">
-                      <div className="flex items-center">
-                        <Typography className="text-sm text-gray-500">
-                          {tabunganFile.name}
-                        </Typography>
-                      </div>
-                      <button
-                        onClick={() => setTabunganFile(null)}
-                        className="p-1 hover:bg-gray-200 rounded-full"
-                      >
-                        <X className="h-5 w-5 text-gray-500" />
-                      </button>
-                    </div>
-                  )}
                 </div>
+                {tabunganFile && (
+                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                    <Typography className="text-xs text-gray-500 truncate max-w-[200px]">
+                      {tabunganFile.name}
+                    </Typography>
+                    <button
+                      onClick={() => setTabunganFile(null)}
+                      className="p-1 hover:bg-gray-200 rounded-full"
+                    >
+                      <X className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </div>
+                )}
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan Nomor Rekening"
+                  value={nomorRekening}
+                  onChange={(e) => setNomorRekening(e.target.value)}
+                />
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3 mt-6">
-              <Button onClick={() => setUploadStep(0)} color="gray">
+            <div className="flex justify-end space-x-3 mt-4">
+              <Button
+                onClick={() => setUploadStep(0)}
+                variant="outlined"
+                className="flex items-center gap-2 px-4 py-2"
+                color="red"
+              >
                 Kembali
               </Button>
-              <Button onClick={handleSendDocuments} color="blue">
+              <Button
+                onClick={handleSendDocuments}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600"
+                color="blue"
+              >
                 Kirim Dokumen
               </Button>
             </div>
@@ -428,42 +437,66 @@ const DiterimaCard = ({ applicationStatus }) => {
       {/* Accept Dialog */}
       <Dialog
         open={showAcceptDialog}
-        handler={() => setShowAcceptDialog(false)}
-        size="md"
+        onOpenChange={() => setShowAcceptDialog(false)}
+        className="max-w-md mx-auto"
       >
-        <DialogHeader>
-          <Typography variant="h5">Konfirmasi Penerimaan</Typography>
+        <DialogHeader className="bg-green-50 p-4 rounded-t-lg">
+          <div className="flex items-center gap-3">
+            <CheckCircle className="w-8 h-8 text-green-500" />
+            <h2 className="text-xl font-semibold text-gray-800">
+              Konfirmasi Penerimaan
+            </h2>
+          </div>
         </DialogHeader>
-        <DialogBody>{renderUploadStep()}</DialogBody>
+
+        <DialogBody className="p-6">{renderUploadStep()}</DialogBody>
       </Dialog>
+
       {/* Reject Dialog */}
       <Dialog
         open={showRejectDialog}
-        handler={() => setShowRejectDialog(false)}
-        size="md"
+        onOpenChange={() => setShowRejectDialog(false)}
+        className="max-w-md mx-auto"
       >
-        <DialogHeader>
-          <Typography variant="h5">Konfirmasi Penolakan</Typography>
+        <DialogHeader className="bg-red-50 p-4 rounded-t-lg">
+          <div className="flex items-center gap-3">
+            <XCircle className="w-8 h-8 text-red-500" />
+            <h2 className="text-xl font-semibold text-gray-800">
+              Konfirmasi Penolakan
+            </h2>
+          </div>
         </DialogHeader>
-        <DialogBody>
-          <div className="text-center">
-            <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <Typography className="text-gray-600 mb-6">
-              Apakah Anda yakin ingin menolak tawaran magang ini? Tindakan ini
-              tidak dapat dibatalkan.
-            </Typography>
+
+        <DialogBody className="p-6">
+          <div className="text-center space-y-4">
+            <XCircle className="w-16 h-16 text-red-500 mx-auto" />
+            <p className="text-gray-600">
+              Apakah Anda yakin ingin menolak tawaran magang ini?
+              <br />
+              <span className="text-sm text-red-500 font-medium">
+                Tindakan ini tidak dapat dibatalkan.
+              </span>
+            </p>
           </div>
         </DialogBody>
-        <DialogFooter>
-          <Button color="gray" onClick={() => setShowRejectDialog(false)}>
+
+        <DialogFooter className="p-4 bg-gray-50 rounded-b-lg space-x-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowRejectDialog(false)}
+            className="w-full sm:w-auto"
+            color="blue"
+          >
             Batalkan
           </Button>
           <Button
-            color="red"
+            variant="outlined"
             onClick={() => {
               setShowRejectDialog(false);
               handleReject();
             }}
+            className="w-full sm:w-auto"
+            color="red"
           >
             Ya, Tolak Tawaran
           </Button>

@@ -2,21 +2,24 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate
+  Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./utils/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoutes";
-import PublicRoute from "./routes/PublicRoute";  // New component
+import PublicRoute from "./routes/PublicRoute"; // New component
 import LandingPage from "./pages/LandingPage";
 import AuthLayout from "./layout/AuthLayout";
 import Home from "./pages/HomePage";
+import AdminDashboard from "./pages/admin/AdminDashboardPage";
 import ApplicationFormSiswa from "./pages/FormSiswaPage";
 import ApplicationFormMahasiswa from "./pages/FormMahasiswaPage";
 import ApplicationStatus from "./pages/MagangPage";
-import ProfilePage from './pages/ProfilePage';
+import ProfilePage from "./pages/ProfilePage";
 import DashboardLayout from "./layout/DashboardLayout";
 import CustomAlert from "./components/CustomAlert";
 import "./index.css";
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
+import AdminRoute from "./routes/AdminRoute";
 
 function App() {
   return (
@@ -36,19 +39,21 @@ function App() {
             <Route element={<DashboardLayout />}>
               <Route path="/home" element={<Home />} />
               <Route path="/form-siswa" element={<ApplicationFormSiswa />} />
-              <Route path="/form-mahasiswa" element={<ApplicationFormMahasiswa />} />
+              <Route
+                path="/form-mahasiswa"
+                element={<ApplicationFormMahasiswa />}
+              />
               <Route path="/magang" element={<ApplicationStatus />} />
               <Route path="/profile" element={<ProfilePage />} />
-
-
             </Route>
           </Route>
 
           {/* Landing page - accessible to all */}
           <Route path="/" element={<LandingPage />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-          {/* Catch all route - redirect based on auth state */}
-          <Route path="*" element={<Navigate to="/home" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

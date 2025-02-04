@@ -17,11 +17,22 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
+    if (userData.user.role !== 'user') {
+      return;
+    }
     setUser(userData);
     localStorage.setItem('token', userData.token);
     localStorage.setItem('user', JSON.stringify(userData.user));
   };
 
+  const loginAdmin = (userData) => {
+    if (userData.user.role !== 'Admin') {
+      return;
+    }
+    setUser(userData);
+    localStorage.setItem('token', userData.token);
+    localStorage.setItem('user', JSON.stringify(userData.user));
+  };
   const logout = () => {
     setUser(null);
     localStorage.removeItem('token');
@@ -29,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user,loginAdmin, login, logout, isLoading }}>
       {!isLoading && children}
     </AuthContext.Provider>
   );

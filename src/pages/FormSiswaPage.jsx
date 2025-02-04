@@ -307,7 +307,7 @@ const ApplicationFormSiswa = () => {
                     <Input
                       type="text"
                       name="alamat"
-                      label="Alamat"
+                      label="Alamat Domisili"
                       size="lg"
                       value={formData.alamat}
                       onChange={handleInputChange}
@@ -596,15 +596,9 @@ const ApplicationFormSiswa = () => {
                 <div className="grid grid-cols-1 gap-6">
                   {[
                     { name: "fileCv", label: "Upload CV (PDF)" },
-                    {
-                      name: "fileTranskrip",
-                      label: "Transkrip Nilai Semester Terakhir",
-                    },
-                    { name: "fileKtp", label: "Kartu Tanda Penduduk" },
-                    {
-                      name: "fileSuratPengantar",
-                      label: "Surat Pengantar dari Institusi (PDF)",
-                    },
+    
+                    //ktp jika ada
+                    { name: "fileKtp", label: "Kartu Tanda Penduduk (Jika ada)" },
                   ].map((doc) => (
                     <div key={doc.name} className="space-y-2">
                       <Typography
