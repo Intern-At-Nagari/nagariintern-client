@@ -39,14 +39,15 @@ const PesertaMagangPage = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No authentication token found");
 
-        const response = await axios.get("http://localhost:3000/intern", {
+        const response = await axios.get("http://localhost:3000/admin/intern", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(response.data);
+       
 
         const responseData = response.data.data || response.data;
         const dataArray = Array.isArray(responseData) ? responseData : [];
         setData(dataArray);
+        
 
         // Extract unique institutions and types from the data
         const uniqueInstitutions = [
@@ -87,7 +88,7 @@ const PesertaMagangPage = () => {
   };
 
   const filteredData = data.filter((item) => {
-    if (!item || item.status.name !== "Diproses") return false;
+    if (!item || item.status.name !== "Mulai Magang") return false;
 
     const matchesSearch = [
       item.biodata?.nama || "",
@@ -317,7 +318,7 @@ const PesertaMagangPage = () => {
                                   variant="small"
                                   color="blue-gray"
                                 >
-                                  {item.unitKerja} 
+                                  {item.penempatan} 
                                 </Typography>
                               </td>
                             
