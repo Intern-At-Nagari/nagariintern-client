@@ -116,7 +116,7 @@ const PesertaMagangPage = () => {
   };
 
   const handleViewClick = (id) => {
-    window.location.href = `/detail/${id}`;
+    window.location.href = `peserta-magang/${id}`;
   };
 
 
@@ -228,15 +228,6 @@ const PesertaMagangPage = () => {
                               Prodi/Jurusan
                             </Typography>
                           </th>
-                          <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
-                              Unit Kerja
-                            </Typography>
-                          </th>
                           
                           <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
                             <Typography
@@ -313,15 +304,6 @@ const PesertaMagangPage = () => {
                                   {item.jurusan || "-"}
                                 </Typography>
                               </td>
-                              <td className="p-4">
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                >
-                                  {item.penempatan} 
-                                </Typography>
-                              </td>
-                            
                               <td className="p-4">
                                 <Typography
                                   variant="small"

@@ -24,6 +24,8 @@ const EmptyState = () => {
           const startDate = new Date(result.data[0].tanggalMulai);
           const endDate = new Date(result.data[0].tanggalTutup);
           setIsRegistrationOpen(now >= startDate && now <= endDate);
+
+          console.log("Period data:", result.data[0]);
         }
       } catch (error) {
         console.error("Error fetching period data:", error);

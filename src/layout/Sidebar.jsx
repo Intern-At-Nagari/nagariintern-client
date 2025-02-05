@@ -174,95 +174,7 @@ const Sidebar = () => {
             </div>
 
             <div className="space-y-2">
-              {/* Permintaan Dropdown */}
-              <button
-                onClick={() => setOpenPermintaan(!openPermintaan)}
-                className={`flex items-center justify-between w-full p-3 rounded-xl transition-all duration-300 ${
-                  activeDropdown === "Permintaan"
-                    ? "bg-white/20 text-white translate-x-1"
-                    : "hover:bg-white/20 hover:text-white hover:translate-x-1"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <DocumentTextIcon className="h-5 w-5" />
-                  <span className="font-medium text-white">Permintaan</span>
-                </div>
-                <ChevronDownIcon
-                  className={`h-4 w-4 transition-transform duration-500 ease-in-out ${
-                    openPermintaan ? "rotate-180" : "rotate-0"
-                  }`}
-                />
-              </button>
-              <div
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                  openPermintaan ? "max-h-48 opacity-100" : "max-h-0 opacity-0"
-                }`}
-              >
-                <div className="ml-7 space-y-1 pt-1">
-                  {["Diproses", "Diterima", "Diverifikasi"].map((item) => (
-                    <a
-                      key={item}
-                      href={`/${item.toLowerCase()}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(`/${item.toLowerCase()}`);
-                        handleItemClick(item, "Permintaan");
-                      }}
-                      onMouseEnter={() => setHoveredItem(item)}
-                      onMouseLeave={() => setHoveredItem(null)}
-                      className={getItemClassName(item, "Permintaan")}
-                    >
-                      {item}
-                    </a>
-                  ))}
-                </div>
-              </div>
 
-              {/* Pengaturan Sistem Dropdown */}
-              <button
-                onClick={() => setOpenPengaturan(!openPengaturan)}
-                className={`flex items-center justify-between w-full p-3 rounded-xl transition-all duration-300 ${
-                  activeDropdown === "Pengaturan"
-                    ? "bg-white/20 text-white translate-x-1"
-                    : "hover:bg-white/20 hover:text-white hover:translate-x-1"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Cog6ToothIcon className="h-5 w-5" />
-                  <span className="font-medium text-white">
-                    Pengaturan Sistem
-                  </span>
-                </div>
-                <ChevronDownIcon
-                  className={`h-4 w-4 transition-transform duration-500 ease-in-out ${
-                    openPengaturan ? "rotate-180" : "rotate-0"
-                  }`}
-                />
-              </button>
-              <div
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                  openPengaturan ? "max-h-32 opacity-100" : "max-h-0 opacity-0"
-                }`}
-              >
-                <div className="ml-7 space-y-1 pt-1">
-                  {pengaturanItems.map(({ label, path }) => (
-                    <a
-                      key={label}
-                      href={path}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(path);
-                        handleItemClick(label, "Pengaturan");
-                      }}
-                      onMouseEnter={() => setHoveredItem(label)}
-                      onMouseLeave={() => setHoveredItem(null)}
-                      className={getItemClassName(label, "Pengaturan")}
-                    >
-                      {label}
-                    </a>
-                  ))}
-                </div>
-              </div>
 
               {/* PesertaMagang Link */}
               <a
@@ -278,22 +190,6 @@ const Sidebar = () => {
               >
                 <UserGroupIcon className="h-5 w-5" />
                 <span className="font-medium text-white">Peserta Magang</span>
-              </a>
-
-              {/* Anggaran Link */}
-              <a
-                href="/anggaran"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/anggaran");
-                  setActiveItem("Anggaran");
-                }}
-                onMouseEnter={() => setHoveredItem("Anggaran")}
-                onMouseLeave={() => setHoveredItem(null)}
-                className={getAnggaranClassName()}
-              >
-                <BanknotesIcon className="h-5 w-5" />
-                <span className="font-medium text-white">Anggaran</span>
               </a>
 
               {/* Logout Section */}

@@ -20,6 +20,7 @@ import CustomAlert from "./components/CustomAlert";
 import "./index.css";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import PesertaMagang from "./pages/admin/PesertaMagangPage";
+import DetailPesertaMagang from "./pages/admin/DetailPesertaMagangPage";
 import AdminRoute from "./routes/AdminRoute";
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/peserta-magang" element={<PesertaMagang />} />
+          <Route path="/admin/peserta-magang/:id" element={<DetailPesertaMagang />} />
 
           {/* Catch all route */}
         </Routes>

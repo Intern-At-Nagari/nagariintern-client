@@ -18,7 +18,11 @@ const ApplicationStatus = () => {
           setApplicationStatus(data);
         }
       } catch (error) {
-        console.error("Error fetching application status:", error);
+        if (error.response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.reload();
+        }
       }
     };
 
