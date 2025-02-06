@@ -24,8 +24,36 @@ const ApplicationFormMahasiswa = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(null);
 
-  // Form state
+  useEffect(() => {
+    const checkRegistrationPeriod = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/jadwal-curent", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        const result = await response.json();
+        if (result.data.length > 0) {
+          setIsRegistrationOpen(true);
+          console.log("Periode pendaftaran dibuka");
+        } else {
+          setIsRegistrationOpen(false);
+          console.log("Periode pendaftaran ditutup");
+          navigate("/magang");
+        }
+      } catch (error) {
+        console.error("Error checking registration period:", error);
+        setIsRegistrationOpen(false);
+        navigate("/magang");
+      }
+    };
+
+    checkRegistrationPeriod();
+  }, [navigate]);
+  
   const [formData, setFormData] = useState({
     nama: "",
     nim: "",

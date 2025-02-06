@@ -23,6 +23,36 @@ const ApplicationFormSiswa = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchError, setSearchError] = useState("");
+  // cek periode pendaftaran, jika periode pendaftaran telah berakhir, maka form tidak bisa diakses
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(null);
+
+  useEffect(() => {
+    const checkRegistrationPeriod = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/jadwal-curent", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        const result = await response.json();
+        if (result.data.length > 0) {
+          setIsRegistrationOpen(true);
+          console.log("Periode pendaftaran dibuka");
+        } else {
+          setIsRegistrationOpen(false);
+          console.log("Periode pendaftaran ditutup");
+          navigate("/magang");
+        }
+      } catch (error) {
+        console.error("Error checking registration period:", error);
+        setIsRegistrationOpen(false);
+        navigate("/magang");
+      }
+    };
+
+    checkRegistrationPeriod();
+  }, [navigate]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -596,9 +626,12 @@ const ApplicationFormSiswa = () => {
                 <div className="grid grid-cols-1 gap-6">
                   {[
                     { name: "fileCv", label: "Upload CV (PDF)" },
-    
+
                     //ktp jika ada
-                    { name: "fileKtp", label: "Kartu Tanda Penduduk (Jika ada)" },
+                    {
+                      name: "fileKtp",
+                      label: "Kartu Tanda Penduduk (Jika ada)",
+                    },
                   ].map((doc) => (
                     <div key={doc.name} className="space-y-2">
                       <Typography

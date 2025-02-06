@@ -29,35 +29,31 @@ function App() {
       <Router>
         <CustomAlert />
         <Routes>
-          {/* Public routes - only accessible when NOT authenticated */}
-          <Route element={<PublicRoute />}>
-            <Route element={<AuthLayout />}>
-              <Route path="/auth/*" element={<AuthLayout />} />
-            </Route>
-          </Route>
+          {/* Public routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/auth/*" element={<AuthLayout />} />
 
-          {/* Protected routes - only accessible when authenticated */}
+          {/* Protected User routes */}
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/home" element={<Home />} />
               <Route path="/form-siswa" element={<ApplicationFormSiswa />} />
-              <Route
-                path="/form-mahasiswa"
-                element={<ApplicationFormMahasiswa />}
-              />
+              <Route path="/form-mahasiswa" element={<ApplicationFormMahasiswa />} />
               <Route path="/magang" element={<ApplicationStatus />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
           </Route>
 
-          {/* Landing page - accessible to all */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/admin/login" element={<AdminLoginPage />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/peserta-magang" element={<PesertaMagang />} />
-          <Route path="/admin/peserta-magang/:id" element={<DetailPesertaMagang />} />
+          {/* Protected Admin routes */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/peserta-magang" element={<PesertaMagang />} />
+            <Route path="/admin/peserta-magang/:id" element={<DetailPesertaMagang />} />
+          </Route>
 
           {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

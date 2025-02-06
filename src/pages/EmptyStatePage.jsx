@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
-import { ClipboardDocumentListIcon, CalendarDaysIcon, ClockIcon } from "@heroicons/react/24/outline";
+import {
+  ClipboardDocumentListIcon,
+  CalendarDaysIcon,
+  ClockIcon,
+} from "@heroicons/react/24/outline";
+import { AlertCircle } from 'lucide-react';
+
 
 const EmptyState = () => {
   const [periodData, setPeriodData] = useState(null);
@@ -25,7 +31,7 @@ const EmptyState = () => {
           const endDate = new Date(result.data[0].tanggalTutup);
           setIsRegistrationOpen(now >= startDate && now <= endDate);
 
-          console.log("Period data:", result.data[0]);
+          
         }
       } catch (error) {
         console.error("Error fetching period data:", error);
@@ -48,7 +54,9 @@ const EmptyState = () => {
     }
 
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const hours = Math.floor(
+      (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
@@ -72,10 +80,36 @@ const EmptyState = () => {
     );
   }
 
-  if (!periodData ) {
+  if (!periodData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">Tidak ada periode pendaftaran yang tersedia</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="text-center max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8">
+          <div className="mb-6 flex justify-center">
+            <div className="p-3 bg-yellow-100 rounded-full">
+              <AlertCircle className="h-12 w-12 text-yellow-600" />
+            </div>
+          </div>
+
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Tidak Ada Periode Pendaftaran Aktif
+          </h3>
+
+          <p className="text-gray-600 mb-6">
+            Saat ini belum ada periode pendaftaran magang yang tersedia. Silakan
+            kembali lagi nanti untuk informasi periode pendaftaran berikutnya.
+          </p>
+
+          <div className="space-y-4">
+  
+            <a href="/home" className="w-full">
+              <button className="w-full py-2 px-4 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-lg transition duration-200">
+                Kembali ke Beranda
+              </button>
+            </a>
+          </div>
+
+  
+        </div>
       </div>
     );
   }
@@ -90,8 +124,11 @@ const EmptyState = () => {
           <Typography variant="h4" className="text-blue-gray-900 mb-2">
             Belum Ada Pengajuan Magang
           </Typography>
-          <Typography variant="paragraph" className="text-gray-600 mb-6 max-w-lg">
-            {isRegistrationOpen 
+          <Typography
+            variant="paragraph"
+            className="text-gray-600 mb-6 max-w-lg"
+          >
+            {isRegistrationOpen
               ? "Anda belum mengajukan permohonan magang. Mulai perjalanan karir Anda dengan mengajukan permohonan magang sekarang."
               : "Saat ini tidak ada periode pendaftaran yang aktif. Silakan cek kembali pada periode pendaftaran berikutnya."}
           </Typography>
@@ -108,11 +145,14 @@ const EmptyState = () => {
                   Tanggal Buka
                 </Typography>
                 <Typography variant="h6" className="text-blue-gray-900">
-                  {new Date(periodData.tanggalMulai).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {new Date(periodData.tanggalMulai).toLocaleDateString(
+                    "id-ID",
+                    {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    }
+                  )}
                 </Typography>
               </div>
               <div>
@@ -120,11 +160,14 @@ const EmptyState = () => {
                   Tanggal Tutup
                 </Typography>
                 <Typography variant="h6" className="text-blue-gray-900">
-                  {new Date(periodData.tanggalTutup).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {new Date(periodData.tanggalTutup).toLocaleDateString(
+                    "id-ID",
+                    {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    }
+                  )}
                 </Typography>
               </div>
             </div>
@@ -134,11 +177,19 @@ const EmptyState = () => {
             </div>
           </div>
           {isRegistrationOpen && (
-            <div className="flex flex-col md:flex-row gap-4 w-full">
-              <Button size="lg" className="w-full md:w-auto bg-blue-500 hover:bg-blue-600">
+            <div className="flex flex-col md:flex-row gap-4 w-full justify-center">
+              <Button
+                size="lg"
+                className="w-full md:w-auto bg-blue-500 hover:bg-blue-600"
+                onClick={() => (window.location.href = "/form-siswa")}
+              >
                 Ajukan Magang untuk Siswa
               </Button>
-              <Button size="lg" className="w-full md:w-auto bg-green-500 hover:bg-green-600">
+              <Button
+                size="lg"
+                className="w-full md:w-auto bg-green-500 hover:bg-green-600"
+                onClick={() => (window.location.href = "/form-mahasiswa")}
+              >
                 Ajukan Magang untuk Mahasiswa
               </Button>
             </div>

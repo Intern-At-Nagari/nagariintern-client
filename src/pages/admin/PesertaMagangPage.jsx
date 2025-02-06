@@ -9,10 +9,7 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import {
-  EyeIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+import { EyeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Sidebar from "../../layout/Sidebar";
 import Pagination from "../../components/Pagination";
@@ -42,12 +39,10 @@ const PesertaMagangPage = () => {
         const response = await axios.get("http://localhost:3000/admin/intern", {
           headers: { Authorization: `Bearer ${token}` },
         });
-       
 
         const responseData = response.data.data || response.data;
         const dataArray = Array.isArray(responseData) ? responseData : [];
         setData(dataArray);
-        
 
         // Extract unique institutions and types from the data
         const uniqueInstitutions = [
@@ -118,13 +113,6 @@ const PesertaMagangPage = () => {
   const handleViewClick = (id) => {
     window.location.href = `peserta-magang/${id}`;
   };
-
-
-
-  
-
-
-
 
   return (
     <div className="lg:ml-80 min-h-screen bg-blue-gray-50">
@@ -225,16 +213,6 @@ const PesertaMagangPage = () => {
                               color="blue-gray"
                               className="font-semibold"
                             >
-                              Prodi/Jurusan
-                            </Typography>
-                          </th>
-                          
-                          <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
                               Periode
                             </Typography>
                           </th>
@@ -254,61 +232,37 @@ const PesertaMagangPage = () => {
                           if (!item) return null;
 
                           const startDate = item.tanggalMulai
-                            ? new Date(
-                                item.tanggalMulai
-                              ).toLocaleDateString("id-ID")
+                            ? new Date(item.tanggalMulai).toLocaleDateString(
+                                "id-ID"
+                              )
                             : "-";
                           const endDate = item.tanggalSelesai
-                            ? new Date(
-                                item.tanggalSelesai
-                              ).toLocaleDateString("id-ID")
+                            ? new Date(item.tanggalSelesai).toLocaleDateString(
+                                "id-ID"
+                              )
                             : "-";
 
                           return (
-                            <tr
-                              key={item.id}
-                              className="even:bg-gray-100/50"
-                            >
+                            <tr key={item.id} className="even:bg-gray-100/50">
                               <td className="p-4">
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                >
-                                  {(currentPage - 1) * itemsPerPage +
-                                    index +
-                                    1}
+                                <Typography variant="small" color="blue-gray">
+                                  {(currentPage - 1) * itemsPerPage + index + 1}
                                 </Typography>
                               </td>
                               <td className="p-4">
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                >
+                                <Typography variant="small" color="blue-gray">
                                   {item.biodata?.nama || "-"}
                                 </Typography>
                               </td>
 
                               <td className="p-4">
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                >
+                                <Typography variant="small" color="blue-gray">
                                   {item.institusi || "-"}
                                 </Typography>
                               </td>
+
                               <td className="p-4">
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                >
-                                  {item.jurusan || "-"}
-                                </Typography>
-                              </td>
-                              <td className="p-4">
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                >
+                                <Typography variant="small" color="blue-gray">
                                   {startDate} - {endDate}
                                 </Typography>
                               </td>
@@ -322,14 +276,11 @@ const PesertaMagangPage = () => {
                                       variant="text"
                                       color="blue"
                                       className="rounded-full"
-                                      onClick={() =>
-                                        handleViewClick(item.id)
-                                      }
+                                      onClick={() => handleViewClick(item.id)}
                                     >
                                       <EyeIcon className="h-4 w-4" />
                                     </IconButton>
                                   </Tooltip>
-                                  
                                 </div>
                               </td>
                             </tr>
@@ -349,19 +300,15 @@ const PesertaMagangPage = () => {
                   </div>
                 </CardBody>
                 <Pagination
-                active={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
+                  active={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
               </Card>
-
-          
             </>
           )}
         </div>
       </div>
-
-      
     </div>
   );
 };
