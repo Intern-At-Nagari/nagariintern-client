@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
+  Button,
   Card,
   CardBody,
   Typography,
@@ -8,12 +9,30 @@ import {
   Tooltip,
   Select,
   Option,
+  Dialog,
+  DialogHeader,
+  DialogBody,
 } from "@material-tailwind/react";
-import { EyeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
+import {
+  EyeIcon,
+  ArrowUpTrayIcon,
+  MagnifyingGlassIcon,
+  UserIcon,
+  BuildingOfficeIcon,
+  PhoneIcon,
+  CalendarIcon,
+  ClockIcon,
+  ArrowLeftIcon,
+  PrinterIcon,
+  IdentificationIcon,
+  ArrowDownTrayIcon,
+} from "@heroicons/react/24/outline";
 import Sidebar from "../../layout/Sidebar";
 import Pagination from "../../components/Pagination";
-import BreadcrumbsComponent from "../../components/BreadcrumbsComponent";
+import ModalIframe from "../../components/ModalIframe";
+import MonthlyAttendanceTable from "../../components/MonthlyAttendanceTable";
+import axios from "axios";
+
 const PesertaMagangPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,9 +43,20 @@ const PesertaMagangPage = () => {
   const [selectedInstitution, setSelectedInstitution] = useState("");
   const [institutions, setInstitutions] = useState([]);
   const [types, setTypes] = useState([]);
+  const [selectedIntern, setSelectedIntern] = useState(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
+  
+  const [selectedDocument, setSelectedDocument] = useState({
+    url: "",
+    title: "",
+  });
 
-  const itemsPerPage = 10;
+  const handlePrintOpen = useCallback(() => {
+    setPrintOpen((prev) => !prev);
+  }, []);
 
+  const itemsPerPage = 5;
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -44,7 +74,6 @@ const PesertaMagangPage = () => {
         const dataArray = Array.isArray(responseData) ? responseData : [];
         setData(dataArray);
 
-        // Extract unique institutions and types from the data
         const uniqueInstitutions = [
           ...new Set(dataArray.map((item) => item.institusi).filter(Boolean)),
         ];
@@ -58,7 +87,6 @@ const PesertaMagangPage = () => {
         setError(
           err.response?.data?.message || err.message || "Failed to fetch data"
         );
-        console.error("Error details:", err);
       } finally {
         setLoading(false);
       }
@@ -67,21 +95,33 @@ const PesertaMagangPage = () => {
     fetchData();
   }, []);
 
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(1);
+  const handleViewClick = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:3000/intern/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSelectedIntern(response.data);
+      setIsDetailOpen(true);
+    } catch (err) {
+      console.error("Error fetching intern details:", err);
+    }
   };
 
-  const handleTypeChange = (value) => {
-    setSelectedType(value);
-    setCurrentPage(1);
+  const handleDocumentModal = (url = "", title = "") => {
+    setSelectedDocument({ url, title });
+    setIsDocumentModalOpen(!isDocumentModalOpen);
   };
 
-  const handleInstitutionChange = (value) => {
-    setSelectedInstitution(value);
-    setCurrentPage(1);
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
   };
 
+  // Rest of the filtering logic remains the same
   const filteredData = data.filter((item) => {
     if (!item || item.status.name !== "Mulai Magang") return false;
 
@@ -110,16 +150,43 @@ const PesertaMagangPage = () => {
     return filteredData.slice(startIndex, startIndex + itemsPerPage);
   };
 
-  const handleViewClick = (id) => {
-    window.location.href = `peserta-magang/${id}`;
-  };
-
   return (
     <div className="lg:ml-80 min-h-screen bg-blue-gray-50">
       <Sidebar />
       <div className="px-4 md:px-8 pb-8">
         <div className="max-w-7xl mx-auto">
-          <BreadcrumbsComponent />
+          <div className="pt-4 flex justify-between items-center mb-4">
+            <Typography
+              variant="h3"
+              className="mb-8 font-bold text-gray-800 text-2xl md:text-3xl"
+            >
+              Peserta Magang
+            </Typography>
+
+            <div className="flex gap-2">
+              <Button
+                color="blue"
+                className="flex items-center gap-2"
+                onClick={handlePrintOpen}
+              >
+                <PrinterIcon className="h-4 w-4" /> Cetak Surat Pengantar
+              </Button>
+              <Button
+                color="green"
+                className="flex items-center gap-2"
+                onClick={() => setUploadOpen(true)}
+              >
+                <ArrowUpTrayIcon className="h-4 w-4" /> Upload Surat
+              </Button>
+            </div>
+          </div>
+
+          {/* Main content */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+              {error}
+            </div>
+          )}
 
           {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -127,13 +194,14 @@ const PesertaMagangPage = () => {
             </div>
           ) : (
             <>
+              {/* Filters */}
               <div className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative flex w-full">
                   <Input
                     type="search"
                     label="Cari data..."
                     value={searchQuery}
-                    onChange={handleSearch}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="pr-20"
                     containerProps={{
                       className: "min-w-0",
@@ -147,7 +215,7 @@ const PesertaMagangPage = () => {
                 <Select
                   label="Filter Institusi"
                   value={selectedInstitution}
-                  onChange={handleInstitutionChange}
+                  onChange={(value) => setSelectedInstitution(value)}
                   searchable
                 >
                   <Option value="">Semua Institusi</Option>
@@ -161,7 +229,7 @@ const PesertaMagangPage = () => {
                 <Select
                   label="Filter Tipe"
                   value={selectedType}
-                  onChange={handleTypeChange}
+                  onChange={(value) => setSelectedType(value)}
                   searchable
                 >
                   <Option value="">Semua Tipe</Option>
@@ -173,6 +241,7 @@ const PesertaMagangPage = () => {
                 </Select>
               </div>
 
+              {/* Table */}
               <Card className="overflow-hidden">
                 <CardBody className="p-0">
                   <div className="overflow-x-auto">
@@ -197,7 +266,6 @@ const PesertaMagangPage = () => {
                               Nama
                             </Typography>
                           </th>
-
                           <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
                             <Typography
                               variant="small"
@@ -228,67 +296,56 @@ const PesertaMagangPage = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {getCurrentPageData().map((item, index) => {
-                          if (!item) return null;
-
-                          const startDate = item.tanggalMulai
-                            ? new Date(item.tanggalMulai).toLocaleDateString(
-                                "id-ID"
-                              )
-                            : "-";
-                          const endDate = item.tanggalSelesai
-                            ? new Date(item.tanggalSelesai).toLocaleDateString(
-                                "id-ID"
-                              )
-                            : "-";
-
-                          return (
-                            <tr key={item.id} className="even:bg-gray-100/50">
-                              <td className="p-4">
-                                <Typography variant="small" color="blue-gray">
-                                  {(currentPage - 1) * itemsPerPage + index + 1}
-                                </Typography>
-                              </td>
-                              <td className="p-4">
-                                <Typography variant="small" color="blue-gray">
-                                  {item.biodata?.nama || "-"}
-                                </Typography>
-                              </td>
-
-                              <td className="p-4">
-                                <Typography variant="small" color="blue-gray">
-                                  {item.institusi || "-"}
-                                </Typography>
-                              </td>
-
-                              <td className="p-4">
-                                <Typography variant="small" color="blue-gray">
-                                  {startDate} - {endDate}
-                                </Typography>
-                              </td>
-                              <td className="p-4">
-                                <div className="flex gap-2 justify-center">
-                                  <Tooltip
-                                    content="Lihat detail"
-                                    className="bg-blue-500"
+                        {getCurrentPageData().map((item, index) => (
+                          <tr key={item.id} className="even:bg-gray-100/50">
+                            <td className="p-4">
+                              <Typography variant="small" color="blue-gray">
+                                {(currentPage - 1) * itemsPerPage + index + 1}
+                              </Typography>
+                            </td>
+                            <td className="p-4">
+                              <Typography variant="small" color="blue-gray">
+                                {item.biodata?.nama || "-"}
+                              </Typography>
+                            </td>
+                            <td className="p-4">
+                              <Typography variant="small" color="blue-gray">
+                                {item.institusi || "-"}
+                              </Typography>
+                            </td>
+                            <td className="p-4">
+                              <Typography variant="small" color="blue-gray">
+                                {new Date(item.tanggalMulai).toLocaleDateString(
+                                  "id-ID"
+                                )}{" "}
+                                -
+                                {new Date(
+                                  item.tanggalSelesai
+                                ).toLocaleDateString("id-ID")}
+                              </Typography>
+                            </td>
+                            <td className="p-4">
+                              <div className="flex gap-2 justify-center">
+                                <Tooltip
+                                  content="Lihat detail"
+                                  className="bg-blue-500"
+                                >
+                                  <IconButton
+                                    variant="text"
+                                    color="blue"
+                                    className="rounded-full"
+                                    onClick={() => handleViewClick(item.id)}
                                   >
-                                    <IconButton
-                                      variant="text"
-                                      color="blue"
-                                      className="rounded-full"
-                                      onClick={() => handleViewClick(item.id)}
-                                    >
-                                      <EyeIcon className="h-4 w-4" />
-                                    </IconButton>
-                                  </Tooltip>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
+                                    <EyeIcon className="h-4 w-4" />
+                                  </IconButton>
+                                </Tooltip>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
                         {filteredData.length === 0 && (
                           <tr>
-                            <td colSpan="7" className="p-4 text-center">
+                            <td colSpan="5" className="p-4 text-center">
                               <Typography variant="small" color="blue-gray">
                                 No data found
                               </Typography>
@@ -307,6 +364,231 @@ const PesertaMagangPage = () => {
               </Card>
             </>
           )}
+
+          {/* Detail Modal */}
+          <Dialog
+            size="xl"
+            open={isDetailOpen}
+            handler={() => setIsDetailOpen(false)}
+          >
+            <DialogHeader>Detail Peserta Magang</DialogHeader>
+            <DialogBody divider className="max-h-[80vh] overflow-y-auto">
+              {selectedIntern && (
+                <div className="space-y-6">
+                  {/* Personal Information */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Left Column */}
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <UserIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
+                        <div>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-medium"
+                          >
+                            Nama
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-blue-gray-500"
+                          >
+                            {selectedIntern.User?.Mahasiswas[0]?.name ||
+                              selectedIntern.User?.Siswas[0]?.name}
+                          </Typography>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <BuildingOfficeIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
+                        <div>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-medium"
+                          >
+                            {selectedIntern.type === "siswa"
+                              ? "SMK & Jurusan"
+                              : "Institusi & Program Studi"}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-blue-gray-500"
+                          >
+                            {selectedIntern.type === "siswa"
+                              ? `${selectedIntern.Smk?.name} - ${selectedIntern.Jurusan?.name}`
+                              : `${selectedIntern.PerguruanTinggi?.name} - ${selectedIntern.Prodi?.name}`}
+                          </Typography>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <IdentificationIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
+                        <div>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-medium"
+                          >
+                            {selectedIntern.type === "siswa" ? "NISN" : "NIM"}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-blue-gray-500"
+                          >
+                            {selectedIntern.type === "siswa"
+                              ? selectedIntern.User?.Siswas[0]?.nisn
+                              : selectedIntern.User?.Mahasiswas[0]?.nim || "-"}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <PhoneIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
+                        <div>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-medium"
+                          >
+                            No. Telepon
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-blue-gray-500"
+                          >
+                            {(selectedIntern.type === "siswa"
+                              ? selectedIntern.User?.Siswas[0]?.no_hp
+                              : selectedIntern.User?.Mahasiswas[0]?.no_hp) ||
+                              "-"}
+                          </Typography>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <CalendarIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
+                        <div>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-medium"
+                          >
+                            Periode Magang
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-blue-gray-500"
+                          >
+                            {formatDate(selectedIntern.tanggalMulai)} -{" "}
+                            {formatDate(selectedIntern.tanggalSelesai)}
+                          </Typography>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <BuildingOfficeIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
+                        <div>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-medium"
+                          >
+                            Unit Kerja
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-blue-gray-500"
+                          >
+                            {selectedIntern.UnitKerjaPengajuan?.name}
+                          </Typography>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <ClockIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
+                        <div>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-medium"
+                          >
+                            Status
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            className="text-blue-gray-500"
+                          >
+                            {selectedIntern.Status?.name}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Documents Section */}
+                  <div className="space-y-4">
+                    <Typography
+                      variant="h6"
+                      color="blue-gray"
+                      className="mb-4 pb-2 border-b"
+                    >
+                      Dokumen Pendukung
+                    </Typography>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {selectedIntern.Dokumens &&
+                        [
+                          { label: "Curriculum Vitae", index: 0 },
+                          { label: "Kartu Tanda Penduduk", index: 2 },
+                          { label: "Surat Pengantar", index: 3 },
+                          { label: "Transkrip Nilai", index: 1 },
+                        ].map((doc) => (
+                          <div key={doc.label} className="flex gap-2">
+                            <Button
+                              variant="outlined"
+                              className="flex items-center gap-2 normal-case flex-1"
+                              onClick={() => {
+                                handleDocumentModal(
+                                  `http://localhost:3000/uploads/${
+                                    selectedIntern.Dokumens[doc.index].url
+                                  }`,
+                                  doc.label
+                                );
+                              }}
+                            >
+                              <ArrowDownTrayIcon className="w-4 h-4" />
+                              {doc.label}
+                            </Button>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+
+                  {/* Attendance Section */}
+                  <div className="space-y-4">
+                    <Typography
+                      variant="h6"
+                      color="blue-gray"
+                      className="mb-4 pb-2 border-b"
+                    >
+                      Data Kehadiran
+                    </Typography>
+                    <MonthlyAttendanceTable data={selectedIntern.Kehadirans} />
+                  </div>
+                </div>
+              )}
+            </DialogBody>
+          </Dialog>
+
+          {/* Document Preview Modal */}
+          <ModalIframe
+            isOpen={isDocumentModalOpen}
+            handleOpen={handleDocumentModal}
+            pdfUrl={selectedDocument.url}
+            title={selectedDocument.title}
+          />
         </div>
       </div>
     </div>

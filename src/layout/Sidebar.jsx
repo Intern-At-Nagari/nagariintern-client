@@ -2,24 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import {
-  UserCircleIcon,
-  DocumentTextIcon,
   Squares2X2Icon,
   Bars3Icon,
   XMarkIcon,
-  BanknotesIcon,
-  ChevronDownIcon,
   ArrowRightEndOnRectangleIcon,
   UserGroupIcon,
-  Cog6ToothIcon,
+  DocumentChartBarIcon, 
 } from "@heroicons/react/24/outline";
 import { Typography } from "@material-tailwind/react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [openPermintaan, setOpenPermintaan] = useState(false);
-  const [openPengaturan, setOpenPengaturan] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [hoveredItem, setHoveredItem] = useState(null);
@@ -62,16 +56,6 @@ const Sidebar = () => {
     }
   };
 
-  const handleItemClick = (item, dropdown) => {
-    setActiveItem(item);
-    setActiveDropdown(dropdown);
-    if (dropdown === "Permintaan") {
-      setOpenPermintaan(true);
-    } else if (dropdown === "Pengaturan") {
-      setOpenPengaturan(true);
-    }
-  };
-
   const getPesertaMagangClassName = () => {
     const isActive = activeItem === "PesertaMagang";
     const isHovered = hoveredItem === "PesertaMagang";
@@ -84,28 +68,15 @@ const Sidebar = () => {
       }`;
   };
 
-  const getAnggaranClassName = () => {
-    const isActive = activeItem === "Anggaran";
-    const isHovered = hoveredItem === "Anggaran";
-
+  const getRekapitulasiClassName = () => {
+    const isActive = activeItem === "Rekapitulasi";
+    const isHovered = hoveredItem === "Rekapitulasi";
     return `flex items-center gap-3 p-3 rounded-xl transition-all duration-300 
-      ${
-        isActive || isHovered
-          ? "bg-white/20 text-white translate-x-1"
-          : "hover:bg-white/20 hover:text-white hover:translate-x-1"
-      }`;
-  };
-
-  const getItemClassName = (item, dropdown) => {
-    const isActive = activeItem === item && activeDropdown === dropdown;
-    const isHovered = hoveredItem === item;
-
-    return `block p-3 rounded-xl transition-all duration-300 text-blue-100 
-      ${
-        isActive || isHovered
-          ? "bg-white/20 text-white translate-x-1"
-          : "hover:bg-white/20 hover:text-white hover:translate-x-1"
-      }`;
+    ${
+      isActive || isHovered
+        ? "bg-white/20 text-white translate-x-1"
+        : "hover:bg-white/20 hover:text-white hover:translate-x-1"
+    }`;
   };
 
   const handleLogout = () => {
@@ -113,17 +84,6 @@ const Sidebar = () => {
     localStorage.removeItem("user");
     navigate("/");
   };
-
-  const pengaturanItems = [
-    {
-      label: "Buat Akun Cabang",
-      path: "/tambah-akun-cabang",
-    },
-    {
-      label: "Atur Jadwal Pendaftaran",
-      path: "/atur-jadwal-pendaftaran",
-    },
-  ];
 
   return (
     <>
@@ -161,7 +121,6 @@ const Sidebar = () => {
 
             {/* Profile Card */}
             <div className="mb-8 p-4 bg-white/15 rounded-xl backdrop-blur-lg transform transition-all duration-300 hover:scale-[1.02]">
-   
               <Typography
                 variant="h6"
                 className="text-white font-semibold text-center"
@@ -174,8 +133,6 @@ const Sidebar = () => {
             </div>
 
             <div className="space-y-2">
-
-
               {/* PesertaMagang Link */}
               <a
                 href="/mapping"
@@ -190,6 +147,21 @@ const Sidebar = () => {
               >
                 <UserGroupIcon className="h-5 w-5" />
                 <span className="font-medium text-white">Peserta Magang</span>
+              </a>
+
+              <a
+                href="/rekapitulasi"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/admin/rekapitulasi");
+                  setActiveItem("Rekapitulasi");
+                }}
+                onMouseEnter={() => setHoveredItem("Rekapitulasi")}
+                onMouseLeave={() => setHoveredItem(null)}
+                className={getRekapitulasiClassName()}
+              >
+                <DocumentChartBarIcon className="h-5 w-5" />
+                <span className="font-medium text-white">Rekapitulasi</span>
               </a>
 
               {/* Logout Section */}

@@ -21,6 +21,7 @@ import "./index.css";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import PesertaMagang from "./pages/admin/PesertaMagangPage";
 import DetailPesertaMagang from "./pages/admin/DetailPesertaMagangPage";
+import RekapAbsen from "./pages/admin/RekapAbsenPage";
 import AdminRoute from "./routes/AdminRoute";
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/peserta-magang" element={<PesertaMagang />} />
             <Route path="/admin/peserta-magang/:id" element={<DetailPesertaMagang />} />
+            <Route path="/admin/rekapitulasi" element={<RekapAbsen />} />
           </Route>
 
           {/* Catch all route */}

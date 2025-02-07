@@ -16,7 +16,6 @@ const Dashboard = () => {
       {/* Welcome Message */}
       <div className="px-4 md:px-8 pb-8">
         <div className="max-w-7xl mx-auto">
-          <BreadcrumbsComponent />
           <Typography
             variant="h3"
             className="mb-8 font-bold text-gray-800 text-2xl md:text-3xl"

@@ -26,7 +26,6 @@ import {
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Sidebar from "../../layout/Sidebar";
-import BreadcrumbsComponent from "../../components/BreadcrumbsComponent";
 import { toast } from "react-toastify";
 import ModalIframe from "../../components/ModalIframe";
 import MonthlyAttendanceTable from "../../components/MonthlyAttendanceTable";
@@ -53,6 +52,7 @@ const DetailPesertaMagangPage = () => {
             },
           }),
         ]);
+        console.log(internResponse.data);
         setData(internResponse.data);
         setSelectedUnit(internResponse.data.UnitKerjaPengajuan.id);
       } catch (err) {
@@ -107,7 +107,14 @@ const DetailPesertaMagangPage = () => {
       <Sidebar />
       <div className="px-4 md:px-8 pb-8">
         <div className="max-w-7xl mx-auto">
-          <BreadcrumbsComponent />
+          <div className="pt-4 mb-8 flex items-center gap-3">
+            <Typography
+              variant="h3"
+              className="font-bold text-gray-800 text-2xl md:text-3xl"
+            >
+              Detail Peserta Magang
+            </Typography>
+          </div>
 
           <Card className="mb-6">
             <CardBody className="p-6">
@@ -369,10 +376,7 @@ const DetailPesertaMagangPage = () => {
             </CardBody>
           </Card>
 
-          <MonthlyAttendanceTable
-            startDate={data.tanggalMulai}
-            endDate={data.tanggalSelesai}
-          />
+          <MonthlyAttendanceTable data={data.Kehadirans} />
 
           <ModalIframe
             isOpen={isDocumentModalOpen}
