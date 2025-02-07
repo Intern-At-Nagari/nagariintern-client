@@ -46,7 +46,6 @@ const PesertaMagangPage = () => {
   const [selectedIntern, setSelectedIntern] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
-  
   const [selectedDocument, setSelectedDocument] = useState({
     url: "",
     title: "",

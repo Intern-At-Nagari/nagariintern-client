@@ -59,11 +59,12 @@ const RekapAbsenPage = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No authentication token found");
 
-        const response = await axios.get("http://localhost:3000/admin/attendance/monthly", {
+        const response = await axios.get("http://localhost:3000/admin/absensi", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const responseData = response.data.data || response.data;
+        console.log(responseData)
         setData(Array.isArray(responseData) ? responseData : []);
       } catch (err) {
         setError(err.response?.data?.message || err.message || "Failed to fetch data");
@@ -77,21 +78,16 @@ const RekapAbsenPage = () => {
 
   const filteredData = data.filter((item) => {
     const matchesSearch = [
-      item.nama || "",
-      item.type || "",
-      item.status || "",
-      item.bulan || "",
+
       item.tahun || "",
     ]
       .join(" ")
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
 
-    const matchesType = !selectedType || item.type === selectedType;
-    const matchesMonth = !selectedMonth || item.bulan === selectedMonth;
-    const matchesYear = !selectedYear || item.tahun === selectedYear;
-
-    return matchesSearch && matchesType && matchesMonth && matchesYear;
+    const matchesYear = !selectedYear || item.tahun == selectedYear;
+    console.log("item tahun",item.tahun,"item select",selectedYear)
+    return matchesSearch && matchesYear;
   });
 
   const getCurrentPageData = () => {
@@ -106,6 +102,9 @@ const RekapAbsenPage = () => {
     console.log("Printing attendance for ID:", id);
   };
 
+  const handleViewClick = (bulan, tahun) => {
+    
+  }
   return (
     <div className="lg:ml-80 min-h-screen bg-blue-gray-50">
       <Sidebar />
@@ -196,12 +195,12 @@ const RekapAbsenPage = () => {
                           </th>
                           <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
                             <Typography variant="small" color="blue-gray" className="font-semibold">
-                              Bulan
+                              Bulan/Tahun
                             </Typography>
                           </th>
                           <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
                             <Typography variant="small" color="blue-gray" className="font-semibold">
-                              Tahun
+                              Siswa/Mahasiswa
                             </Typography>
                           </th>
                           <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
@@ -231,17 +230,17 @@ const RekapAbsenPage = () => {
                             </td>
                             <td className="p-4">
                               <Typography variant="small" color="blue-gray">
-                                {months.find(m => m.value === item.bulan)?.label || "-"}
+                                {item.bulan } {item.tahun}
                               </Typography>
                             </td>
                             <td className="p-4">
                               <Typography variant="small" color="blue-gray">
-                                {item.tahun}
+                                {item.peserta}
                               </Typography>
                             </td>
                             <td className="p-4">
                               <Typography variant="small" color="blue-gray">
-                                {item.nama}
+                                {item.totalKehadiran}
                               </Typography>
                             </td>
                             <td className="p-4">
@@ -256,7 +255,7 @@ const RekapAbsenPage = () => {
                                     variant="text"
                                     color="blue"
                                     className="rounded-full"
-                                    onClick={() => handleViewClick(item.id)}
+                                    onClick={() => handleViewClick(item.bulan , item.tahun)}
                                   >
                                     <EyeIcon className="h-4 w-4" />
                                   </IconButton>
