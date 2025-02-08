@@ -14,9 +14,14 @@ import {
   MagnifyingGlassIcon,
   ArrowLeftIcon,
   PencilIcon,
+  PrinterIcon,
+  ArrowUpTrayIcon,
+  DocumentIcon,
 } from "@heroicons/react/24/outline";
 import Sidebar from "../../layout/Sidebar";
 import Pagination from "../../components/Pagination";
+import { toast } from "react-toastify";
+import UploadModal from "../../components/UploadModal";
 
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -26,10 +31,21 @@ const DetailAbsensiPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [rekapInfo, setRekapInfo] = useState(null);
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
   const { bulan, tahun } = useParams();
   const navigate = useNavigate();
+  const [printLoading, setPrintLoading] = useState(false);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [selectedPrintData, setSelectedPrintData] = useState(null);
+  const [printForm, setPrintForm] = useState({
+    tempat: "",
+    nama_pimpinan: "",
+    jabatan: "",
+  });
 
   const itemsPerPage = 10;
 
@@ -52,6 +68,7 @@ const DetailAbsensiPage = () => {
         const responseData = response.data.data || [];
         setTotal(response.data.total || 0);
         setData(responseData);
+        setRekapInfo(response.data.rekapKehadiran || null);
       } catch (err) {
         setError(
           err.response?.data?.message || err.message || "Failed to fetch data"
@@ -64,12 +81,73 @@ const DetailAbsensiPage = () => {
     fetchData();
   }, [bulan, tahun]);
 
+  const handleViewPdf = () => {
+    if (rekapInfo?.url) {
+      window.open(`http://localhost:3000/public/${rekapInfo.url}`, '_blank');
+    }
+  };
+
   const filteredData = data.filter((item) =>
     Object.values(item)
       .join(" ")
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
+
+  const handlePrint = (bulan, tahun) => {
+    setSelectedPrintData({ bulan, tahun });
+    setIsPrintModalOpen(true);
+  };
+
+  const handlePrintClose = () => {
+    setIsPrintModalOpen(false);
+    setSelectedPrintData(null);
+    setPrintForm({
+      tempat: "",
+      nama_pimpinan: "",
+      jabatan: "",
+    });
+  };
+
+  const handlePrintSubmit = async () => {
+    if (!selectedPrintData) return;
+
+    setPrintLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const { bulan, tahun } = selectedPrintData;
+
+      const response = await axios.post(
+        `http://localhost:3000/admin/absensi/${bulan}/${tahun}/print`,
+        printForm,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          responseType: "arraybuffer",
+        }
+      );
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `rekap_absensi_${bulan}_${tahun}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Berhasil mencetak rekap!");
+      handlePrintClose();
+    } catch (err) {
+      console.error("Error printing document:", err);
+      toast.error(err.response?.data?.message || "Gagal mencetak rekap!");
+    } finally {
+      setPrintLoading(false);
+    }
+  };
 
   const getCurrentPageData = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -126,6 +204,39 @@ const DetailAbsensiPage = () => {
     }
   };
 
+  const handleUpload = async (file) => {
+    setUploadLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("fileRekap", file);
+
+      const response = await axios.post(
+        `http://localhost:3000/admin/absensi/${bulan}/${tahun}/upload`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.status === "success") {
+        toast.success("Surat balasan berhasil dikirim!");
+        setUploadOpen(false);
+      }
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Gagal mengirim surat balasan!"
+      );
+      console.error("Error sending letter:", err);
+    } finally {
+      setUploadLoading(false);
+      //refresh
+      window.location.reload();
+    }
+  };
+
   return (
     <div className="lg:ml-80 min-h-screen bg-blue-gray-50">
       <Sidebar />
@@ -152,34 +263,52 @@ const DetailAbsensiPage = () => {
             </div>
           ) : (
             <>
-              <div className="mb-4 flex justify-between items-center">
-                <div className="relative flex w-full max-w-[24rem]">
-                  <button
-                    onClick={() => navigate(-1)}
-                    className="mr-8 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-                  >
-                    <ArrowLeftIcon className="h-5 w-5" />
-                    <Typography variant="button">Kembali</Typography>
-                  </button>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="relative flex w-full max-w-[24rem]">
+                    <button
+                      onClick={() => navigate(-1)}
+                      className="mr-8 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <ArrowLeftIcon className="h-5 w-5" />
+                      <Typography variant="button">Kembali</Typography>
+                    </button>
 
-                  <Input
-                    type="search"
-                    label="Cari data..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pr-20"
-                    containerProps={{
-                      className: "min-w-0",
-                    }}
-                    icon={
-                      <MagnifyingGlassIcon className="h-5 w-5 text-blue-gray-500" />
-                    }
-                  />
+                    <Input
+                      type="search"
+                      label="Cari data..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pr-20"
+                      containerProps={{
+                        className: "min-w-0",
+                      }}
+                      icon={
+                        <MagnifyingGlassIcon className="h-5 w-5 text-blue-gray-500" />
+                      }
+                    />
+                  </div>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <Typography className="font-semibold text-blue-900">
+                      Total Uang Saku: Rp {totalAllowance.toLocaleString()}
+                    </Typography>
+                  </div>
                 </div>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <Typography className="font-semibold text-blue-900">
-                    Total Uang Saku: Rp {totalAllowance.toLocaleString()}
-                  </Typography>
+                <div className="flex gap-2">
+                  <Button
+                    color="blue"
+                    className="flex items-center gap-2"
+                    onClick={() => handlePrint(bulan, tahun)}
+                  >
+                    <PrinterIcon className="h-4 w-4" /> Cetak Rekapitulasi
+                  </Button>
+                  <Button
+                    color="green"
+                    className="flex items-center gap-2"
+                    onClick={() => setUploadOpen(true)}
+                  >
+                    <ArrowUpTrayIcon className="h-4 w-4" /> Upload Rekapitulasi
+                  </Button>
                 </div>
               </div>
 
@@ -249,15 +378,6 @@ const DetailAbsensiPage = () => {
                               color="blue-gray"
                               className="font-semibold"
                             >
-                              kode cabang
-                            </Typography>
-                          </th>
-                          <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
                               No.rekening
                             </Typography>
                           </th>
@@ -311,11 +431,6 @@ const DetailAbsensiPage = () => {
                               </Typography>
                             </td>
                             <td className="p-4">
-                              <Typography variant="small" color="blue-gray">
-                                {item.rekening}
-                              </Typography>
-                            </td>
-                            <td className="p-4">
                               <button
                                 onClick={() => handleEditAttendance(item.id)}
                                 className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
@@ -345,6 +460,109 @@ const DetailAbsensiPage = () => {
                   onPageChange={setCurrentPage}
                 />
               </Card>
+              <div className="mt-6 bg-white rounded-lg p-4 shadow">
+            <Typography variant="h6" color="blue-gray" className="mb-2">
+              Status Upload Rekapitulasi
+            </Typography>
+            {rekapInfo ? (
+              <div className="space-y-4">
+                <div>
+                  <Typography color="blue-gray">
+                    Diupload oleh: {rekapInfo.karyawan?.nama || 'Unknown'}
+                  </Typography>
+                  <Typography color="blue-gray">
+                    Tanggal upload: {new Date(rekapInfo.updatedAt).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </Typography>
+                </div>
+                <div className="w-full aspect-[16/9] border border-gray-200 rounded-lg overflow-hidden">
+                  <iframe
+                    src={`http://localhost:3000/uploads/${rekapInfo.url}`}
+                    className="w-full h-full"
+                    title="Rekap PDF"
+                  />
+                </div>
+              </div>
+            ) : (
+              <Typography color="gray">
+                Rekapitulasi belum diupload
+              </Typography>
+            )}
+          </div>
+              <Dialog
+                open={isPrintModalOpen}
+                handler={handlePrintClose}
+                size="sm"
+              >
+                <DialogHeader>Cetak Rekap Absensi</DialogHeader>
+                <DialogBody>
+                  <div className="flex flex-col gap-4">
+                    <Input
+                      type="text"
+                      label="Tempat"
+                      value={printForm.tempat}
+                      onChange={(e) =>
+                        setPrintForm((prev) => ({
+                          ...prev,
+                          tempat: e.target.value,
+                        }))
+                      }
+                    />
+                    <Input
+                      type="text"
+                      label="Nama Pimpinan"
+                      value={printForm.nama_pimpinan}
+                      onChange={(e) =>
+                        setPrintForm((prev) => ({
+                          ...prev,
+                          nama_pimpinan: e.target.value,
+                        }))
+                      }
+                    />
+                    <Input
+                      type="text"
+                      label="Jabatan"
+                      value={printForm.jabatan}
+                      onChange={(e) =>
+                        setPrintForm((prev) => ({
+                          ...prev,
+                          jabatan: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </DialogBody>
+                <DialogFooter>
+                  <Button
+                    variant="text"
+                    color="red"
+                    onClick={handlePrintClose}
+                    className="mr-1"
+                  >
+                    <span>Batal</span>
+                  </Button>
+                  <Button
+                    variant="gradient"
+                    color="blue"
+                    onClick={handlePrintSubmit}
+                    disabled={printLoading}
+                  >
+                    {printLoading ? (
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Memproses...
+                      </span>
+                    ) : (
+                      <span>Cetak</span>
+                    )}
+                  </Button>
+                </DialogFooter>
+              </Dialog>
               <Dialog open={isModalOpen} handler={handleCloseModal} size="xs">
                 <DialogHeader>Input Absensi</DialogHeader>
                 <DialogBody>
@@ -375,9 +593,17 @@ const DetailAbsensiPage = () => {
                   </Button>
                 </DialogFooter>
               </Dialog>
+              <UploadModal
+                open={uploadOpen}
+                onClose={() => setUploadOpen(false)}
+                onSubmit={handleUpload}
+                isLoading={uploadLoading}
+              />
             </>
           )}
         </div>
+
+
       </div>
     </div>
   );
