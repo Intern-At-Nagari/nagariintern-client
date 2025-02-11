@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
 import {
   ClipboardDocumentListIcon,
   CalendarDaysIcon,
@@ -8,8 +9,8 @@ import {
 import { AlertCircle } from 'lucide-react';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
 const EmptyState = () => {
+  const navigate = useNavigate();
   const [periodData, setPeriodData] = useState(null);
   const [countdown, setCountdown] = useState("");
   const [loading, setLoading] = useState(true);
@@ -31,8 +32,6 @@ const EmptyState = () => {
           const startDate = new Date(result.data[0].tanggalMulai);
           const endDate = new Date(result.data[0].tanggalTutup);
           setIsRegistrationOpen(now >= startDate && now <= endDate);
-
-          
         }
       } catch (error) {
         console.error("Error fetching period data:", error);
@@ -101,15 +100,13 @@ const EmptyState = () => {
           </p>
 
           <div className="space-y-4">
-  
-            <a href="/home" className="w-full">
-              <button className="w-full py-2 px-4 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-lg transition duration-200">
-                Kembali ke Beranda
-              </button>
-            </a>
+            <button
+              onClick={() => navigate("/home")}
+              className="w-full py-2 px-4 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-lg transition duration-200"
+            >
+              Kembali ke Beranda
+            </button>
           </div>
-
-  
         </div>
       </div>
     );
@@ -182,14 +179,14 @@ const EmptyState = () => {
               <Button
                 size="lg"
                 className="w-full md:w-auto bg-blue-500 hover:bg-blue-600"
-                onClick={() => (window.location.href = "/form-siswa")}
+                onClick={() => navigate("/form-siswa")}
               >
                 Ajukan Magang untuk Siswa
               </Button>
               <Button
                 size="lg"
                 className="w-full md:w-auto bg-green-500 hover:bg-green-600"
-                onClick={() => (window.location.href = "/form-mahasiswa")}
+                onClick={() => navigate("/form-mahasiswa")}
               >
                 Ajukan Magang untuk Mahasiswa
               </Button>
