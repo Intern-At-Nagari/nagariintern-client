@@ -309,114 +309,99 @@ const DiterimaCard = ({ applicationStatus }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 p-2 md:p-4">
       <div className="border-b border-gray-100 pb-4">
-        <Typography variant="h4" className="font-bold text-gray-800">
+        <Typography variant="h4" className="font-bold text-gray-800 text-xl md:text-2xl">
           Tawaran Magang
         </Typography>
-        <Typography className="text-gray-600 mt-1">
+        <Typography className="text-gray-600 mt-1 text-sm md:text-base">
           Silakan tinjau penawaran magang yang diberikan
         </Typography>
       </div>
-      <div className="bg-blue-50 rounded-lg p-4 space-y-3">
+
+      <div className="bg-blue-50 rounded-lg p-3 md:p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <Typography className="text-sm text-gray-600">
+            <Typography className="text-xs md:text-sm text-gray-600">
               Unit Kerja Ditempatkan
             </Typography>
-            <Typography className="font-medium">
+            <Typography className="font-medium text-sm md:text-base">
               {applicationStatus.data.penempatan}
             </Typography>
           </div>
           <Building className="w-5 h-5 text-blue-500" />
         </div>
       </div>
-      <div className="p-4 border border-gray-200 rounded-lg">
-        <div className="flex justify-between items-start">
-          <div className="w-full">
-            <Typography className="font-medium text-gray-800">
-              Surat Balasan
-            </Typography>
 
-            {applicationStatus.data.dokumen.find(
-              (dokumen) => dokumen.tipe === "Surat Balasan"
-            ) ? (
-              <div className="border rounded-lg p-4 mt-2 flex justify-between items-center">
-                <div>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-medium"
-                  ></Typography>
-                  <Typography variant="small" color="gray">
-                    {
-                      applicationStatus.data.dokumen.find(
-                        (dokumen) => dokumen.tipe === "Surat Balasan"
-                      ).url
-                    }
-                  </Typography>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outlined"
-                  color="blue"
-                  className="flex items-center gap-2"
-                  onClick={() =>
-                    handleDownload(
-                      applicationStatus.data.dokumen.find(
-                        (dokumen) => dokumen.tipe === "Surat Balasan"
-                      ).url
-                    )
-                  }
-                >
-                  <Download size={16} /> Download
-                </Button>
-              </div>
-            ) : (
-              <Typography variant="small" color="gray" className="mt-2">
-                Dokumen Surat Pengantar tidak tersedia.
-              </Typography>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="p-4 border border-gray-200 rounded-lg mt-4">
-        <div className="flex justify-between items-start">
-          <div className="w-full">
-            <Typography className="font-medium text-gray-800">
-              Template Surat Pernyataan
+      <div className="p-3 md:p-4 border border-gray-200 rounded-lg">
+        <Typography className="font-medium text-gray-800 text-sm md:text-base mb-2">
+          Surat Balasan
+        </Typography>
+        {applicationStatus.data.dokumen.find(
+          (dokumen) => dokumen.tipe === "Surat Balasan"
+        ) ? (
+          <div className="border rounded-lg p-3 md:p-4 flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
+            <Typography variant="small" color="gray" className="text-xs md:text-sm break-all">
+              {applicationStatus.data.dokumen.find(
+                (dokumen) => dokumen.tipe === "Surat Balasan"
+              ).url}
             </Typography>
-            <div className="flex space-x-2 mt-2">
-              <Button
-                size="sm"
-                variant="outlined"
-                color="blue"
-                className="flex items-center gap-2"
-                onClick={() => handleDownloadTemplate("template_surat_pernyataan_siswa.docx")}
-              >
-                <Download size={16} /> Surat Pernyataan Siswa
-              </Button>
-              <Button
-                size="sm"
-                variant="outlined"
-                color="blue"
-                className="flex items-center gap-2"
-                onClick={() => handleDownloadTemplate("template_surat_pernyataan_institusi.docx")}
-              >
-                <Download size={16} /> Surat Pernyataan Institusi
-              </Button>
-            </div>
+            <Button
+              size="sm"
+              variant="outlined"
+              color="blue"
+              className="flex items-center gap-2 w-full md:w-auto justify-center"
+              onClick={() =>
+                handleDownload(
+                  applicationStatus.data.dokumen.find(
+                    (dokumen) => dokumen.tipe === "Surat Balasan"
+                  ).url
+                )
+              }
+            >
+              <Download size={16} /> Download
+            </Button>
           </div>
+        ) : (
+          <Typography variant="small" color="gray" className="mt-2 text-xs md:text-sm">
+            Dokumen Surat Pengantar tidak tersedia.
+          </Typography>
+        )}
+      </div>
+
+      <div className="p-3 md:p-4 border border-gray-200 rounded-lg">
+        <Typography className="font-medium text-gray-800 text-sm md:text-base mb-2">
+          Template Surat Pernyataan
+        </Typography>
+        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+          <Button
+            size="sm"
+            variant="outlined"
+            color="blue"
+            className="flex items-center gap-2 w-full md:w-auto justify-center"
+            onClick={() => handleDownloadTemplate("template_surat_pernyataan_siswa.docx")}
+          >
+            <Download size={16} /> Surat Pernyataan Siswa/Mahasiswa
+          </Button>
+          <Button
+            size="sm"
+            variant="outlined"
+            color="blue"
+            className="flex items-center gap-2 w-full md:w-auto justify-center"
+            onClick={() => handleDownloadTemplate("template_surat_pernyataan_institusi.docx")}
+          >
+            <Download size={16} /> Surat Pernyataan Orang tua/wali
+          </Button>
         </div>
       </div>
-      {/* Action Buttons */}
+
       {applicationStatus?.data?.status.id == 2 &&
         applicationStatus?.data?.statusState == "completed" && (
-          <div className="flex justify-center space-x-4 pt-4">
+          <div className="flex flex-col md:flex-row justify-center space-y-2 md:space-y-0 md:space-x-4 pt-4">
             <Button
               onClick={handleRejectClick}
               color="red"
-              className="flex items-center space-x-2"
+              className="flex items-center justify-center space-x-2 w-full md:w-auto"
             >
               <XCircle className="w-5 h-5" />
               <span>Tolak Tawaran</span>
@@ -425,7 +410,7 @@ const DiterimaCard = ({ applicationStatus }) => {
             <Button
               onClick={handleAcceptClick}
               color="blue"
-              className="flex items-center space-x-2"
+              className="flex items-center justify-center space-x-2 w-full md:w-auto"
             >
               <Check className="w-5 h-5" />
               <span>Terima Tawaran</span>
@@ -433,43 +418,42 @@ const DiterimaCard = ({ applicationStatus }) => {
           </div>
         )}
 
-      {/* Accept Dialog */}
+      {/* Dialogs */}
       <Dialog
         open={showAcceptDialog}
         onOpenChange={() => setShowAcceptDialog(false)}
-        className="max-w-md mx-auto"
+        className="max-w-md mx-auto w-11/12 md:w-full"
       >
-        <DialogHeader className="bg-green-50 p-4 rounded-t-lg">
+        <DialogHeader className="bg-green-50 p-3 md:p-4 rounded-t-lg">
           <div className="flex items-center gap-3">
-            <CheckCircle className="w-8 h-8 text-green-500" />
-            <h2 className="text-xl font-semibold text-gray-800">
+            <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800">
               Konfirmasi Penerimaan
             </h2>
           </div>
         </DialogHeader>
 
-        <DialogBody className="p-6">{renderUploadStep()}</DialogBody>
+        <DialogBody className="p-4 md:p-6">{renderUploadStep()}</DialogBody>
       </Dialog>
 
-      {/* Reject Dialog */}
       <Dialog
         open={showRejectDialog}
         onOpenChange={() => setShowRejectDialog(false)}
-        className="max-w-md mx-auto"
+        className="max-w-md mx-auto w-11/12 md:w-full"
       >
-        <DialogHeader className="bg-red-50 p-4 rounded-t-lg">
+        <DialogHeader className="bg-red-50 p-3 md:p-4 rounded-t-lg">
           <div className="flex items-center gap-3">
-            <XCircle className="w-8 h-8 text-red-500" />
-            <h2 className="text-xl font-semibold text-gray-800">
+            <XCircle className="w-6 h-6 md:w-8 md:h-8 text-red-500" />
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800">
               Konfirmasi Penolakan
             </h2>
           </div>
         </DialogHeader>
 
-        <DialogBody className="p-6">
+        <DialogBody className="p-4 md:p-6">
           <div className="text-center space-y-4">
-            <XCircle className="w-16 h-16 text-red-500 mx-auto" />
-            <p className="text-gray-600">
+            <XCircle className="w-12 h-12 md:w-16 md:h-16 text-red-500 mx-auto" />
+            <p className="text-gray-600 text-sm md:text-base">
               Apakah Anda yakin ingin menolak tawaran magang ini?
               <br />
               <span className="text-sm text-red-500 font-medium">
@@ -479,22 +463,19 @@ const DiterimaCard = ({ applicationStatus }) => {
           </div>
         </DialogBody>
 
-        <DialogFooter className="p-4 bg-gray-50 rounded-b-lg space-x-3">
+        <DialogFooter className="p-3 md:p-4 bg-gray-50 rounded-b-lg space-y-2 md:space-y-0 md:space-x-3">
           <Button
             variant="outline"
             onClick={() => setShowRejectDialog(false)}
-            className="w-full sm:w-auto"
+            className="w-full md:w-auto"
             color="blue"
           >
             Batalkan
           </Button>
           <Button
             variant="outlined"
-            onClick={() => {
-              setShowRejectDialog(false);
-              handleReject();
-            }}
-            className="w-full sm:w-auto"
+            onClick={handleReject}
+            className="w-full md:w-auto"
             color="red"
           >
             Ya, Tolak Tawaran

@@ -29,11 +29,11 @@ const PernyataanCard = ({ applicationStatus }) => {
   const handleDownload = async (fileUrl) => {
     const url = `${API_BASE_URL}/download/${fileUrl}`;
     const a = document.createElement("a");
-        a.href = url;
-        a.download = fileUrl;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+    a.href = url;
+    a.download = fileUrl;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const getStatusBadge = (status) => {
@@ -43,7 +43,7 @@ const PernyataanCard = ({ applicationStatus }) => {
           <Typography
             variant="small"
             color="green"
-            className="flex items-center gap-2"
+            className="flex items-center gap-1"
           >
             <CheckCircle size={16} /> Terverifikasi
           </Typography>
@@ -53,7 +53,7 @@ const PernyataanCard = ({ applicationStatus }) => {
           <Typography
             variant="small"
             color="orange"
-            className="flex items-center gap-2"
+            className="flex items-center gap-1"
           >
             <Clock size={16} /> Sedang Diproses
           </Typography>
@@ -63,7 +63,7 @@ const PernyataanCard = ({ applicationStatus }) => {
           <Typography
             variant="small"
             color="red"
-            className="flex items-center gap-2"
+            className="flex items-center gap-1"
           >
             <AlertCircle size={16} /> Ditolak
           </Typography>
@@ -74,34 +74,33 @@ const PernyataanCard = ({ applicationStatus }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 p-4 md:p-6">
       {/* Header */}
-      <div className="border-b border-gray-100 pb-4"></div>
-      <div className="mb-4">
-        <Typography variant="h5" color="blue-gray" className="mb-2">
+      <div className="border-b border-gray-100 pb-4">
+        <Typography variant="h5" color="blue-gray" className="text-lg md:text-xl mb-2">
           Verifikasi Dokumen
         </Typography>
-        <Typography variant="small" color="gray">
+        <Typography variant="small" color="gray" className="text-sm">
           Status verifikasi dokumen yang telah diupload
         </Typography>
       </div>
 
       {/* Documents List */}
-      <div className="space-y-4 mb-6">
+      <div className="space-y-4">
         {documents.map((doc, index) => (
           <div
             key={index}
-            className="border rounded-lg p-4 flex justify-between items-center"
+            className="border rounded-lg p-3 md:p-4 flex flex-col md:flex-row gap-3 md:gap-4 md:justify-between md:items-center"
           >
-            <div>
+            <div className="space-y-1">
               <Typography
                 variant="small"
                 color="blue-gray"
-                className="font-medium"
+                className="font-medium text-sm md:text-base"
               >
                 {doc.title}
               </Typography>
-              <Typography variant="small" color="gray">
+              <Typography variant="small" color="gray" className="text-xs md:text-sm break-all">
                 {doc.fileName}
               </Typography>
             </div>
@@ -109,7 +108,7 @@ const PernyataanCard = ({ applicationStatus }) => {
               size="sm"
               variant="outlined"
               color="blue"
-              className="flex items-center gap-2"
+              className="flex items-center justify-center gap-2 w-full md:w-auto"
               onClick={() => handleDownload(doc.fileName)}
             >
               <Download size={16} /> Download
@@ -119,15 +118,15 @@ const PernyataanCard = ({ applicationStatus }) => {
       </div>
 
       {/* Status Summary */}
-      <div className="bg-blue-50 rounded-lg p-4">
+      <div className="bg-blue-50 rounded-lg p-3 md:p-4">
         <Typography
           variant="small"
           color="blue-gray"
-          className="flex items-center gap-2 mb-2"
+          className="flex items-center gap-1 mb-2 text-sm md:text-base"
         >
           <Clock size={16} /> Estimasi Waktu Verifikasi
         </Typography>
-        <Typography variant="small" color="gray">
+        <Typography variant="small" color="gray" className="text-xs md:text-sm">
           Proses verifikasi dokumen membutuhkan waktu 1-2 hari kerja. Anda akan
           mendapatkan notifikasi setelah dokumen selesai diverifikasi.
         </Typography>
