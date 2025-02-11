@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Input, Button, Typography } from "@material-tailwind/react";
-import {
-  EnvelopeIcon,
-  LockClosedIcon,
-} from "@heroicons/react/24/outline";
+import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -13,8 +10,6 @@ import AnimatedButton from "../components/AnimatedButton";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const RegisterForm = ({ nagariImage, onToggleForm }) => {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -42,9 +37,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
 
     const passwordErrors = validatePassword(formData.password);
     if (passwordErrors.length > 0) {
-      newErrors.password = `Password must include: ${passwordErrors.join(
-        ", "
-      )}`;
+      newErrors.password = `Password must include: ${passwordErrors.join(", ")}`;
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -61,7 +54,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
     try {
       await axios.post(`${API_BASE_URL}/auth/register`, formData);
       toast.success("Register berhasil, silakan aktivasi email Anda.");
-      onToggleForm(); // Kembali ke halaman login
+      onToggleForm();
     } catch (error) {
       console.error("Error during registration:", error);
       setErrors({ submit: "Registration failed. Please try again." });
@@ -88,10 +81,12 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
     damping: 17,
     mass: 1,
   };
+
   return (
     <>
+      {/* Image Section */}
       <motion.div
-        className="absolute w-1/2 h-full"
+        className="absolute w-1/2 h-full hidden md:block"
         variants={imageVariants}
         initial="initial"
         animate="animate"
@@ -107,18 +102,30 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
         </div>
       </motion.div>
 
+      {/* Mobile Background Image */}
+      <div className="absolute inset-0 md:hidden">
+        <div className="w-full h-full bg-gradient-to-br from-blue-400/90 to-blue-600/90">
+          <img
+            src={nagariImage}
+            alt="Auth"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+      </div>
+
+      {/* Form Section */}
       <motion.div
-        className="absolute w-1/2 h-full flex items-center justify-center p-6"
-        style={{ left: "50%" }}
+        className="absolute w-full md:w-1/2 h-full flex items-center justify-center p-4 md:p-6"
+        style={{ left: "0", right: "0", md: { left: "50%" } }}
         variants={formVariants}
         initial="initial"
         animate="animate"
         exit="exit"
         transition={transition}
       >
-        <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-6">
+        <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 md:space-y-6 bg-white/80 md:bg-transparent p-6 rounded-lg backdrop-blur-sm md:backdrop-blur-none">
           <div className="text-center">
-            <Typography variant="h4" color="blue">
+            <Typography variant="h4" color="blue" className="text-2xl md:text-3xl font-bold">
               Daftar
             </Typography>
           </div>
@@ -129,7 +136,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
             </Typography>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <div>
               <Input
                 type="email"
@@ -140,6 +147,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
                 onChange={handleInputChange}
                 error={!!errors.email}
                 required
+                className="!bg-white"
               />
               {errors.email && (
                 <Typography variant="small" color="red" className="mt-1">
@@ -158,6 +166,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
                 onChange={handleInputChange}
                 error={!!errors.password}
                 required
+                className="!bg-white"
               />
               {errors.password && (
                 <Typography variant="small" color="red" className="mt-1">
@@ -176,6 +185,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
                 onChange={handleInputChange}
                 error={!!errors.confirmPassword}
                 required
+                className="!bg-white"
               />
               {errors.confirmPassword && (
                 <Typography variant="small" color="red" className="mt-1">
@@ -188,12 +198,13 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
               type="submit"
               disabled={isLoading}
               isLoading={isLoading}
+              className="w-full"
             >
               DAFTAR
             </AnimatedButton>
           </div>
 
-          <Typography variant="small" className="text-center mt-6">
+          <Typography variant="small" className="text-center mt-4">
             Sudah Punya Akun?{" "}
             <a
               href="#"
@@ -207,7 +218,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
             </a>
           </Typography>
 
-          <Typography variant="small" className="text-center mt-4">
+          <Typography variant="small" className="text-center mt-2">
             <a
               href="#"
               onClick={() => navigate("/")}
