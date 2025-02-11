@@ -123,24 +123,6 @@ const DashboardLayout = () => {
             </Button>
           ))}
           <hr className="my-2 border-blue-gray-50" />
-          <MenuItem 
-            className="flex items-center gap-2 rounded cursor-pointer hover:bg-blue-50"
-            onClick={() => handleNavigation("/notifications")}
-          >
-            <BellIcon className="h-5 w-5" />
-            <Typography variant="small" className="font-normal">
-              Notifikasi
-            </Typography>
-          </MenuItem>
-          <MenuItem 
-            className="flex items-center gap-2 rounded cursor-pointer hover:bg-blue-50"
-            onClick={() => handleNavigation("/profile")}
-          >
-            <UserIcon className="h-5 w-5" />
-            <Typography variant="small" className="font-normal">
-              Profil Saya
-            </Typography>
-          </MenuItem>
           <Button
             size="lg"
             variant="text"
