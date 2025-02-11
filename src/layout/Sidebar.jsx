@@ -10,6 +10,7 @@ import {
   DocumentChartBarIcon, 
 } from "@heroicons/react/24/outline";
 import { Typography } from "@material-tailwind/react";
+import { User2Icon } from "lucide-react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -30,11 +31,11 @@ const Sidebar = () => {
       setActiveDropdown("Permintaan");
       setOpenPermintaan(true);
     } else if (
-      ["tambah-akun-cabang", "atur-jadwal-pendaftaran"].includes(path)
+      ["tambah-profil-cabang", "atur-jadwal-pendaftaran"].includes(path)
     ) {
       setActiveItem(
-        path === "tambah-akun-cabang"
-          ? "Buat Akun Cabang"
+        path === "tambah-profil-cabang"
+          ? "Buat Profil Cabang"
           : "Atur Jadwal Pendaftaran"
       );
       setActiveDropdown("Pengaturan");
@@ -79,6 +80,17 @@ const Sidebar = () => {
     }`;
   };
 
+  const getProfilClassName = () => {
+    const isActive = activeItem === "Profil";
+    const isHovered = hoveredItem === "Profil";
+    return `flex items-center gap-3 p-3 rounded-xl transition-all duration-300 
+    ${
+      isActive || isHovered
+        ? "bg-white/20 text-white translate-x-1"
+        : "hover:bg-white/20 hover:text-white hover:translate-x-1"
+    }`;
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -109,7 +121,7 @@ const Sidebar = () => {
         className={`fixed top-0 left-0 z-40 h-full transform transition-transform duration-300 ease-in-out lg:translate-x-0 
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        <div className="min-h-screen bg-slate-100 p-4">
+        <div className="min-h-screen bg-blue-gray-50 p-4">
           <div className="w-72 min-h-[calc(100vh-2rem)] bg-gradient-to-b from-blue-600 to-blue-800 p-6 text-white shadow-xl rounded-3xl relative">
             {/* Logo and Title */}
             <div className="mb-8 flex items-center gap-3">
@@ -162,6 +174,21 @@ const Sidebar = () => {
               >
                 <DocumentChartBarIcon className="h-5 w-5" />
                 <span className="font-medium text-white">Rekapitulasi</span>
+              </a>
+
+              <a
+                href="/admin/profil"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/admin/profil");
+                  setActiveItem("Profil");
+                }}
+                onMouseEnter={() => setHoveredItem("Profil")}
+                onMouseLeave={() => setHoveredItem(null)}
+                className={getProfilClassName()}
+              >
+                <User2Icon className="h-5 w-5" />
+                <span className="font-medium text-white">Profil</span>
               </a>
 
               {/* Logout Section */}

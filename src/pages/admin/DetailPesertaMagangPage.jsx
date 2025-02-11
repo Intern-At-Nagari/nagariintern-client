@@ -20,18 +20,19 @@ import {
   UserIcon,
   PhoneIcon,
   CalendarIcon,
-  ArrowDownTrayIcon,
+  CheckCircleIcon,
   IdentificationIcon,
   EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Sidebar from "../../layout/Sidebar";
 import { toast } from "react-toastify";
-import ModalIframe from "../../components/ModalIframe";
 import MonthlyAttendanceTable from "../../components/MonthlyAttendanceTable";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const DetailPesertaMagangPage = () => {
+  const [isUpdateStatusOpen, setIsUpdateStatusOpen] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,13 +48,12 @@ const DetailPesertaMagangPage = () => {
       setLoading(true);
       try {
         const [internResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/intern/${id}`, {
+          axios.get(`${API_BASE_URL}/admin/intern/${id}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }),
         ]);
-        console.log(internResponse.data);
         setData(internResponse.data);
         setSelectedUnit(internResponse.data.UnitKerjaPengajuan.id);
       } catch (err) {
@@ -102,6 +102,44 @@ const DetailPesertaMagangPage = () => {
       </div>
     );
   }
+
+  const checkAttendanceComplete = () => {
+    return data.Kehadirans.every((attendance) => attendance.totalKehadiran !== null);
+  };
+  const handleUpdateStatus = async () => {
+    if (!checkAttendanceComplete()) {
+      toast.error(
+        "Tidak dapat menyelesaikan magang. Pastikan semua absensi telah diisi."
+      );
+      return;
+    }
+
+    setIsUpdateStatusOpen(true);
+  };
+
+  const confirmUpdateStatus = async () => {
+    setIsUpdatingStatus(true);
+    try {
+      await axios.patch(
+        `${API_BASE_URL}/admin/intern/${id}/complete`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      toast.success("Status magang berhasil diperbarui");
+      // Refresh data
+      window.location.reload();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Gagal memperbarui status");
+    } finally {
+      setIsUpdatingStatus(false);
+      setIsUpdateStatusOpen(false);
+    }
+  };
 
   return (
     <div className="lg:ml-80 min-h-screen bg-blue-gray-50">
@@ -317,76 +355,98 @@ const DetailPesertaMagangPage = () => {
                       </Typography>
                     </div>
                   </div>
-
-                  <div className="flex items-start gap-3">
-                    <ClockIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
-                    <div className="flex-1">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-medium"
-                      >
-                        Status
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        className="text-blue-gray-500"
-                      >
-                        {data.Status?.name}
-                      </Typography>
-                    </div>
-                  </div>
                 </div>
-              </div>
-
-              {/* Documents Section */}
-              <Typography
-                variant="h6"
-                color="blue-gray"
-                className="mb-4 pb-2 border-b"
-              >
-                Dokumen Pendukung
-              </Typography>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {data.Dokumens &&
-                  [
-                    { label: "Curriculum Vitae", index: 0 },
-                    { label: "Kartu Tanda Penduduk", index: 2 },
-                    { label: "Surat Pengantar", index: 3 },
-                    { label: "Transkrip Nilai", index: 1 },
-                  ].map((doc) => (
-                    <div key={doc.label} className="flex gap-2">
-                      <Button
-                        variant="outlined"
-                        className="flex items-center gap-2 normal-case flex-1"
-                        onClick={() => {
-                          handleDocumentModal(
-                            `${API_BASE_URL}/uploads/${
-                              data.Dokumens[doc.index].url
-                            }`,
-                            doc.label
-                          );
-                        }}
-                      >
-                        <ArrowDownTrayIcon className="w-4 h-4" />
-                        {doc.label}
-                      </Button>
-                    </div>
-                  ))}
               </div>
             </CardBody>
           </Card>
 
           <MonthlyAttendanceTable data={data.Kehadirans} />
 
-          <ModalIframe
-            isOpen={isDocumentModalOpen}
-            handleOpen={handleDocumentModal}
-            pdfUrl={selectedDocument.url}
-            title={selectedDocument.title}
-          />
+          <Card className="mt-6">
+            <CardBody>
+              <Typography
+                variant="h6"
+                color="blue-gray"
+                className="mb-6 pb-2 border-b"
+              >
+                Status Penyelesaian Magang
+              </Typography>
+
+              <div className="overflow-x-auto">
+                <div className="mb-4">
+                  <Alert color="blue" className="mb-4">
+                    {checkAttendanceComplete()
+                      ? "Semua kehadiran telah diisi lengkap. Anda dapat menyelesaikan proses magang."
+                      : "Mohon lengkapi semua data kehadiran sebelum menyelesaikan magang."}
+                  </Alert>
+                  {data.Status?.name === "Selesai" ? (
+                    <Alert color="green">
+                      Peserta telah menyelesaikan program magang
+                    </Alert>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <Button
+                        size="small"
+                        className="flex items-center gap-2"
+                        onClick={handleUpdateStatus}
+                        color="green"
+                        disabled={!checkAttendanceComplete()}
+                      >
+                        <CheckCircleIcon className="h-4 w-4" />
+                        Selesaikan Magang
+                      </Button>
+                      {!checkAttendanceComplete() && (
+                        <Typography
+                          variant="small"
+                          color="gray"
+                          className="italic"
+                        >
+                          Lengkapi semua kehadiran terlebih dahulu
+                        </Typography>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </div>
+      <Dialog
+        open={isUpdateStatusOpen}
+        handler={() => setIsUpdateStatusOpen(false)}
+      >
+        <DialogHeader>Konfirmasi Penyelesaian Magang</DialogHeader>
+        <DialogBody divider>
+          Apakah Anda yakin ingin menyelesaikan magang ini? Pastikan semua
+          absensi telah diisi dengan benar.
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            color="red"
+            onClick={() => setIsUpdateStatusOpen(false)}
+            className="mr-1"
+          >
+            Batal
+          </Button>
+          <Button
+            variant="gradient"
+            color="green"
+            onClick={confirmUpdateStatus}
+            disabled={isUpdatingStatus}
+          >
+            {isUpdatingStatus ? (
+              <div className="flex items-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                Memproses...
+              </div>
+            ) : (
+              "Konfirmasi"
+            )}
+          </Button>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 };

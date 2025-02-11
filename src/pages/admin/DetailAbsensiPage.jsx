@@ -66,6 +66,8 @@ const DetailAbsensiPage = () => {
           }
         );
 
+        console.log("Response data:", response.data);
+
         const responseData = response.data.data || [];
         setTotal(response.data.total || 0);
         setData(responseData);
@@ -84,7 +86,7 @@ const DetailAbsensiPage = () => {
 
   const handleViewPdf = () => {
     if (rekapInfo?.url) {
-      window.open(`${API_BASE_URL}/public/${rekapInfo.url}`, '_blank');
+      window.open(`${API_BASE_URL}/public/${rekapInfo.url}`, "_blank");
     }
   };
 
@@ -413,7 +415,9 @@ const DetailAbsensiPage = () => {
                             </td>
                             <td className="p-4">
                               <Typography variant="small" color="blue-gray">
-                                {item.kehadiran || "Belum Absen"}
+                                {item.kehadiran === null
+                                  ? "belum di input"
+                                  : item.kehadiran}
                               </Typography>
                             </td>
                             <td className="p-4">
@@ -462,39 +466,43 @@ const DetailAbsensiPage = () => {
                 />
               </Card>
               <div className="mt-6 bg-white rounded-lg p-4 shadow">
-            <Typography variant="h6" color="blue-gray" className="mb-2">
-              Status Upload Rekapitulasi
-            </Typography>
-            {rekapInfo ? (
-              <div className="space-y-4">
-                <div>
-                  <Typography color="blue-gray">
-                    Diupload oleh: {rekapInfo.karyawan?.nama || 'Unknown'}
+                <Typography variant="h6" color="blue-gray" className="mb-2">
+                  Status Upload Rekapitulasi
+                </Typography>
+                {rekapInfo ? (
+                  <div className="space-y-4">
+                    <div>
+                      <Typography color="blue-gray">
+                        Diupload oleh: {rekapInfo.karyawan?.nama || "Unknown"}
+                      </Typography>
+                      <Typography color="blue-gray">
+                        Tanggal upload:{" "}
+                        {new Date(rekapInfo.updatedAt).toLocaleDateString(
+                          "id-ID",
+                          {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </Typography>
+                    </div>
+                    <div className="w-full aspect-[16/9] border border-gray-200 rounded-lg overflow-hidden">
+                      <iframe
+                        src={`${API_BASE_URL}/uploads/${rekapInfo.url}`}
+                        className="w-full h-full"
+                        title="Rekap PDF"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <Typography color="gray">
+                    Rekapitulasi belum diupload
                   </Typography>
-                  <Typography color="blue-gray">
-                    Tanggal upload: {new Date(rekapInfo.updatedAt).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </Typography>
-                </div>
-                <div className="w-full aspect-[16/9] border border-gray-200 rounded-lg overflow-hidden">
-                  <iframe
-                    src={`${API_BASE_URL}/uploads/${rekapInfo.url}`}
-                    className="w-full h-full"
-                    title="Rekap PDF"
-                  />
-                </div>
+                )}
               </div>
-            ) : (
-              <Typography color="gray">
-                Rekapitulasi belum diupload
-              </Typography>
-            )}
-          </div>
               <Dialog
                 open={isPrintModalOpen}
                 handler={handlePrintClose}
@@ -603,8 +611,6 @@ const DetailAbsensiPage = () => {
             </>
           )}
         </div>
-
-
       </div>
     </div>
   );

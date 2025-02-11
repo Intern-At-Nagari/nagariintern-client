@@ -67,6 +67,9 @@ const AdminLoginForm = () => {
         toast.error("Login failed. Please check your credentials.");
       } else {
         toast.success("Login successful!");
+        if (response.data.user.lengkap == false) {
+          navigate("/admin/firstlogin");
+        } else
         navigate("/admin/peserta-magang");
       }
       

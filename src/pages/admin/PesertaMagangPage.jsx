@@ -32,6 +32,7 @@ import Pagination from "../../components/Pagination";
 import ModalIframe from "../../components/ModalIframe";
 import MonthlyAttendanceTable from "../../components/MonthlyAttendanceTable";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const PesertaMagangPage = () => {
@@ -44,13 +45,8 @@ const PesertaMagangPage = () => {
   const [selectedInstitution, setSelectedInstitution] = useState("");
   const [institutions, setInstitutions] = useState([]);
   const [types, setTypes] = useState([]);
-  const [selectedIntern, setSelectedIntern] = useState(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState({
-    url: "",
-    title: "",
-  });
+  const navigate = useNavigate();
+
 
   const handlePrintOpen = useCallback(() => {
     setPrintOpen((prev) => !prev);
@@ -69,6 +65,8 @@ const PesertaMagangPage = () => {
         const response = await axios.get(`${API_BASE_URL}/admin/intern`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        console.log(response.data);
 
         const responseData = response.data.data || response.data;
         const dataArray = Array.isArray(responseData) ? responseData : [];
@@ -97,37 +95,18 @@ const PesertaMagangPage = () => {
 
   const handleViewClick = async (id) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${API_BASE_URL}/admin/intern/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setSelectedIntern(response.data);
-      setIsDetailOpen(true);
+      ///admin/peserta-magang/
+      navigate(`/admin/peserta-magang/${id}`);
+
     } catch (err) {
       console.error("Error fetching intern details:", err);
     }
   };
 
-  const handleDocumentModal = (url = "", title = "") => {
-    setSelectedDocument({ url, title });
-    setIsDocumentModalOpen(!isDocumentModalOpen);
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
+ 
 
   // Rest of the filtering logic remains the same
   const filteredData = data.filter((item) => {
-    if (!item || item.status.name !== "Mulai Magang") return false;
-
     const matchesSearch = [
       item.biodata?.nama || "",
       item.institusi || "",
@@ -287,6 +266,15 @@ const PesertaMagangPage = () => {
                               Periode
                             </Typography>
                           </th>
+                          <th className="border-b border-blue-gray-100 bg-gray-100 p-4">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-semibold"
+                            >
+                              Status
+                            </Typography>
+                          </th>
                           <th className="border-b border-blue-gray-100 bg-gray-100 p-4 text-center">
                             <Typography
                               variant="small"
@@ -325,6 +313,11 @@ const PesertaMagangPage = () => {
                                 {new Date(
                                   item.tanggalSelesai
                                 ).toLocaleDateString("id-ID")}
+                              </Typography>
+                            </td>
+                            <td className="p-4">
+                              <Typography variant="small" color="blue-gray">
+                                {item.status.name || "-"}
                               </Typography>
                             </td>
                             <td className="p-4">
@@ -367,238 +360,6 @@ const PesertaMagangPage = () => {
               </Card>
             </>
           )}
-
-          {/* Detail Modal */}
-          <Dialog
-            size="xl"
-            open={isDetailOpen}
-            handler={() => setIsDetailOpen(false)}
-          >
-            <DialogHeader>Detail Peserta Magang</DialogHeader>
-            <DialogBody divider className="max-h-[80vh] overflow-y-auto">
-              {selectedIntern && (
-                <div className="space-y-6">
-                  {/* Personal Information */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Left Column */}
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <UserIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-medium"
-                          >
-                            Nama
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            className="text-blue-gray-500"
-                          >
-                            {selectedIntern.User?.Mahasiswas[0]?.name ||
-                              selectedIntern.User?.Siswas[0]?.name}
-                          </Typography>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <BuildingOfficeIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-medium"
-                          >
-                            {selectedIntern.type === "siswa"
-                              ? "SMK & Jurusan"
-                              : "Institusi & Program Studi"}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            className="text-blue-gray-500"
-                          >
-                            {selectedIntern.type === "siswa"
-                              ? `${selectedIntern.Smk?.name} - ${selectedIntern.Jurusan?.name}`
-                              : `${selectedIntern.PerguruanTinggi?.name} - ${selectedIntern.Prodi?.name}`}
-                          </Typography>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <IdentificationIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-medium"
-                          >
-                            {selectedIntern.type === "siswa" ? "NISN" : "NIM"}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            className="text-blue-gray-500"
-                          >
-                            {selectedIntern.type === "siswa"
-                              ? selectedIntern.User?.Siswas[0]?.nisn
-                              : selectedIntern.User?.Mahasiswas[0]?.nim || "-"}
-                          </Typography>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right Column */}
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <PhoneIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-medium"
-                          >
-                            No. Telepon
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            className="text-blue-gray-500"
-                          >
-                            {(selectedIntern.type === "siswa"
-                              ? selectedIntern.User?.Siswas[0]?.no_hp
-                              : selectedIntern.User?.Mahasiswas[0]?.no_hp) ||
-                              "-"}
-                          </Typography>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <CalendarIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-medium"
-                          >
-                            Periode Magang
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            className="text-blue-gray-500"
-                          >
-                            {formatDate(selectedIntern.tanggalMulai)} -{" "}
-                            {formatDate(selectedIntern.tanggalSelesai)}
-                          </Typography>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <BuildingOfficeIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-medium"
-                          >
-                            Unit Kerja
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            className="text-blue-gray-500"
-                          >
-                            {selectedIntern.UnitKerjaPengajuan?.name}
-                          </Typography>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <ClockIcon className="h-5 w-5 text-blue-gray-500 mt-1" />
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-medium"
-                          >
-                            Status
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            className="text-blue-gray-500"
-                          >
-                            {selectedIntern.Status?.name}
-                          </Typography>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <Typography
-                      variant="h6"
-                      color="blue-gray"
-                      className="mb-4 pb-2 border-b"
-                    >
-                      Dokumen Pendukung
-                    </Typography>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {selectedIntern.Dokumens &&
-                        [
-                          { label: "Curriculum Vitae", tipe: "CV" },
-                          { label: "Kartu Tanda Penduduk", tipe: "KTP" },
-                          { label: "Surat Pengantar", tipe: "Surat Pengantar" },
-                          { label: "Transkrip Nilai", tipe: "Transkip Nilai" },
-                        ].map((doc) => {
-                          console.log(selectedIntern.Dokumens);
-                          const document = selectedIntern.Dokumens.find(
-                            (d) => d.tipeDokumen.name == doc.tipe
-                          );
-                          console.log(document);
-
-                          if (!document) return null;
-
-                          return (
-                            <div key={doc.label} className="flex gap-2">
-                              <Button
-                                variant="outlined"
-                                className="flex items-center gap-2 normal-case flex-1"
-                                onClick={() => {
-                                  handleDocumentModal(
-                                    `${API_BASE_URL}/uploads/${document.url}`,
-                                    doc.label
-                                  );
-                                }}
-                              >
-                                <ArrowDownTrayIcon className="w-4 h-4" />
-                                {doc.label}
-                              </Button>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-
-                  {/* Attendance Section */}
-                  <div className="space-y-4">
-                    <Typography
-                      variant="h6"
-                      color="blue-gray"
-                      className="mb-4 pb-2 border-b"
-                    >
-                      Data Kehadiran
-                    </Typography>
-                    <MonthlyAttendanceTable data={selectedIntern.Kehadirans} />
-                  </div>
-                </div>
-              )}
-            </DialogBody>
-          </Dialog>
-
-          {/* Document Preview Modal */}
-          <ModalIframe
-            isOpen={isDocumentModalOpen}
-            handleOpen={handleDocumentModal}
-            pdfUrl={selectedDocument.url}
-            title={selectedDocument.title}
-          />
         </div>
       </div>
     </div>
