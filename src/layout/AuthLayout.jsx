@@ -1,13 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+
 import { Card } from "@material-tailwind/react";
 import { AnimatePresence } from 'framer-motion';
 import LoginForm from '../pages/LoginPage';
 import RegisterForm from '../pages/RegisterPage';
 import heroImage from '../assets/hero.jpg';
 import nagariImage from '../assets/nagari.jpg';
+import { useNavigate } from "react-router-dom";
+
 
 const AuthLayout = () => {
     const [isLogin, setIsLogin] = useState(true);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const user = localStorage.getItem("user");
+        const jsonUser = JSON.parse(user)
+      
+
+        if (token) {
+            const role =jsonUser.role;
+          if (role == "Admin") {
+            navigate("/admin/dashboard");
+          } else {
+            navigate("/home");  
+          }
+        }
+      }, []);
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 relative">

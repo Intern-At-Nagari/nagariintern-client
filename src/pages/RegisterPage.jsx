@@ -10,8 +10,11 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { validateEmail, validatePassword } from "../utils/validation";
 import AnimatedButton from "../components/AnimatedButton";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const RegisterForm = ({ nagariImage, onToggleForm }) => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -56,7 +59,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
     }
 
     try {
-      await axios.post("http://localhost:3000/auth/register", formData);
+      await axios.post(`${API_BASE_URL}/auth/register`, formData);
       toast.success("Register berhasil, silakan aktivasi email Anda.");
       onToggleForm(); // Kembali ke halaman login
     } catch (error) {

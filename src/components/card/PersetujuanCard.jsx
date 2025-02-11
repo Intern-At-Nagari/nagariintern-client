@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography, Button } from "@material-tailwind/react";
 import { FileCheck, Download, Calendar, MapPin, UserCheck } from "lucide-react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const PersetujuanCard = ({ applicationStatus }) => {
   // Ambil data dari applicationStatus
@@ -21,14 +22,15 @@ const PersetujuanCard = ({ applicationStatus }) => {
     });
   };
 
-  // Fungsi untuk menangani download
-  const handleDownload = (url) => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = url.split("/").pop(); // Mengambil nama file dari URL
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+  const handleDownload = async (fileUrl) => {
+    const url = `${API_BASE_URL}/download/${fileUrl}`;
+    const a = document.createElement("a");
+        a.href = url;
+        a.download = fileUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
   };
 
   return (

@@ -8,16 +8,17 @@ import {
   FileText,
   Download,
 } from "lucide-react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const PernyataanCard = ({ applicationStatus }) => {
   const documents = [
     {
       title: "Surat Pernyataan Siswa/Mahasiswa",
-      fileName: applicationStatus.data.dokumen.find(doc => doc.tipe === "Surat Pernyataan Pribadi")?.url || "",
+      fileName: applicationStatus.data.dokumen.find(doc => doc.tipe === "Surat Keterangan Pribadi")?.url || "",
     },
     {
       title: "Surat Pernyataan Orang Tua/Wali & Sekolah/Perguruan Tinggi",
-      fileName: applicationStatus.data.dokumen.find(doc => doc.tipe === "Surat Pernyataan Kampus")?.url || "",
+      fileName: applicationStatus.data.dokumen.find(doc => doc.tipe === "Surat Keterangan Kampus")?.url || "",
     },
     {
       title: "Fotocopy Buku Tabungan Bank Nagari",
@@ -26,13 +27,13 @@ const PernyataanCard = ({ applicationStatus }) => {
   ];
 
   const handleDownload = async (fileUrl) => {
-    const fileName = fileUrl.split("/").pop();
-    const aTag = document.createElement("a");
-    aTag.href = `http://localhost:3000/uploads/${fileUrl}`;
-    aTag.setAttribute("download", fileName);
-    document.body.appendChild(aTag);
-    aTag.click();
-    aTag.remove();
+    const url = `${API_BASE_URL}/download/${fileUrl}`;
+    const a = document.createElement("a");
+        a.href = url;
+        a.download = fileUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
   };
 
   const getStatusBadge = (status) => {

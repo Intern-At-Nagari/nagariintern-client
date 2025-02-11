@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "react-toastify";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const DiterimaCard = ({ applicationStatus }) => {
   const [siswaFile, setSiswaFile] = useState(null);
@@ -26,7 +27,7 @@ const DiterimaCard = ({ applicationStatus }) => {
   const [showAcceptDialog, setShowAcceptDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [uploadStep, setUploadStep] = useState(0);
-  const [nomorRekening, setNomorRekening] = useState('');
+  const [nomorRekening, setNomorRekening] = useState("");
   const token = localStorage.getItem("token");
   console.log(token);
 
@@ -48,11 +49,20 @@ const DiterimaCard = ({ applicationStatus }) => {
       setTabunganFile(file);
     }
   };
-
   const handleDownload = async (fileUrl) => {
+    const url = `${API_BASE_URL}/download/${fileUrl}`;
+    const a = document.createElement("a");
+        a.href = url;
+        a.download = fileUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+  };
+
+  const handleDownloadTemplate = async (fileUrl) => {
     const fileName = fileUrl.split("/").pop();
     const aTag = document.createElement("a");
-    aTag.href = `http://localhost:3000/uploads/${fileUrl}`;
+    aTag.href = `${API_BASE_URL}/template/${fileUrl}`;
     aTag.setAttribute("download", fileName);
     document.body.appendChild(aTag);
     aTag.click();
@@ -61,7 +71,7 @@ const DiterimaCard = ({ applicationStatus }) => {
 
   const handleReject = async () => {
     try {
-      const response = await fetch("http://localhost:3000/my-intern/reject", {
+      const response = await fetch(`${API_BASE_URL}/my-intern/reject`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -96,7 +106,7 @@ const DiterimaCard = ({ applicationStatus }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/intern/send-surat-pernyataan",
+          `${API_BASE_URL}/intern/send-surat-pernyataan`,
         {
           method: "POST",
           headers: {
@@ -328,7 +338,6 @@ const DiterimaCard = ({ applicationStatus }) => {
               Surat Balasan
             </Typography>
 
-            {/* Cari dokumen dengan tipe "Surat Pengantar" */}
             {applicationStatus.data.dokumen.find(
               (dokumen) => dokumen.tipe === "Surat Balasan"
             ) ? (
@@ -383,12 +392,7 @@ const DiterimaCard = ({ applicationStatus }) => {
                 variant="outlined"
                 color="blue"
                 className="flex items-center gap-2"
-                onClick={() =>
-                  window.open(
-                    "http://localhost:3000/intern/download-template/siswa",
-                    "_blank"
-                  )
-                }
+                onClick={() => handleDownloadTemplate("template_surat_pernyataan_siswa.docx")}
               >
                 <Download size={16} /> Surat Pernyataan Siswa
               </Button>
@@ -397,12 +401,7 @@ const DiterimaCard = ({ applicationStatus }) => {
                 variant="outlined"
                 color="blue"
                 className="flex items-center gap-2"
-                onClick={() =>
-                  window.open(
-                    "http://localhost:3000/intern/download-template/institusi",
-                    "_blank"
-                  )
-                }
+                onClick={() => handleDownloadTemplate("template_surat_pernyataan_institusi.docx")}
               >
                 <Download size={16} /> Surat Pernyataan Institusi
               </Button>

@@ -8,6 +8,7 @@ import { validateEmail, validatePassword } from "../utils/validation";
 import axios from "axios";
 import AnimatedButton from "../components/AnimatedButton";
 import { useAuth } from "../utils/AuthContext";
+import {loginUser} from "../apiService";
 
 const LoginForm = ({ nagariImage, onToggleForm }) => {
   const navigate = useNavigate();
@@ -47,10 +48,7 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/login",
-        formData
-      );
+      const response = await loginUser(formData);
 
       login(response.data);
       if (response.data.user.role != "User") {

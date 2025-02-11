@@ -6,6 +6,7 @@ import {
   ClockIcon,
 } from "@heroicons/react/24/outline";
 import { AlertCircle } from 'lucide-react';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 const EmptyState = () => {
@@ -17,7 +18,7 @@ const EmptyState = () => {
   useEffect(() => {
     const fetchPeriodData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/jadwal-curent", {
+        const response = await fetch(`${API_BASE_URL}/jadwal-curent`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

@@ -29,6 +29,7 @@ import Sidebar from "../../layout/Sidebar";
 import { toast } from "react-toastify";
 import ModalIframe from "../../components/ModalIframe";
 import MonthlyAttendanceTable from "../../components/MonthlyAttendanceTable";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const DetailPesertaMagangPage = () => {
   const { id } = useParams();
@@ -46,7 +47,7 @@ const DetailPesertaMagangPage = () => {
       setLoading(true);
       try {
         const [internResponse] = await Promise.all([
-          axios.get(`http://localhost:3000/intern/${id}`, {
+          axios.get(`${API_BASE_URL}/intern/${id}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
@@ -360,7 +361,7 @@ const DetailPesertaMagangPage = () => {
                         className="flex items-center gap-2 normal-case flex-1"
                         onClick={() => {
                           handleDocumentModal(
-                            `http://localhost:3000/uploads/${
+                            `${API_BASE_URL}/uploads/${
                               data.Dokumens[doc.index].url
                             }`,
                             doc.label

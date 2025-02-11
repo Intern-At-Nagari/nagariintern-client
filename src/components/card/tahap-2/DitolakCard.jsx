@@ -6,7 +6,7 @@ const DitolakCard = ({ applicationStatus }) => {
   const handleDownload = async (fileUrl) => {
     const fileName = fileUrl.split("/").pop();
     const aTag = document.createElement("a");
-    aTag.href = `http://localhost:3000/uploads/${fileUrl}`;
+    aTag.href = `${API_BASE_URL}/uploads/${fileUrl}`;
     aTag.setAttribute("download", fileName);
     document.body.appendChild(aTag);
     aTag.click();
@@ -28,10 +28,10 @@ const DitolakCard = ({ applicationStatus }) => {
         <div className="flex items-center justify-between">
           <div>
             <Typography className="text-sm text-gray-600">
-              Status Lamaran
+              Keterangan
             </Typography>
             <Typography className="font-medium text-red-600">
-              Ditolak
+              {applicationStatus.data.keterangan}
             </Typography>
           </div>
           <XCircle className="w-5 h-5 text-red-500" />
@@ -45,7 +45,7 @@ const DitolakCard = ({ applicationStatus }) => {
               Unit Kerja yang Dilamar
             </Typography>
             <Typography className="font-medium">
-              {applicationStatus.data.penempatan}
+              {applicationStatus.data.unitKerja}
             </Typography>
           </div>
           <Building className="w-5 h-5 text-blue-500" />

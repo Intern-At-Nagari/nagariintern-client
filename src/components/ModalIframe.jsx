@@ -8,8 +8,9 @@ import {
     IconButton,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const ModalIframe = ({ isOpen, handleOpen, pdfUrl, title }) => {
+const ModalIframe = ({ isOpen, onClose, pdfUrl, title }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -25,7 +26,7 @@ const ModalIframe = ({ isOpen, handleOpen, pdfUrl, title }) => {
     return (
         <Dialog
             open={isOpen}
-            handler={handleOpen}
+            handler={onClose}
             size="xl"
             className="bg-white shadow-2xl"
             animate={{
@@ -41,7 +42,7 @@ const ModalIframe = ({ isOpen, handleOpen, pdfUrl, title }) => {
                     <IconButton
                         variant="text"
                         color="blue-gray"
-                        onClick={handleOpen}
+                        onClick={onClose}
                         className="rounded-full hover:bg-gray-100"
                     >
                         <XMarkIcon className="h-5 w-5" />

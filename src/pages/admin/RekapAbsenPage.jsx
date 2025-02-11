@@ -24,6 +24,7 @@ import Sidebar from "../../layout/Sidebar";
 import Pagination from "../../components/Pagination";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 const RekapAbsenPage = () => {
@@ -78,7 +79,7 @@ const RekapAbsenPage = () => {
         if (!token) throw new Error("No authentication token found");
 
         const response = await axios.get(
-          "http://localhost:3000/admin/absensi",
+          `${API_BASE_URL}/admin/absensi`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -140,7 +141,7 @@ const RekapAbsenPage = () => {
       const { bulan, tahun } = selectedPrintData;
       
       const response = await axios.post(
-        `http://localhost:3000/admin/absensi/${bulan}/${tahun}/print`,
+        `${API_BASE_URL}/admin/absensi/${bulan}/${tahun}/print`,
         printForm,
         {
           headers: {

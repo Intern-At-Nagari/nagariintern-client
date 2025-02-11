@@ -9,6 +9,7 @@ import {
   AcademicCapIcon,
   ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const StatusView = ({ applicationStatus }) => {
   const formatDate = (dateString) => {
@@ -164,7 +165,7 @@ const StatusView = ({ applicationStatus }) => {
                     className="flex items-center gap-2 normal-case"
                     onClick={() =>
                       window.open(
-                        `http://localhost:3000/uploads/${doc.url}`,
+                        `${API_BASE_URL}/uploads/${doc.url}`,
                         "_blank"
                       )
                     }

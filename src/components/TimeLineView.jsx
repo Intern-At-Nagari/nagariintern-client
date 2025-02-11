@@ -21,6 +21,7 @@ import PernyataanCard from "./card/PernyataanCard";
 import PersetujuanCard from "./card/PersetujuanCard";
 import MenolakCard from "./card/MenolakCard";
 import DitolakCard from "./card/tahap-2/DitolakCard";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TimelineView = ({ applicationStatus }) => {
   console.log(applicationStatus);
@@ -117,7 +118,7 @@ const TimelineView = ({ applicationStatus }) => {
                   Penempatan
                 </Typography>
                 <Typography className="font-semibold">
-                  {data.unitKerja}
+                  {data.penempatan || data.unitKerja}
                 </Typography>
               </div>
             </div>

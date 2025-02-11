@@ -25,11 +25,12 @@ const ApplicationFormSiswa = () => {
   const [searchError, setSearchError] = useState("");
   // cek periode pendaftaran, jika periode pendaftaran telah berakhir, maka form tidak bisa diakses
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(null);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const checkRegistrationPeriod = async () => {
       try {
-        const response = await fetch("http://localhost:3000/jadwal-curent", {
+        const response = await fetch(`${API_BASE_URL}/jadwal-curent`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -100,7 +101,7 @@ const ApplicationFormSiswa = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/sekolah?sekolah=${encodeURIComponent(query)}`
+        `${API_BASE_URL}/api/sekolah?sekolah=${encodeURIComponent(query)}`
       );
 
       console.log("Search response:", response.data); // Add logging
@@ -276,7 +277,7 @@ const ApplicationFormSiswa = () => {
       });
 
       const response = await axios.post(
-        "http://localhost:3000/intern/siswa",
+        `${API_BASE_URL}/intern/siswa`,
         formDataToSend,
         {
           headers: {
@@ -287,7 +288,7 @@ const ApplicationFormSiswa = () => {
       );
 
       toast.success("Permintaan magang berhasil diajukan!");
-      navigate("/status");
+      navigate("/magang");
     } catch (error) {
       console.error(
         "Error submitting application:",

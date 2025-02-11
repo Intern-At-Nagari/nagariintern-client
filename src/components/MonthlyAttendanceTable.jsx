@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const MonthlyAttendanceTable = ({ data }) => {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ const MonthlyAttendanceTable = ({ data }) => {
 
     try {
       await axios.post(
-        "http://localhost:3000/admin/absensi",
+        `${API_BASE_URL}/admin/absensi`,
         {
           permintaanId,
           bulan,

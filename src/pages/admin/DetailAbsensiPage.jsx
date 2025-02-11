@@ -25,6 +25,7 @@ import UploadModal from "../../components/UploadModal";
 
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const DetailAbsensiPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,7 +60,7 @@ const DetailAbsensiPage = () => {
         if (!token) throw new Error("No authentication token found");
 
         const response = await axios.get(
-          `http://localhost:3000/admin/absensi/${bulan}/${tahun}`,
+          `${API_BASE_URL}/admin/absensi/${bulan}/${tahun}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -83,7 +84,7 @@ const DetailAbsensiPage = () => {
 
   const handleViewPdf = () => {
     if (rekapInfo?.url) {
-      window.open(`http://localhost:3000/public/${rekapInfo.url}`, '_blank');
+      window.open(`${API_BASE_URL}/public/${rekapInfo.url}`, '_blank');
     }
   };
 
@@ -118,7 +119,7 @@ const DetailAbsensiPage = () => {
       const { bulan, tahun } = selectedPrintData;
 
       const response = await axios.post(
-        `http://localhost:3000/admin/absensi/${bulan}/${tahun}/print`,
+        `${API_BASE_URL}/admin/absensi/${bulan}/${tahun}/print`,
         printForm,
         {
           headers: {
@@ -183,7 +184,7 @@ const DetailAbsensiPage = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:3000/admin/absensi/${selectedAttendance.id}`,
+        `${API_BASE_URL}/admin/absensi/${selectedAttendance.id}`,
         { kehadiran: parseInt(newAttendance) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -212,7 +213,7 @@ const DetailAbsensiPage = () => {
       formData.append("fileRekap", file);
 
       const response = await axios.post(
-        `http://localhost:3000/admin/absensi/${bulan}/${tahun}/upload`,
+        `${API_BASE_URL}/admin/absensi/${bulan}/${tahun}/upload`,
         formData,
         {
           headers: {
@@ -482,7 +483,7 @@ const DetailAbsensiPage = () => {
                 </div>
                 <div className="w-full aspect-[16/9] border border-gray-200 rounded-lg overflow-hidden">
                   <iframe
-                    src={`http://localhost:3000/uploads/${rekapInfo.url}`}
+                    src={`${API_BASE_URL}/uploads/${rekapInfo.url}`}
                     className="w-full h-full"
                     title="Rekap PDF"
                   />

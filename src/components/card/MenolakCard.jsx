@@ -4,13 +4,13 @@ import { Building, Download, XCircle } from "lucide-react";
 
 const MenolakCard = ({ applicationStatus }) => {
   const handleDownload = async (fileUrl) => {
-    const fileName = fileUrl.split("/").pop();
-    const aTag = document.createElement("a");
-    aTag.href = `http://localhost:3000/uploads/${fileUrl}`;
-    aTag.setAttribute("download", fileName);
-    document.body.appendChild(aTag);
-    aTag.click();
-    aTag.remove();
+    const url = `${API_BASE_URL}/download/${fileUrl}`;
+    const a = document.createElement("a");
+        a.href = url;
+        a.download = fileUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
   };
 
   return (

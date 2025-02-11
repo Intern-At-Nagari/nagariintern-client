@@ -14,6 +14,7 @@ import {
 import { UserIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { toast } from "react-toastify";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 const AdminLoginForm = () => {
@@ -54,7 +55,7 @@ const AdminLoginForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/auth/login",
+        `${API_BASE_URL}/auth/login`,
         formData
       );
 
@@ -66,7 +67,7 @@ const AdminLoginForm = () => {
         toast.error("Login failed. Please check your credentials.");
       } else {
         toast.success("Login successful!");
-        navigate("/admin/dashboard");
+        navigate("/admin/peserta-magang");
       }
       
     } catch (error) {

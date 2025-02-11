@@ -1,6 +1,7 @@
 import React from "react";
 import TimelineView from "../components/TimeLineView";
 import EmptyState from "./EmptyStatePage";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ApplicationStatus = () => {
   const [applicationStatus, setApplicationStatus] = React.useState(null);
@@ -8,7 +9,7 @@ const ApplicationStatus = () => {
   React.useEffect(() => {
     const fetchApplicationStatus = async () => {
       try {
-        const response = await fetch("http://localhost:3000/my-intern", {
+        const response = await fetch(`${API_BASE_URL}/my-intern`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

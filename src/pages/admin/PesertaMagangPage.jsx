@@ -32,6 +32,7 @@ import Pagination from "../../components/Pagination";
 import ModalIframe from "../../components/ModalIframe";
 import MonthlyAttendanceTable from "../../components/MonthlyAttendanceTable";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const PesertaMagangPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,7 +66,7 @@ const PesertaMagangPage = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No authentication token found");
 
-        const response = await axios.get("http://localhost:3000/admin/intern", {
+        const response = await axios.get(`${API_BASE_URL}/admin/intern`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -97,9 +98,12 @@ const PesertaMagangPage = () => {
   const handleViewClick = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:3000/intern/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${API_BASE_URL}/admin/intern/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setSelectedIntern(response.data);
       setIsDetailOpen(true);
     } catch (err) {
@@ -527,7 +531,6 @@ const PesertaMagangPage = () => {
                     </div>
                   </div>
 
-                  {/* Documents Section */}
                   <div className="space-y-4">
                     <Typography
                       variant="h6"
@@ -539,29 +542,37 @@ const PesertaMagangPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {selectedIntern.Dokumens &&
                         [
-                          { label: "Curriculum Vitae", index: 0 },
-                          { label: "Kartu Tanda Penduduk", index: 2 },
-                          { label: "Surat Pengantar", index: 3 },
-                          { label: "Transkrip Nilai", index: 1 },
-                        ].map((doc) => (
-                          <div key={doc.label} className="flex gap-2">
-                            <Button
-                              variant="outlined"
-                              className="flex items-center gap-2 normal-case flex-1"
-                              onClick={() => {
-                                handleDocumentModal(
-                                  `http://localhost:3000/uploads/${
-                                    selectedIntern.Dokumens[doc.index].url
-                                  }`,
-                                  doc.label
-                                );
-                              }}
-                            >
-                              <ArrowDownTrayIcon className="w-4 h-4" />
-                              {doc.label}
-                            </Button>
-                          </div>
-                        ))}
+                          { label: "Curriculum Vitae", tipe: "CV" },
+                          { label: "Kartu Tanda Penduduk", tipe: "KTP" },
+                          { label: "Surat Pengantar", tipe: "Surat Pengantar" },
+                          { label: "Transkrip Nilai", tipe: "Transkip Nilai" },
+                        ].map((doc) => {
+                          console.log(selectedIntern.Dokumens);
+                          const document = selectedIntern.Dokumens.find(
+                            (d) => d.tipeDokumen.name == doc.tipe
+                          );
+                          console.log(document);
+
+                          if (!document) return null;
+
+                          return (
+                            <div key={doc.label} className="flex gap-2">
+                              <Button
+                                variant="outlined"
+                                className="flex items-center gap-2 normal-case flex-1"
+                                onClick={() => {
+                                  handleDocumentModal(
+                                    `${API_BASE_URL}/uploads/${document.url}`,
+                                    doc.label
+                                  );
+                                }}
+                              >
+                                <ArrowDownTrayIcon className="w-4 h-4" />
+                                {doc.label}
+                              </Button>
+                            </div>
+                          );
+                        })}
                     </div>
                   </div>
 

@@ -13,6 +13,7 @@ import { X, Loader2, ChevronDown } from "lucide-react";
 import axios from "axios";
 import LoadingButton from "../components/LoadingButton";
 import { toast } from "react-toastify";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ApplicationFormMahasiswa = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const ApplicationFormMahasiswa = () => {
   useEffect(() => {
     const checkRegistrationPeriod = async () => {
       try {
-        const response = await fetch("http://localhost:3000/jadwal-curent", {
+        const response = await fetch(`${API_BASE_URL}/jadwal-curent`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -98,7 +99,7 @@ const ApplicationFormMahasiswa = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/universitas?name=${encodeURIComponent(
+        `${API_BASE_URL}/api/universitas?name=${encodeURIComponent(
           query
         )}`
       );
@@ -273,7 +274,7 @@ const ApplicationFormMahasiswa = () => {
       });
 
       const response = await axios.post(
-        "http://localhost:3000/intern/mahasiswa",
+        `${API_BASE_URL}/intern/mahasiswa`,
         formDataToSend,
         {
           headers: {
@@ -285,7 +286,7 @@ const ApplicationFormMahasiswa = () => {
 
       console.log("Response:", response.data); // Add logging
       toast.success("Permintaan magang berhasil diajukan!");
-      navigate("/status");
+      navigate("/magang");
     } catch (error) {
       console.error(
         "Error submitting application:",

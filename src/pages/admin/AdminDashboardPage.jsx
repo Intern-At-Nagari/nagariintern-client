@@ -5,8 +5,7 @@ import Sidebar from "../../layout/Sidebar";
 import BreadcrumbsComponent from "../../components/BreadcrumbsComponent";
 
 const Dashboard = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user);
+
   return (
     <div className="lg:ml-80 min-h-screen bg-blue-gray-50">
       <Sidebar />
