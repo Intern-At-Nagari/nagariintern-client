@@ -7,7 +7,7 @@ export default defineConfig({
     port: process.env.PORT || 5001,
     host: '0.0.0.0',
     cors: true,
-    https: true
+    https: true,
   },
   build: {
     outDir: 'dist',

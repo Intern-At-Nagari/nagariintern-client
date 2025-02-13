@@ -116,7 +116,7 @@ const RegisterForm = ({ nagariImage, onToggleForm }) => {
       {/* Form Section */}
       <motion.div
         className="absolute w-full md:w-1/2 h-full flex items-center justify-center p-4 md:p-6"
-        style={{ left: "0", right: "0", md: { left: "50%" } }}
+        style={{ right: "0" }}
         variants={formVariants}
         initial="initial"
         animate="animate"

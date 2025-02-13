@@ -65,7 +65,7 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
   };
 
   const imageVariants = {
-    animate: { x: ["100%", "0%"], opacity: 1 },
+    animate: { x: "0%", opacity: 1 },
     exit: { x: "-100%", opacity: 1 },
   };
 
@@ -82,6 +82,7 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
     mass: 1,
   };
 
+
   return (
     <>
       {/* Image Section */}
@@ -89,7 +90,7 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
         className="absolute w-1/2 md:w-1/2 h-full hidden md:block"
         style={{ left: "50%" }}
         variants={imageVariants}
-        initial="initial"
+        initial="initial" 
         animate="animate"
         exit="exit"
         transition={transition}
