@@ -54,7 +54,7 @@ const ApplicationFormMahasiswa = () => {
 
     checkRegistrationPeriod();
   }, [navigate]);
-  
+
   const [formData, setFormData] = useState({
     nama: "",
     nim: "",
@@ -99,9 +99,7 @@ const ApplicationFormMahasiswa = () => {
 
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/api/universitas?name=${encodeURIComponent(
-          query
-        )}`
+        `${API_BASE_URL}/api/universitas?name=${encodeURIComponent(query)}`
       );
 
       if (response.data.dataUniversitas) {
@@ -288,14 +286,24 @@ const ApplicationFormMahasiswa = () => {
       toast.success("Permintaan magang berhasil diajukan!");
       navigate("/magang");
     } catch (error) {
-      console.error(
-        "Error submitting application:",
-        error.response?.data || error
-      );
-      alert(
-        error.response?.data?.error ||
-          "Terjadi kesalahan saat mengajukan permintaan"
-      );
+      console.error("Error:", error);
+
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with error
+        const errorMessage =
+          error.response.data.message ||
+          "Terjadi kesalahan saat mengajukan permintaan magang";
+        toast.error(errorMessage);
+      } else if (error.request) {
+        // Request made but no response
+        toast.error(
+          "Tidak dapat terhubung ke server. Periksa koneksi internet Anda."
+        );
+      } else {
+        // Error in request setup
+        toast.error("Terjadi kesalahan dalam aplikasi. Silakan coba lagi.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -368,7 +376,6 @@ const ApplicationFormMahasiswa = () => {
                   </div>
                 </div>
               </div>
-
               {/* Educational Information Section */}
               <div className="bg-gray-50 p-6 rounded-lg">
                 <Typography variant="h6" color="blue-gray" className="mb-4">
@@ -459,7 +466,6 @@ const ApplicationFormMahasiswa = () => {
                   *Pastikan nama program studi ditulis dengan lengkap dan benar
                 </Typography>
               </div>
-
               {/* Internship Details Section */}
               <div className="bg-gray-50 p-6 rounded-lg">
                 <Typography variant="h6" color="blue-gray" className="mb-4">
@@ -583,15 +589,18 @@ const ApplicationFormMahasiswa = () => {
                   </div>
                 ) : null}
               </div>
-
               {/* Documents Section */}
               <div className="bg-gray-50 p-6 rounded-lg">
                 <Typography variant="h6" color="blue-gray" className="mb-4">
                   Dokumen Pendukung
                 </Typography>
+                <div className="text-sm text-blue-gray-600 mb-4">
+                  <span className="font-medium">Catatan:</span> Semua dokumen
+                  harus dalam format PDF dengan ukuran maksimal 2MB per file
+                </div>
                 <div className="grid grid-cols-1 gap-6">
                   {[
-                    { name: "fileCv", label: "Upload CV (PDF)" },
+                    { name: "fileCv", label: "Upload CV" },
                     {
                       name: "fileTranskrip",
                       label: "Transkrip Nilai Semester Terakhir",
@@ -599,16 +608,19 @@ const ApplicationFormMahasiswa = () => {
                     { name: "fileKtp", label: "Kartu Tanda Penduduk" },
                     {
                       name: "fileSuratPengantar",
-                      label: "Surat Pengantar dari Institusi (PDF)",
+                      label: "Surat Pengantar dari Institusi",
                     },
                   ].map((doc) => (
-                    <div key={doc.name} className="space-y-2">
+                    <div
+                      key={doc.name}
+                      className="p-4 bg-white rounded-lg border border-gray-200"
+                    >
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-medium"
+                        className="font-medium mb-2"
                       >
-                        {doc.label}
+                        {doc.label} (PDF)
                       </Typography>
                       <Input
                         type="file"
@@ -619,12 +631,14 @@ const ApplicationFormMahasiswa = () => {
                         required
                         className="bg-white"
                       />
+                      <Typography variant="small" color="gray" className="mt-1">
+                        Maksimal 2MB
+                      </Typography>
                     </div>
                   ))}
                 </div>
               </div>
-
-              {/* Submit Button */}
+              {/* Submit Button */}}
               <LoadingButton
                 type="submit"
                 isLoading={isSubmitting}

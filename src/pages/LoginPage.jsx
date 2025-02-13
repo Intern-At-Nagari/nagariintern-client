@@ -56,9 +56,13 @@ const LoginForm = ({ nagariImage, onToggleForm }) => {
         navigate("/home");
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      setErrors({ submit: "Login failed. Please check your credentials." });
-      toast.error("Login failed. Please check your credentials.");
+      console.error("Error during login:", );
+      if (error.response && error.response.status === 401) {
+        setErrors({ submit: error.response.data.error });
+        toast.error(error.response.data.error);
+      } else {
+        setErrors({ submit: error.response?.data?.message || "Login failed" });
+      }
     } finally {
       setIsLoading(false);
     }
