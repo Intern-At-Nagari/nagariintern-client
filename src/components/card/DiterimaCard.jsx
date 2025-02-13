@@ -50,7 +50,7 @@ const DiterimaCard = ({ applicationStatus }) => {
     }
   };
   const handleDownload = async (fileUrl) => {
-    const url = `${API_BASE_URL}/download/${fileUrl}`;
+    const url = `${API_BASE_URL}/uploads/${fileUrl}`;
     const a = document.createElement("a");
         a.href = url;
         a.download = fileUrl;
