@@ -73,6 +73,8 @@ const TimelineView = ({ applicationStatus }) => {
     },
   ];
 
+
+
   const ApplicantProfileSummary = ({ data }) => {
     return (
       <div className="bg-white shadow-md rounded-xl p-6 mb-8">
@@ -269,6 +271,135 @@ const TimelineView = ({ applicationStatus }) => {
     }
   };
 
+
+  const TimelineSteps = ({ className = "" }) => (
+    <div className={`relative overflow-x-auto pt-2 ${className}`}>
+      <div className="flex items-center justify-between px-4 min-w-max">
+        {timelineSteps.map((step, index) => {
+          const StatusIcon = getStepIcon(step.statusCode);
+          const isActive = activeStep === step.id;
+          const isAccessible = isStepAccessible(step.id);
+          const isLast = index === timelineSteps.length - 1;
+
+          return (
+            <div
+              key={step.id}
+              className="relative flex flex-col items-center w-full"
+            >
+              {!isLast && (
+                <div
+                  className={`absolute top-7 left-1/2 w-full h-1 ${getProgressLineColor(
+                    index
+                  )}`}
+                />
+              )}
+              <div className="relative z-10 flex flex-col items-center">
+                <button
+                  onClick={() => handleStepClick(step.id)}
+                  className={`
+                    flex flex-col items-center space-y-2 
+                    transition-all duration-200 group
+                    ${!isAccessible ? "cursor-not-allowed opacity-60" : ""}
+                  `}
+                  disabled={!isAccessible}
+                >
+                  <div
+                    className={`
+                      w-14 h-14 rounded-full flex items-center justify-center
+                      transition-all duration-200 border-2
+                      ${isActive ? "ring-4 ring-blue-100 shadow-lg transform scale-110" : ""}
+                      ${
+                        !isAccessible
+                          ? "bg-gray-100 border-gray-200"
+                          : step.statusCode < applicationStatus.data.status.id
+                          ? "bg-blue-500 border-blue-500"
+                          : step.statusCode === 2 &&
+                            (applicationStatus.data.statusState == "reject" ||
+                              applicationStatus.data.statusState == "rejected")
+                          ? "bg-white border-red-500 ring-2 ring-red-100"
+                          : step.statusCode === applicationStatus.data.status.id
+                          ? "bg-white border-blue-500 ring-2 ring-blue-100"
+                          : "bg-gray-100 border-gray-200"
+                      }
+                    `}
+                  >
+                    {!isAccessible ? (
+                      <Lock className="w-6 h-6 text-gray-400" />
+                    ) : (
+                      <StatusIcon
+                        className={`w-6 h-6 ${
+                          step.statusCode < applicationStatus.data.status.id
+                            ? "text-white"
+                            : step.statusCode === 2 &&
+                              (applicationStatus.data.statusState == "reject" ||
+                                applicationStatus.data.statusState == "rejected")
+                            ? "text-red-500"
+                            : step.statusCode === applicationStatus.data.status.id
+                            ? "text-blue-500"
+                            : "text-gray-400"
+                        }`}
+                      />
+                    )}
+                  </div>
+                  <div
+                    className={`
+                      text-center transition-all duration-200
+                      ${
+                        !isActive
+                          ? "p-2"
+                          : step.statusCode === 2 &&
+                            (applicationStatus.data.statusState == "reject" ||
+                              applicationStatus.data.statusState == "rejected")
+                          ? "bg-red-50 p-2 rounded-lg shadow-sm"
+                          : "bg-blue-50 p-2 rounded-lg shadow-sm"
+                      }
+                    `}
+                  >
+                    <Typography
+                      className={`
+                        font-semibold mb-0.5 whitespace-nowrap
+                        ${
+                          !isAccessible
+                            ? "text-gray-400"
+                            : step.statusCode < applicationStatus.data.status.id
+                            ? "text-blue-500"
+                            : step.statusCode === 2 &&
+                              (applicationStatus.data.statusState == "reject" ||
+                                applicationStatus.data.statusState == "rejected")
+                            ? "text-red-500"
+                            : step.statusCode === applicationStatus.data.status.id
+                            ? "text-blue-600"
+                            : "text-gray-600"
+                        }
+                      `}
+                    >
+                      {step.title}
+                    </Typography>
+                    <Typography
+                      className={`text-sm whitespace-nowrap ${
+                        step.statusCode < applicationStatus.data.status.id
+                          ? "text-blue-500"
+                          : step.statusCode === 2 &&
+                            (applicationStatus.data.statusState == "reject" ||
+                              applicationStatus.data.statusState == "rejected")
+                          ? "text-red-500"
+                          : step.statusCode === applicationStatus.data.status.id
+                          ? "text-blue-600"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {step.subtitle}
+                    </Typography>
+                  </div>
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6">
       <ApplicantProfileSummary data={applicationStatus.data} />
@@ -410,87 +541,134 @@ const TimelineView = ({ applicationStatus }) => {
           </div>
         </div>
 
-        {/* Mobile Timeline - Remains largely unchanged */}
-        <div className="md:hidden space-y-4">
-          {timelineSteps.map((step, index) => {
-            const StatusIcon = getStepIcon(step.statusCode);
-            const isActive = activeStep === step.id;
-            const isAccessible = isStepAccessible(step.id);
+        {/* Mobile Timeline */}
+<div className="md:hidden overflow-x-auto pb-8 pt-4"> {/* Added pt-4 for top padding */}
+  <div className="flex items-center justify-between px-2 min-w-max relative" style={{ minWidth: '100%', paddingTop: '12px' }}> {/* Added paddingTop */}
+    {timelineSteps.map((step, index) => {
+      const StatusIcon = getStepIcon(step.statusCode);
+      const isActive = activeStep === step.id;
+      const isAccessible = isStepAccessible(step.id);
+      const isLast = index === timelineSteps.length - 1;
 
-            return (
-              <button
-                key={step.id}
-                onClick={() => handleStepClick(step.id)}
-                disabled={!isAccessible}
+      return (
+        <div
+          key={step.id}
+          className="relative flex flex-col items-center"
+          style={{ width: `${100 / timelineSteps.length}%` }}
+        >
+          {!isLast && (
+            <div
+              className={`absolute top-5 left-1/2 w-full h-1 ${getProgressLineColor(
+                index
+              )}`}
+              style={{ transform: 'translateY(100%)' }} 
+            />
+          )}
+          <div className="relative z-10 flex flex-col items-center">
+            <button
+              onClick={() => handleStepClick(step.id)}
+              className={`
+                flex flex-col items-center space-y-1
+                transition-all duration-200 group mt-2
+                ${!isAccessible ? "cursor-not-allowed opacity-60" : ""}
+              `}
+              disabled={!isAccessible}
+            >
+              <div
                 className={`
-          w-full flex items-center p-4 rounded-xl
-          transition-all duration-200
-          ${!isAccessible ? "opacity-60 cursor-not-allowed" : ""}
-          ${
-            isActive
-              ? "bg-blue-50 border-2 border-blue-200 shadow-md"
-              : "hover:bg-gray-50 border border-gray-100"
-          }
-        `}
+                  w-10 h-10 rounded-full flex items-center justify-center
+                  transition-all duration-200 border-2 mb-1
+                  ${isActive ? "ring-2 ring-blue-100 shadow-lg transform scale-110" : ""}
+                  ${
+                    !isAccessible
+                      ? "bg-gray-100 border-gray-200"
+                      : step.statusCode < applicationStatus.data.status.id
+                      ? "bg-blue-500 border-blue-500"
+                      : step.statusCode === 2 &&
+                        (applicationStatus.data.statusState == "reject" ||
+                          applicationStatus.data.statusState == "rejected")
+                      ? "bg-white border-red-500 ring-2 ring-red-100"
+                      : step.statusCode === applicationStatus.data.status.id
+                      ? "bg-white border-blue-500 ring-2 ring-blue-100"
+                      : "bg-gray-100 border-gray-200"
+                  }
+                `}
               >
-                <div
-                  className={`
-            w-12 h-12 rounded-full flex items-center justify-center
-            ${
-              !isAccessible
-                ? "bg-gray-100"
-                : step.statusCode < applicationStatus.data.status.id
-                ? "bg-blue-500"
-                : step.statusCode === applicationStatus.data.status.id
-                ? "bg-blue-500"
-                : "bg-gray-100"
-            }
-          `}
-                >
-                  {!isAccessible ? (
-                    <Lock className="w-6 h-6 text-gray-400" />
-                  ) : (
-                    <StatusIcon
-                      className={`w-6 h-6 ${
-                        step.statusCode < applicationStatus.data.status.id ||
-                        step.statusCode === applicationStatus.data.status.id
-                          ? "text-white"
-                          : "text-gray-400"
-                      }`}
-                    />
-                  )}
-                </div>
-                <div className="ml-4 text-left">
-                  <Typography
-                    className={`
-              font-semibold
-              ${
-                !isAccessible
-                  ? "text-gray-400"
-                  : isActive
-                  ? "text-blue-600"
-                  : step.statusCode < applicationStatus.data.status.id
-                  ? "text-blue-500"
-                  : step.statusCode === applicationStatus.data.status.id
-                  ? "text-blue-500"
-                  : "text-gray-600"
-              }
-            `}
-                  >
-                    {step.title}
-                  </Typography>
-                  <Typography
-                    className={`text-sm ${
-                      isActive ? "text-blue-600" : "text-gray-500"
+                {!isAccessible ? (
+                  <Lock className="w-4 h-4 text-gray-400" />
+                ) : (
+                  <StatusIcon
+                    className={`w-4 h-4 ${
+                      step.statusCode < applicationStatus.data.status.id
+                        ? "text-white"
+                        : step.statusCode === 2 &&
+                          (applicationStatus.data.statusState == "reject" ||
+                            applicationStatus.data.statusState == "rejected")
+                        ? "text-red-500"
+                        : step.statusCode === applicationStatus.data.status.id
+                        ? "text-blue-500"
+                        : "text-gray-400"
                     }`}
-                  >
-                    {step.subtitle}
-                  </Typography>
-                </div>
-              </button>
-            );
-          })}
+                  />
+                )}
+              </div>
+              <div
+                className={`
+                  text-center px-1 py-0.5
+                  ${
+                    !isActive
+                      ? ""
+                      : step.statusCode === 2 &&
+                        (applicationStatus.data.statusState == "reject" ||
+                          applicationStatus.data.statusState == "rejected")
+                      ? "bg-red-50 rounded shadow-sm"
+                      : "bg-blue-50 rounded shadow-sm"
+                  }
+                `}
+              >
+                <Typography
+                  className={`
+                    font-semibold text-[10px] leading-tight mb-0.5
+                    ${
+                      !isAccessible
+                        ? "text-gray-400"
+                        : step.statusCode < applicationStatus.data.status.id
+                        ? "text-blue-500"
+                        : step.statusCode === 2 &&
+                          (applicationStatus.data.statusState == "reject" ||
+                            applicationStatus.data.statusState == "rejected")
+                        ? "text-red-500"
+                        : step.statusCode === applicationStatus.data.status.id
+                        ? "text-blue-600"
+                        : "text-gray-600"
+                    }
+                  `}
+                >
+                  {step.title}
+                </Typography>
+                <Typography
+                  className={`text-[8px] leading-tight ${
+                    step.statusCode < applicationStatus.data.status.id
+                      ? "text-blue-500"
+                      : step.statusCode === 2 &&
+                        (applicationStatus.data.statusState == "reject" ||
+                          applicationStatus.data.statusState == "rejected")
+                      ? "text-red-500"
+                      : step.statusCode === applicationStatus.data.status.id
+                      ? "text-blue-600"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {step.subtitle}
+                </Typography>
+              </div>
+            </button>
+          </div>
         </div>
+      );
+    })}
+  </div>
+</div>
       </div>
       {/* Content Card */}
       {isStepAccessible(activeStep) ? (
