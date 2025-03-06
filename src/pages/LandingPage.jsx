@@ -130,10 +130,10 @@ const LandingPage = () => {
                   </svg>
                 </div>
                 <Typography variant="h5" color="blue-gray" className="mb-2">
-                  Pengembangan Karir
+                  Product Bank Nagari
                 </Typography>
                 <Typography className="text-blue-gray-600">
-                  Jalur karir yang jelas dengan berbagai peluang pengembangan diri melalui pelatihan dan sertifikasi profesional perbankan.
+                  Layanan perbankan yang lengkap dan inovatif untuk memenuhi kebutuhan nasabah perorangan maupun korporat.
                 </Typography>
               </CardBody>
             </Card>
