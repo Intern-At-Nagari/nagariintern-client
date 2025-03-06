@@ -127,7 +127,7 @@ const PernyataanCard = ({ applicationStatus }) => {
           <Clock size={16} /> Estimasi Waktu Verifikasi
         </Typography>
         <Typography variant="small" color="gray" className="text-xs md:text-sm">
-          Proses verifikasi dokumen membutuhkan waktu 1-2 hari kerja. Anda akan
+          Proses verifikasi dokumen membutuhkan waktu 7 hari kerja. Anda akan
           mendapatkan notifikasi setelah dokumen selesai diverifikasi.
         </Typography>
       </div>

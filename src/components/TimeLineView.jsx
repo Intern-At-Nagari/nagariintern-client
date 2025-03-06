@@ -21,6 +21,7 @@ import PernyataanCard from "./card/PernyataanCard";
 import PersetujuanCard from "./card/PersetujuanCard";
 import MenolakCard from "./card/MenolakCard";
 import DitolakCard from "./card/tahap-2/DitolakCard";
+import SelesaiCard from "./card/SelesaiCard";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TimelineView = ({ applicationStatus }) => {
@@ -69,6 +70,16 @@ const TimelineView = ({ applicationStatus }) => {
       content: {
         title: "Dokumen Disetujui",
         status: "Terverifikasi",
+      },
+    },
+    {
+      id: "5",
+      title: "Selesai",
+      subtitle: "Tahap 5",
+      statusCode: 5,
+      content: {
+        title: "Magang Selesai",
+        status: "Telah menyelesaikan program magang",
       },
     },
   ];
@@ -265,7 +276,8 @@ const TimelineView = ({ applicationStatus }) => {
         return <PernyataanCard applicationStatus={applicationStatus} />;
       case "4":
         return <PersetujuanCard applicationStatus={applicationStatus} />;
-      // Hapus case untuk tahap 5
+      case "5":
+        return <SelesaiCard applicationStatus={applicationStatus} />;
       default:
         return null;
     }

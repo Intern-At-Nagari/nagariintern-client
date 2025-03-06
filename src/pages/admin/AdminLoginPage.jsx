@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validatePassword } from "../../utils/validation";
 import { useAuth } from "../../utils/AuthContext";
+import { useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -23,12 +24,22 @@ const AdminLoginForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    console.log(user);
+    setUserData(user);
+    if (user && user.role === "Admin") {
+      navigate("/admin/peserta-magang");
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -10,7 +10,6 @@ import PublicRoute from "./routes/PublicRoute"; // New component
 import LandingPage from "./pages/LandingPage";
 import AuthLayout from "./layout/AuthLayout";
 import Home from "./pages/HomePage";
-import AdminDashboard from "./pages/admin/AdminDashboardPage";
 import ApplicationFormSiswa from "./pages/FormSiswaPage";
 import ApplicationFormMahasiswa from "./pages/FormMahasiswaPage";
 import ApplicationStatus from "./pages/MagangPage";
@@ -51,7 +50,6 @@ function App() {
 
           {/* Protected Admin routes */}
           <Route element={<AdminRoute />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/peserta-magang" element={<PesertaMagang />} />
             <Route path="/admin/peserta-magang/:id" element={<DetailPesertaMagang />} />
             <Route path="/admin/rekapitulasi" element={<RekapAbsen />} />

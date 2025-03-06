@@ -19,7 +19,7 @@ const AuthLayout = () => {
         if (token) {
             const role = jsonUser.role;
             if (role == "Admin") {
-                navigate("/admin/dashboard");
+                navigate("/admin/peserta-magang");
             } else {
                 navigate("/home");
             }
